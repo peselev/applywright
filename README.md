@@ -1,5 +1,9 @@
 # Applywright
 
+<p align="center">
+  <img src="assets/applywright.png" alt="Applywright" width="640">
+</p>
+
 An agentic job-application pipeline you run from your own machine. You paste a job URL (or a queue of them); the agent fetches the posting, scans it for prompt-injection, assesses fit against your CV and portfolio, tailors your resume, exports a clean PDF, and records the application in a tracker. You review and submit.
 
 Built for **Claude Code**. The work runs locally — your CV, bullets, and applications never leave your machine.
