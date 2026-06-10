@@ -1,0 +1,40 @@
+# Applywright — profile config (EXAMPLE)
+#
+# Copy this whole profile.example/ directory to profile/ to get started:
+#     cp -r profile.example profile
+# then edit profile/ with your own details. profile/ is gitignored; this
+# example stays in the repo as the template.
+#
+# Skills read these values; the cover-letter export passes the contact block
+# to the PDF template. Nothing here is hard-coded in the engine.
+
+identity:
+  full_name: "Jordan Lin"
+  # surname drives the exported PDF filename: "{surname} - Resume.pdf"
+  surname: "Lin"
+  # appended after the name on the CV (leave "" if none)
+  credentials: "MBA"
+  email: "jordan.lin@example.com"
+  phone: "(555) 010-2837"
+
+portfolio:
+  # If url is empty, refresh-persona is skipped and profile/persona.md is
+  # maintained by hand (or via the orientation interview, later milestone).
+  url: "https://jordanlin.example"
+  # AI-readable summary endpoint, if your site publishes one (else "").
+  llms_txt: ""
+
+utm:
+  source_cv: "cv"
+  source_cover_letter: "cover_letter"
+  medium: "application"
+  # campaign is set to the application short-id at generation time.
+
+tracker:
+  # "csv"   — zero setup, writes output/applications.csv (the default)
+  # "notion" — requires the Notion MCP configured in Claude Code + the DB IDs below
+  mode: "csv"
+  csv_path: "output/applications.csv"
+  notion:
+    applications_db: ""
+    companies_db: ""

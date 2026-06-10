@@ -1,0 +1,22 @@
+# ── Personal data — never committed ────────────────────────────
+# Your real profile (identity, CV, bullets, persona, field notes).
+# Start from profile.example/ instead:  cp -r profile.example profile
+/profile/
+
+# Filed applications + the CSV tracker (everything you generate).
+/output/*
+!/output/.gitkeep
+
+# Secrets / keys (optional Notion, etc.)
+/.env
+
+# ── Transient scratch ──────────────────────────────────────────
+/temp/*
+!/temp/.gitkeep
+/inbox/*
+!/inbox/.gitkeep
+
+# ── OS / tooling ───────────────────────────────────────────────
+.DS_Store
+*.pyc
+__pycache__/
