@@ -208,13 +208,12 @@ JD location: <temp/fetched-jd.md or inbox/jd.md>
 JD size: <N> bytes
 ```
 
-### Step 3b: Convert to PDF and open (auto-fetch path only)
+### Step 3b: Validate the export pipeline (auto-fetch path only)
 
-If the JD came from auto-fetch (web_fetch, iframe-switch, or Jina), convert to PDF and open:
+If the JD came from auto-fetch (web_fetch, iframe-switch, or Jina), run the PDF export once as a smoke test. This confirms the strip → pandoc → Typst pipeline works before any tailoring happens, so a broken export surfaces now instead of after fit assessment. Do not open the result. It is a throwaway check, not for reading.
 
 ```bash
 ./scripts/export-pdf.sh temp/fetched-jd.md temp/fetched-jd.pdf document
-open temp/fetched-jd.pdf
 ```
 
 **If `export-pdf.sh` fails** (non-zero exit), STOP the pipeline. Tell the user:
@@ -223,7 +222,7 @@ open temp/fetched-jd.pdf
 - This likely means the export pipeline is broken; CV export later will also fail
 - Ask him to fix it before continuing
 
-Do NOT fall back to opening the `.md` — a PDF failure here is an early warning.
+A PDF failure here is an early warning. Do not work around it.
 
 If the JD came from manual paste, skip the PDF step. The user pasted it themselves.
 
