@@ -17,6 +17,10 @@ Built for **Claude Code**. The work runs locally. Your CV, bullets, and applicat
 - **Tracks** every application in a CSV (default, zero setup) or Notion (optional), and **dedups** so the same job is never filed twice.
 - **Drafts cover letters and application-form answers** in your voice, on request, with a strict anti-AI-tell rule set.
 
+<p align="center">
+  <img src="assets/applywright-flowchart.svg" alt="Applywright pipeline: from a job URL through dedup, fetch, injection scan, fit scoring, and CV tailoring to a filed application" width="480">
+</p>
+
 ## Your data lives in one place: `profile/`
 
 Everything personal (identity, CV, bullets, persona, learnings) lives in `profile/`, which is **gitignored**. The engine (skills, scripts, templates) carries none of your details; it reads them from `profile/config.yaml` at runtime. That means you can publish or fork the engine freely, and your information stays put.
@@ -33,7 +37,7 @@ cd applywright
 ./setup.sh          # installs Claude Code, Typst, Pandoc; bootstraps profile/ from the example
 ```
 
-Then edit `profile/`:
+The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through config, CV, bullets, and persona, and saves progress so you can stop and resume. Or edit the files by hand:
 
 1. `profile/config.yaml`: name, email, phone, portfolio URL, tracker mode
 2. `profile/cv.md`: your resume, with `{bullet_2}` / `{bullet_3}` placeholders the agent fills

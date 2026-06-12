@@ -13,7 +13,8 @@ applywright/
 ├── profile/cover-letter-field-notes.md  ← cross-application cover-letter learnings (yours; agent proposes, you approve)
 ├── profile/answers-field-notes.md       ← cross-application answer learnings (yours; agent proposes, you approve)
 ├── profile/
-│   ├── cv.md                  ← CV template with {bullet_1} and {bullet_2} placeholders
+│   ├── cv.md                  ← CV template with {bullet_2} and {bullet_3} placeholders
+│   ├── cv-rules.md            ← what's locked vs dynamic in cv.md (convention doc, read-only)
 │   ├── persona.md             ← distilled snapshot of the user's portfolio (managed by refresh-persona)
 │   └── master-bullets.md      ← library of high-impact bullets (assess-fit picks from this)
 ├── output/              ← one folder per job, created by you
@@ -33,6 +34,7 @@ applywright/
 │   └── jobs.txt                ← bulk queue: one job URL per line (see bulk-process skill)
 ├── temp/                     ← scratch directory used by fetch-jd for auto-fetched content
 ├── skills/
+│   ├── orientation/SKILL.md     ← first-time setup: env check + profile interview (run once)
 │   ├── process-job/SKILL.md     ← the main filing pipeline (runs auto or manual)
 │   ├── bulk-process/SKILL.md    ← loop over inbox/jobs.txt, each job via process-job in auto mode
 │   ├── fetch-jd/SKILL.md        ← JD fetching with fallbacks
@@ -45,6 +47,7 @@ applywright/
 │       └── rating-and-learning.md ← ok/star rating + propose-then-write learning loop (used by both writing skills)
 ├── scripts/
 │   ├── export-pdf.sh             ← markdown → PDF via Typst (cv, document, or cover-letter)
+│   ├── doctor.sh                 ← environment check + export smoke test (used by orientation)
 │   ├── fetch-jd.sh               ← URL → temp/fetched-jd.md via curl (web_fetch or jina)
 │   ├── inbox.py                  ← atomic claim/done/fail for the inbox/jobs.txt bulk queue
 │   ├── log-append.py             ← append a timestamped line to a log file
@@ -56,6 +59,10 @@ applywright/
     ├── cv.typ                 ← styled resume template
     └── document.typ           ← generic readable document (JDs, fit reports)
 ```
+
+## First-time setup
+
+If the user is new (no populated `profile/`, or they say "set me up", "get started", "onboard me", "first run"), run `skills/orientation/SKILL.md`. It checks the environment, bootstraps `profile/`, and interviews them into config, CV, master-bullets, and persona. It is resumable and runs once. It is not part of the application pipeline.
 
 ## Pipeline
 
