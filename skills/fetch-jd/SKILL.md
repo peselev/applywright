@@ -1,11 +1,11 @@
 ---
 name: fetch-jd
-description: Fetch a job description from a URL into temp/fetched-jd.md. Use whenever the user provides a job posting URL — either to file an application (called by the process-job skill) or to discuss a posting before deciding to apply. Uses scripts/fetch-jd.sh to actually fetch the bytes (curl direct first, Jina reader proxy fallback). Detects shell-page-with-ATS-iframe patterns and re-fetches the ATS URL. Asks the user for an alternative URL or manual paste if all fetch methods fail. Logs every attempt with method, URL hit, and byte count for full reproducibility.
+description: Fetch a job description from a URL into temp/fetched-jd.md. Use whenever the user provides a job posting URL — either to file an application (called by the process-job skill) or to discuss a posting before deciding to apply. Uses scripts/fetch-jd.py to actually fetch the bytes (direct fetch first, Jina reader proxy fallback). Detects shell-page-with-ATS-iframe patterns and re-fetches the ATS URL. Asks the user for an alternative URL or manual paste if all fetch methods fail. Logs every attempt with method, URL hit, and byte count for full reproducibility.
 ---
 
 # Fetch JD
 
-This skill produces a local file containing the job description. **You never write the JD content yourself** — the `scripts/fetch-jd.sh` script does all byte handling. Your role is to invoke the script, validate the result, and decide whether to try another method.
+This skill produces a local file containing the job description. **You never write the JD content yourself** — the `scripts/fetch-jd.py` script does all byte handling. Your role is to invoke the script, validate the result, and decide whether to try another method.
 
 ## CRITICAL: Why this skill uses a script
 
@@ -14,7 +14,7 @@ In the past, this skill let the agent handle the bytes directly. The agent — e
 The fix is structural: the script transports bytes, you read and validate the file. You cannot summarize what you never held.
 
 **Rules that follow from this:**
-1. The ONLY way JD content enters `temp/fetched-jd.md` is via `scripts/fetch-jd.sh`. Never write the file directly with content you produced.
+1. The ONLY way JD content enters `temp/fetched-jd.md` is via `scripts/fetch-jd.py`. Never write the file directly with content you produced.
 2. You may READ the file to validate. You may NEVER rewrite it.
 3. If the file's content is bad (junk, shell, login wall), your only option is to invoke the script again with a different method or URL. Not to "improve" the content.
 4. The iframe-detection step requires reading the file to look for ATS URLs — that's fine. When you detect a shell, you call the script again with the ATS URL; you do not write the ATS content yourself.
@@ -49,14 +49,14 @@ Log format (the message string you accumulate — no timestamp prefix):
 step=01 fetch-attempt method={web_fetch|jina|iframe-switch|manual} url=<URL passed to script> bytes=<N> result={ok|junk|failed|error}
 ```
 
-The script's stderr line is your source of truth for the `url`, `bytes`, and curl exit code. Include them verbatim in the message string.
+The script's stderr line is your source of truth for the `url`, `bytes`, and `fetch_code` field. Include them verbatim in the message string.
 
 ## Step 2: Fetch the content
 
 ### Step 2a: Try web_fetch via the script
 
 ```bash
-./scripts/fetch-jd.sh "<URL>" temp/fetched-jd.md web_fetch
+python3 scripts/fetch-jd.py "<URL>" temp/fetched-jd.md web_fetch
 ```
 
 Capture the script's stderr line and its exit code.
@@ -91,7 +91,7 @@ Look for any of these URL patterns in the file:
 **If it's a shell:** extract the ATS URL and re-invoke the script:
 
 ```bash
-./scripts/fetch-jd.sh "<ATS URL>" temp/fetched-jd.md web_fetch
+python3 scripts/fetch-jd.py "<ATS URL>" temp/fetched-jd.md web_fetch
 ```
 
 This overwrites the shell with the iframe content. Log:
@@ -134,7 +134,7 @@ step=01 fetch-attempt method=<previous method> bytes=<N> result=ok
 If web_fetch (with or without iframe switch) didn't produce valid content, try Jina:
 
 ```bash
-./scripts/fetch-jd.sh "<original URL>" temp/fetched-jd.md jina
+python3 scripts/fetch-jd.py "<original URL>" temp/fetched-jd.md jina
 ```
 
 Note: pass the ORIGINAL URL (the one the user provided), not any iframe-detected URL. Jina handles its own iframe rendering and may succeed where web_fetch produced a shell.
@@ -184,7 +184,7 @@ Reached only in **manual** mode. (In auto mode, Step 2e already returned `fetch-
 Tell the user auto-fetch is exhausted and ask him to paste the JD into `inbox/jd.md`. Open the file:
 
 ```bash
-open inbox/jd.md
+python3 scripts/open.py inbox/jd.md
 ```
 
 Wait for the user to confirm in chat that they've pasted it. Then read `inbox/jd.md` and verify it has content. If empty, ask again.
@@ -213,10 +213,10 @@ JD size: <N> bytes
 If the JD came from auto-fetch (web_fetch, iframe-switch, or Jina), run the PDF export once as a smoke test. This confirms the strip → pandoc → Typst pipeline works before any tailoring happens, so a broken export surfaces now instead of after fit assessment. Do not open the result. It is a throwaway check, not for reading.
 
 ```bash
-./scripts/export-pdf.sh temp/fetched-jd.md temp/fetched-jd.pdf document
+python3 scripts/export-pdf.py temp/fetched-jd.md temp/fetched-jd.pdf document
 ```
 
-**If `export-pdf.sh` fails** (non-zero exit), STOP the pipeline. Tell the user:
+**If `export-pdf.py` fails** (non-zero exit), STOP the pipeline. Tell the user:
 - The PDF export failed
 - The exact error output
 - This likely means the export pipeline is broken; CV export later will also fail

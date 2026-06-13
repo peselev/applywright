@@ -245,7 +245,7 @@ Use the same verdict emoji as in the H1 (see the table in Step 6).
 Open the fit file for the user to review:
 
 ```bash
-open output/{short-id}/fit-{short-id}.md
+python3 scripts/open.py output/{short-id}/fit-{short-id}.md
 ```
 
 ## Step 8: Done

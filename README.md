@@ -29,13 +29,24 @@ The repo ships `profile.example/` (a complete demo persona). Your real `profile/
 
 ## Quick start
 
-**New machine (macOS):**
+**New machine (macOS, Linux, or Windows):**
+
+First install the toolchain: Claude Code, Python 3, pandoc, and typst.
+- macOS: `brew install pandoc typst` (and install Claude Code + Python).
+- Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (and install Claude Code + Python). Native Claude Code, no WSL.
+
+Then clone and bootstrap the project:
 
 ```bash
 git clone <your-fork-url> applywright
 cd applywright
-./setup.sh          # installs Claude Code, Typst, Pandoc; bootstraps profile/ from the example
+python3 bootstrap.py   # bootstraps profile/ from the example, inits the tracker, creates folders
 ```
+
+The skills call scripts as `python3 scripts/<name>.py`, so `python3` must be on your
+PATH. macOS and Linux already use that name. On Windows, install Python from the
+Microsoft Store (it provides `python3`); a winget/python.org install only provides
+`python`. The exact per-OS commands are in `SETUP-WITH-AI.md`.
 
 The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through config, CV, bullets, and persona, and saves progress so you can stop and resume. Or edit the files by hand:
 
@@ -82,11 +93,11 @@ You'll see these most often:
 - **`cd` plus output redirection** in one compound command, flagged as "path resolution bypass."
 - **Brace groups containing quotes**, flagged as "expansion obfuscation." The JD-saving step writes frontmatter this way.
 - **First touch of a directory** (for example creating an `output/{company}` folder), which asks once per directory.
-- **A script's first run** (`export-pdf.sh`, `write-jd.py`, and similar), or the `open` command.
+- **A script's first run** (`export-pdf.py`, `write-jd.py`, and similar). All helpers run as `python3 scripts/*.py`.
 
 All of these are expected and safe to approve. At each prompt:
 - Pick **Yes** to run that one command.
-- Pick **"Yes, and always allow..."** or **"don't ask again for: python3 *"** to stop being asked for that pattern again.
+- Pick **"Yes, and always allow..."** or **"don't ask again for: python3 scripts/*.py"** to stop being asked for that pattern again.
 
 Runs get quieter as you approve the patterns you trust. A bulk run of many jobs prompts a few times at the start, then settles into almost none. If you'd rather skip the prompts entirely, pre-allow the tools in Claude Code's settings.
 
@@ -138,7 +149,7 @@ Setup, per chat:
 The idea is the same (fetch, scan, assess fit, tailor, draft a cover letter or answers), with these differences from the Claude Code version:
 - **Nothing auto-opens.** The browser can't open files on your machine. Claude returns the fit report, the tailored resume, and any cover letter inline, and you copy or download them.
 - **No `open` step, no local tracker writes.** You update your CSV yourself. If you connect the Notion connector in the browser, Claude can record applications there.
-- **PDF export runs in Claude's sandbox or on your machine.** Claude can run the Typst export in its own sandbox and hand you a finished PDF to download, or return the tailored `cv.md` for you to export locally with `scripts/export-pdf.sh`.
+- **PDF export runs in Claude's sandbox or on your machine.** Claude can run the Typst export in its own sandbox and hand you a finished PDF to download, or return the tailored `cv.md` for you to export locally with `scripts/export-pdf.py`.
 - **No approval prompts.** The browser sandbox runs without Claude Code's per-command yes/no gates, so the run doesn't pause the same way.
 - **More manual.** Files move in and out by upload and download instead of living in one local folder. There's no bulk queue and no dedup against a local tracker.
 

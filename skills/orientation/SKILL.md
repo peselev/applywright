@@ -1,6 +1,6 @@
 ---
 name: orientation
-description: One-time onboarding for a new Applywright user on a new machine. Use when someone has just cloned the repo and needs to get set up. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". Verifies the environment (git, python3, typst, pandoc) and runs setup.sh if dependencies are missing, bootstraps profile/ from profile.example/, then interviews the user to populate profile/config.yaml (identity + tracker choice), profile/cv.md (with the locked-vs-dynamic bullet convention), profile/master-bullets.md (the tagged story bank assess-fit picks from), and profile/persona.md (by hand, or via refresh-persona if a portfolio URL is set). Smoke-tests the PDF export and initializes the tracker. Resumable across sessions via profile/.orientation-progress.md. Never invents the user's work history, metrics, or bullets: all professional content comes from the user's answers, an existing resume they provide, or their portfolio. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
+description: One-time onboarding for a new Applywright user on a new machine. Use when someone has just cloned the repo and needs to get set up. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". Verifies the environment (git, python, typst, pandoc) and guides the user through installing any missing tools, bootstraps profile/ from profile.example/, then interviews the user to populate profile/config.yaml (identity + tracker choice), profile/cv.md (with the locked-vs-dynamic bullet convention), profile/master-bullets.md (the tagged story bank assess-fit picks from), and profile/persona.md (by hand, or via refresh-persona if a portfolio URL is set). Smoke-tests the PDF export and initializes the tracker. Resumable across sessions via profile/.orientation-progress.md. Never invents the user's work history, metrics, or bullets: all professional content comes from the user's answers, an existing resume they provide, or their portfolio. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
 ---
 
 # Orientation (first-time setup)
@@ -29,18 +29,18 @@ Announce the shape up front: "Setup is 8 steps. I'll go through them with you on
 Run the environment check:
 
 ```bash
-./scripts/doctor.sh
+python3 scripts/doctor.py
 ```
 
-- If it reports required tools missing, run `./setup.sh` (it installs Node, Claude Code, Typst, and Pandoc on macOS via Homebrew), then run `./scripts/doctor.sh` again.
-- If Homebrew itself is missing, stop and tell the user to install it from https://brew.sh, then re-run this skill.
+- If it reports required tools missing, install them and run `python3 scripts/doctor.py` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
+- On macOS, if Homebrew is missing, tell the user to install it from https://brew.sh. On Windows, winget ships with App Installer. Then re-run this skill.
 - Do not continue past a failing export smoke test. A broken PDF pipeline means every application export will fail later. Show the exact error and ask the user to fix it first.
 
 Checkpoint Step 1.
 
 ## Step 2: Bootstrap profile/
 
-- If `profile/` does not exist, create it from the template: `cp -r profile.example profile`. (setup.sh also does this; this is the fallback if the user skipped it.)
+- If `profile/` does not exist, create it from the template: `cp -r profile.example profile`. (`python3 bootstrap.py` also does this; this is the fallback if the user skipped it.)
 - Ensure the convention doc exists: if `profile/cv-rules.md` is missing, copy it with `cp profile.example/cv-rules.md profile/cv-rules.md`.
 - Confirm the file set is present: `config.yaml`, `cv.md`, `master-bullets.md`, `persona.md`, `cv-rules.md`, `cover-letter-field-notes.md`, `answers-field-notes.md`.
 
@@ -131,7 +131,7 @@ Checkpoint Step 7.
 1. Initialize the tracker: `python3 scripts/tracker.py init`, then `python3 scripts/tracker.py status` to confirm it reads back.
 2. Compile the user's CV to confirm their `cv.md` is valid input:
    ```bash
-   ./scripts/export-pdf.sh profile/cv.md temp/onboard-cv-smoke.pdf cv
+   python3 scripts/export-pdf.py profile/cv.md temp/onboard-cv-smoke.pdf cv
    ```
    The `{bullet_2}` / `{bullet_3}` placeholders will appear literally in this test PDF. That is expected; they are filled per application, not here. If the compile fails, fix the `cv.md` formatting (usually a stray `|||` or `@@@` marker) before finishing.
 3. Clean up: `rm -f temp/onboard-cv-smoke.pdf`.

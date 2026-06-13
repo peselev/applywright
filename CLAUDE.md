@@ -9,6 +9,7 @@ All of the user's identity (name, contact, portfolio URL, UTM, tracker choice) l
 ```
 applywright/
 ├── CLAUDE.md                  ← you are here
+├── bootstrap.py               ← one-time project bootstrap (profile/ from example, tracker init, folders)
 ├── profile/config.yaml        ← identity + tracker choice (gitignored; read for any personal value)
 ├── profile/cover-letter-field-notes.md  ← cross-application cover-letter learnings (yours; agent proposes, you approve)
 ├── profile/answers-field-notes.md       ← cross-application answer learnings (yours; agent proposes, you approve)
@@ -46,9 +47,10 @@ applywright/
 │       ├── writing-rules.md     ← the user's voice: anti-fabrication, banned words, AI-tells, Fluff Test, core checklist (used by cover-letter + application-answers)
 │       └── rating-and-learning.md ← ok/star rating + propose-then-write learning loop (used by both writing skills)
 ├── scripts/
-│   ├── export-pdf.sh             ← markdown → PDF via Typst (cv, document, or cover-letter)
-│   ├── doctor.sh                 ← environment check + export smoke test (used by orientation)
-│   ├── fetch-jd.sh               ← URL → temp/fetched-jd.md via curl (web_fetch or jina)
+│   ├── export-pdf.py             ← markdown → PDF via Typst (cv, document, or cover-letter)
+│   ├── doctor.py                 ← environment check + export smoke test (used by orientation)
+│   ├── fetch-jd.py               ← URL → temp/fetched-jd.md via urllib (web_fetch or jina)
+│   ├── open.py                   ← open a file in the OS default app (replaces the macOS `open`)
 │   ├── inbox.py                  ← atomic claim/done/fail for the inbox/jobs.txt bulk queue
 │   ├── log-append.py             ← append a timestamped line to a log file
 │   ├── postprocess-typst.py      ← cleans pandoc's typst output before compile
@@ -221,7 +223,7 @@ The portfolio URL and UTM `source`/`medium` come from `profile/config.yaml`. Onl
 Run:
 
 ```bash
-./scripts/export-pdf.sh output/{short-id}/cv-{short-id}.md "output/{short-id}/{surname} - Resume.pdf" cv
+python3 scripts/export-pdf.py output/{short-id}/cv-{short-id}.md "output/{short-id}/{surname} - Resume.pdf" cv
 ```
 
 If the script fails, log the error and tell the user — don't try to work around it silently.

@@ -140,7 +140,7 @@ Write the new content to `profile/persona.md`, overwriting the old file.
 Open it for the user's review:
 
 ```bash
-open profile/persona.md
+python3 scripts/open.py profile/persona.md
 ```
 
 ## Step 6: Done

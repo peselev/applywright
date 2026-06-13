@@ -130,7 +130,7 @@ Save the letter as `output/{short-id}/cover-letter-{short-id}.md`.
 
 Open it:
 ```bash
-open output/{short-id}/cover-letter-{short-id}.md
+python3 scripts/open.py output/{short-id}/cover-letter-{short-id}.md
 ```
 
 Show in chat — four lines:
@@ -159,7 +159,7 @@ Re-run the core checklist (shared) and the cover-letter-specific checklist after
 
 Re-open the file after every rewrite:
 ```bash
-open output/{short-id}/cover-letter-{short-id}.md
+python3 scripts/open.py output/{short-id}/cover-letter-{short-id}.md
 ```
 
 ## Step 8: Export to PDF
@@ -169,7 +169,7 @@ When the user says the letter is final (e.g., "done", "export it", "looks good")
 Run the export with the `cover-letter` template. Note the output filename is the clean, recruiter-facing **`{surname} - cover letter.pdf`** — not the internal short-id name (substitute the `surname` from `profile/config.yaml`). The footer is passed in as template inputs (the template renders it as a page footer, so it must not be in the markdown body). Read `profile/config.yaml` and pass the contact values:
 
 ```bash
-./scripts/export-pdf.sh \
+python3 scripts/export-pdf.py \
   "output/{short-id}/cover-letter-{short-id}.md" \
   "output/{short-id}/{surname} - cover letter.pdf" \
   cover-letter \

@@ -291,7 +291,7 @@ Log: `[TS] step=07 cv-built bullets-1={KEY or "custom"} bullets-2={KEY or "custo
 Run the export script:
 
 ```bash
-./scripts/export-pdf.sh "output/{short-id}/cv-{short-id}.md" "output/{short-id}/{surname} - Resume.pdf" cv
+python3 scripts/export-pdf.py "output/{short-id}/cv-{short-id}.md" "output/{short-id}/{surname} - Resume.pdf" cv
 ```
 
 If it succeeds: log `[TS] step=08 pdf-export engine={typst|pandoc} result=ok`
