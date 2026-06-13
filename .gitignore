@@ -24,3 +24,4 @@ __pycache__/
 # Python build / editable-install metadata
 *.egg-info/
 __pycache__/
+build/
