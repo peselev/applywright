@@ -73,6 +73,16 @@ When you change the Applywright source yourself, re-install with
 `pipx install . --force` to pick up the edits. Templates and skills are read from
 the repo folder live, so editing those needs no re-install.
 
+The commands find the repo automatically. Each one that reads or writes project
+files (`export-pdf`, `tracker`, `inbox`, `bootstrap`, `doctor`) walks up from the
+current directory to the nearest folder whose `pyproject.toml` declares the
+`applywright` package, and treats that as the root. So you can run them from any
+subfolder of the repo. Run one from outside the repo and it stops with a specific
+error: it prints the directory it started from, the rule it used, and every
+folder it checked, rather than scattering files in the wrong place. The
+path-only commands (`fetch`, `write-jd`, `scan`, `log-append`, `open`) act on the
+paths you give them and run anywhere.
+
 ### 3. Verify
 
 ```bash

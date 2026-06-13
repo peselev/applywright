@@ -50,6 +50,9 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 
+from .paths import find_root
+
+# Anchored to the project root in main(); this default is only a placeholder.
 CSV_PATH = os.path.join("output", "applications.csv")
 
 FIELDS = [
@@ -197,6 +200,9 @@ def main(argv):
     p_add.add_argument("--allow-dup", action="store_true")
 
     args = parser.parse_args(argv)
+
+    global CSV_PATH
+    CSV_PATH = str(find_root() / "output" / "applications.csv")
 
     if args.cmd == "init":
         return cmd_init()

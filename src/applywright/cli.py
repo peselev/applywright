@@ -48,7 +48,7 @@ Commands:
   bootstrap                             set up profile/, tracker, folders
   version                               print the version
 
-Run from your Applywright repo folder."""
+Run from your Applywright repo, or any subfolder of it."""
 
 
 def main(argv=None):

@@ -44,6 +44,9 @@ import os
 import sys
 import tempfile
 
+from .paths import find_root
+
+# Anchored to the project root in main(); this default is only a placeholder.
 JOBS_PATH = os.path.join("inbox", "jobs.txt")
 
 IN_PROGRESS = "⏳"
@@ -178,6 +181,9 @@ def main(argv):
         sys.stderr.write(__doc__)
         return 1
     cmd = argv[0]
+
+    global JOBS_PATH
+    JOBS_PATH = str(find_root() / "inbox" / "jobs.txt")
     if cmd == "claim":
         return cmd_claim()
     if cmd == "status":

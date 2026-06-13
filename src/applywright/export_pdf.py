@@ -37,6 +37,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .paths import find_root
 from .postprocess import process as postprocess
 from .strip_images import strip_images
 
@@ -74,9 +75,9 @@ def main(argv) -> int:
         else:
             return fail(f"ERROR: unexpected argument: {rest[i]} (expected --input key=value)", 1)
 
-    # The repo root is the current working directory: the tool is run from the
-    # repo folder, where templates/, profile/, output/, and temp/ live.
-    root = Path.cwd()
+    # The repo root is the nearest ancestor whose pyproject.toml declares the
+    # applywright package. Run from anywhere inside the repo.
+    root = find_root(require=["templates"])
     template = root / "templates" / f"{kind}.typ"
 
     input_path = Path(input_md)

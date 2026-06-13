@@ -17,10 +17,11 @@ import sys
 from pathlib import Path
 
 from . import tracker
+from .paths import find_root
 
 
 def main(argv=None) -> int:
-    root = Path.cwd()
+    root = find_root()
     print("-> Applywright bootstrap")
     print()
 

@@ -14,13 +14,10 @@ from pathlib import Path
 from shutil import which
 
 from . import export_pdf
+from .paths import find_root_quiet
 
 
 def main(argv=None) -> int:
-    root = Path.cwd()
-    temp_dir = root / "temp"
-    temp_dir.mkdir(parents=True, exist_ok=True)
-
     miss = 0
 
     def check(tool: str, optional: bool = False) -> None:
@@ -49,8 +46,24 @@ def main(argv=None) -> int:
         check("winget", optional=True)
     print()
 
+    print("Project root:")
+    root = find_root_quiet()
+    if root is None:
+        print(f"  [note] not found from {Path.cwd()}")
+        print("         run from inside the repo to test the export pipeline")
+    else:
+        print(f"  [ok]   {root}")
+    print()
+
     print("Export smoke test:")
-    if which("typst") and which("pandoc"):
+    if root is None:
+        print("  [skip] no project root in scope; cannot locate templates/")
+    elif not (root / "templates").is_dir():
+        print("  [MISS] project root found but templates/ is missing")
+        miss += 1
+    elif which("typst") and which("pandoc"):
+        temp_dir = root / "temp"
+        temp_dir.mkdir(parents=True, exist_ok=True)
         smoke_md = temp_dir / "doctor-smoke.md"
         smoke_pdf = temp_dir / "doctor-smoke.pdf"
         smoke_md.write_text(
