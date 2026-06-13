@@ -50,6 +50,12 @@ to use it; `pipx ensurepath` adds pipx's bin directory (`~/.local/bin`) to your
 shell profile. Verify the whole toolchain with `applywright doctor`. Per-OS
 details are in `SETUP-WITH-AI.md`.
 
+On Windows this is the step most likely to need attention. If PowerShell reports
+that `applywright` is not recognized after `pipx install .`, run `pipx ensurepath`,
+close the terminal, and open a new one so the session picks up the updated PATH.
+Then run `applywright doctor` from inside the repo folder to confirm the command
+resolves and the toolchain is complete.
+
 The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through config, CV, bullets, and persona, and saves progress so you can stop and resume. Or edit the files by hand:
 
 1. `profile/config.yaml`: name, email, phone, portfolio URL, tracker mode
