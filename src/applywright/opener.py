@@ -3,7 +3,7 @@
 Open a file with the OS default application. Cross-platform replacement for the
 macOS-only `open` command used in the skills to show finished PDFs and files.
 
-Usage: python scripts/open.py <file>
+Usage: applywright open <file>
 
   macOS    -> open
   Windows  -> os.startfile
@@ -21,12 +21,12 @@ import sys
 from pathlib import Path
 
 
-def main() -> int:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
+def main(argv) -> int:
+    if len(argv) != 1:
+        print("Usage: applywright open <file>", file=sys.stderr)
         return 1
 
-    target = Path(sys.argv[1])
+    target = Path(argv[0])
     if not target.exists():
         print(f"ERROR: file not found: {target}", file=sys.stderr)
         return 1
@@ -46,4 +46,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

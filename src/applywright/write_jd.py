@@ -5,7 +5,7 @@ application folder. Replaces the brace+redirect shell pattern that triggers
 Claude Code's expansion-obfuscation check.
 
 Usage:
-    python3 scripts/write-jd.py \
+    applywright write-jd \
         --source    temp/fetched-jd.md \
         --dest      applications/{short-id}/job-description-{short-id}.md \
         --url       https://... \
@@ -18,7 +18,7 @@ import argparse
 import sys
 from pathlib import Path
 
-def main():
+def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("--source",    required=True, help="Path to fetched JD (temp/fetched-jd.md or inbox/jd.md)")
     parser.add_argument("--dest",      required=True, help="Destination path inside applications/")
@@ -26,7 +26,7 @@ def main():
     parser.add_argument("--saved-at",  required=True, help="ISO timestamp")
     parser.add_argument("--method",    required=True, help="Fetch method: web_fetch | jina | iframe-switch | manual")
     parser.add_argument("--bytes",     required=True, help="Byte count of fetched content")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     source = Path(args.source)
     dest   = Path(args.dest)
@@ -53,4 +53,4 @@ fetch_bytes: {args.bytes}
     print(f"OK: {dest} ({final_bytes} bytes)")
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv[1:]))

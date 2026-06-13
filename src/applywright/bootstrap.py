@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 """
-Applywright project bootstrap. Cross-platform replacement for the project-setup
-half of setup.sh (the toolchain install is now guided per-OS commands; see
-SETUP-WITH-AI.md). Idempotent: safe to run multiple times.
+Applywright project bootstrap (`applywright bootstrap`). Idempotent: safe to run
+multiple times.
 
-Run this once, after the toolchain (Claude Code, Python 3, pandoc, typst) is
-installed:
+Run once, from the repo folder, after `pipx install .`:
 
-  python3 bootstrap.py
+  applywright bootstrap
 
 It bootstraps profile/ from profile.example/, initializes the CSV tracker, and
-creates the working folders. It does NOT install system tools. Applywright has
-no pip dependencies, so no virtual environment is required.
+creates the working folders (output/ inbox/ temp/) in the current directory. It
+does NOT install system tools.
 """
 
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
+from . import tracker
 
-def main() -> int:
-    root = Path(__file__).resolve().parent
+
+def main(argv=None) -> int:
+    root = Path.cwd()
     print("-> Applywright bootstrap")
     print()
 
@@ -34,7 +33,7 @@ def main() -> int:
         shutil.copytree(example, profile)
         print("  [ok]   created profile/ from profile.example/ (edit it with your details)")
     else:
-        print("  [MISS] profile.example/ not found; cannot bootstrap profile/")
+        print("  [MISS] profile.example/ not found; run this from the repo folder")
 
     # Folder scaffolding for non-tracked dirs.
     for name in ("output", "inbox", "temp"):
@@ -42,13 +41,8 @@ def main() -> int:
     print("  [ok]   ensured output/ inbox/ temp/ exist")
 
     # Create the CSV tracker (default tracker; no-op if it already exists).
-    tracker = root / "scripts" / "tracker.py"
-    result = subprocess.run(
-        [sys.executable, str(tracker), "init"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    if result.returncode == 0:
+    rc = tracker.main(["init"])
+    if rc == 0:
         print("  [ok]   tracker initialized (output/applications.csv)")
     else:
         print("  [note] tracker init returned non-zero (may already exist)")
@@ -57,10 +51,10 @@ def main() -> int:
     print("Next steps:")
     print("  1. Edit profile/config.yaml  - name, email, phone, portfolio URL, tracker mode")
     print("  2. Edit profile/cv.md, profile/master-bullets.md, profile/persona.md")
-    print("  3. Verify the environment:  python3 scripts/doctor.py")
+    print("  3. Verify the environment:  applywright doctor")
     print("  4. Run:  claude")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

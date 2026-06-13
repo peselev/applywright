@@ -18,25 +18,25 @@ Columns (in order):
     submission_date
 
 Usage:
-    python3 scripts/tracker.py init
+    applywright tracker init
         Create output/applications.csv with the header row if it is missing.
         No-op if it already exists. Always safe to call.
 
-    python3 scripts/tracker.py seen "<url>"
+    applywright tracker seen "<url>"
         Dedup check. If the url is already filed, print one line:
             found short_id=<id> stage=<stage> company=<company>
         otherwise print:
             not-found
         Exit 0 either way. Matching is exact on the url column.
 
-    python3 scripts/tracker.py add \
+    applywright tracker add \
         --short-id ID --company C --role R --url U \
         --source S --stage ST --fit F --comments CM [--submission-date D] \
         [--allow-dup]
         Append one row atomically. If the url is already present, this is a
         no-op and prints "duplicate ..." unless --allow-dup is given.
 
-    python3 scripts/tracker.py status
+    applywright tracker status
         Print a one-line count, total plus a per-stage tally.
 
 All paths are relative to the current working directory (run from the repo
@@ -163,7 +163,7 @@ def cmd_add(args):
 def cmd_status():
     present, rows = read_rows()
     if not present:
-        sys.stdout.write("no csv yet (run: python3 scripts/tracker.py init)\n")
+        sys.stdout.write("no csv yet (run: applywright tracker init)\n")
         return 0
     by_stage = {}
     for r in rows:
@@ -196,7 +196,7 @@ def main(argv):
     p_add.add_argument("--submission-date", default="")
     p_add.add_argument("--allow-dup", action="store_true")
 
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(argv)
 
     if args.cmd == "init":
         return cmd_init()
@@ -212,4 +212,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv))
+    raise SystemExit(main(sys.argv[1:]))

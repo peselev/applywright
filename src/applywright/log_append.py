@@ -7,10 +7,10 @@ Generates the UTC timestamp internally so the agent never has to write
 Code's "shell syntax that cannot be statically analyzed" prompt.
 
 Usage:
-    python3 scripts/log-append.py <logfile> "<message>"
+    applywright log-append <logfile> "<message>"
 
 Example:
-    python3 scripts/log-append.py applications/bitwarden-90287/log-bitwarden-90287.md "step=03 jd-saved bytes=54787"
+    applywright log-append applications/bitwarden-90287/log-bitwarden-90287.md "step=03 jd-saved bytes=54787"
 
 Writes:  [2026-06-04T16:22:10Z] step=03 jd-saved bytes=54787
 """
@@ -19,13 +19,13 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-def main():
-    if len(sys.argv) != 3:
+def main(argv):
+    if len(argv) != 2:
         print("Usage: log-append.py <logfile> \"<message>\"", file=sys.stderr)
         sys.exit(1)
 
-    logfile = Path(sys.argv[1])
-    message = sys.argv[2]
+    logfile = Path(argv[0])
+    message = argv[1]
 
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     line = f"[{ts}] {message}"
@@ -37,4 +37,4 @@ def main():
     print(f"logged: {line}")
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv[1:]))

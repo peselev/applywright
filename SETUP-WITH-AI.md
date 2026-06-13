@@ -28,7 +28,7 @@ There are two ways to do it. Pick one.
 **macOS** (Homebrew):
 
 ```bash
-brew install pandoc typst
+brew install pandoc typst pipx
 # Install Claude Code and Python 3 as well (Python via brew install python or python.org).
 ```
 
@@ -38,35 +38,45 @@ brew install pandoc typst
 winget install --id JohnMacFarlane.Pandoc --exact
 winget install --id Typst.Typst
 winget install --id Python.Python.3.12
+py -m pip install --user pipx
 # Install Claude Code per its Windows instructions.
 ```
 
-**Linux**: install Claude Code, Python 3, and pandoc from your package manager,
-and typst from your package manager or its GitHub release.
+**Linux**: install Claude Code, Python 3, pandoc, and pipx from your package
+manager, and typst from your package manager or its GitHub release.
 
 Use a recent Claude Code (v2.1.84 or newer). It has a native PowerShell tool, so
 Git Bash is not required on Windows. Git for Windows is still recommended.
 
-### 2. Clone and bootstrap
+### 2. Clone, install the CLI, and bootstrap
 
 ```bash
 git clone <your-fork-url> applywright
 cd applywright
-python3 bootstrap.py     # profile/ from the example, tracker init, output/ inbox/ temp/
+pipx install .            # installs the `applywright` command onto your PATH
+applywright bootstrap     # profile/ from the example, tracker init, output/ inbox/ temp/
 ```
 
-The skills call scripts as `python3 scripts/<name>.py`, so `python3` must be on
-your PATH. macOS and Linux already use that name (Applywright has zero pip
-dependencies, so no virtual environment is needed). On Windows, install Python
-from the Microsoft Store, which provides a `python3` command; a winget or
-python.org install only provides `python`, and the skills would not find it.
-(Phase 2 replaces these `python3 scripts/...` calls with a single `applywright`
-command on PATH, removing this requirement entirely.)
+`pipx install .` builds Applywright into its own isolated environment and drops a
+single `applywright` launcher into pipx's bin directory (`~/.local/bin` on
+macOS/Linux). Because that launcher has its interpreter baked in, the agent never
+has to resolve `python` versus `python3` — the command just works in any shell on
+any OS, which is the whole reason for the CLI.
+
+If `applywright` is reported as not found right after install, run
+`pipx ensurepath`, open a new terminal, and retry. That command must be on your
+PATH for the agent to call it; `pipx ensurepath` adds pipx's bin directory to
+your shell profile. (Run setup from a normal shell, not an activated virtual
+environment.)
+
+When you change the Applywright source yourself, re-install with
+`pipx install . --force` to pick up the edits. Templates and skills are read from
+the repo folder live, so editing those needs no re-install.
 
 ### 3. Verify
 
 ```bash
-python3 scripts/doctor.py
+applywright doctor
 ```
 
 This checks the tools and runs a one-shot PDF export. Do not continue past a
@@ -83,17 +93,16 @@ claude
 
 ## Recommended Claude Code allowlist
 
-Applywright keeps file mutations inside audited scripts rather than freehand
-shell. Every helper now runs as `python3 scripts/<name>.py`, so a single allow
-pattern covers the pipeline:
+Applywright keeps file mutations inside audited commands rather than freehand
+shell. Everything runs through the one `applywright` command, so a single allow
+pattern covers the whole pipeline:
 
 ```
-Bash(python3 scripts/*.py:*)
+Bash(applywright *)
 ```
 
-That replaces the older per-script entries (the `*.sh` scripts and the macOS
-`open` command). pandoc and typst are invoked internally by
-`scripts/export-pdf.py`, so the agent never calls them directly and they do not
+That replaces every per-script entry. pandoc and typst are invoked internally by
+`applywright export-pdf`, so the agent never calls them directly and they do not
 need their own allowlist entries. Approve other prompts (new directories, the
 brace-group frontmatter write) as they appear; runs get quieter as you do.
 

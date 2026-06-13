@@ -31,22 +31,24 @@ The repo ships `profile.example/` (a complete demo persona). Your real `profile/
 
 **New machine (macOS, Linux, or Windows):**
 
-First install the toolchain: Claude Code, Python 3, pandoc, and typst.
-- macOS: `brew install pandoc typst` (and install Claude Code + Python).
-- Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (and install Claude Code + Python). Native Claude Code, no WSL.
+First install the toolchain: Claude Code, Python 3, pandoc, typst, and pipx.
+- macOS: `brew install pandoc typst pipx` (and install Claude Code + Python).
+- Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst`, then install pipx with `py -m pip install --user pipx` (and install Claude Code + Python). Native Claude Code, no WSL.
 
-Then clone and bootstrap the project:
+Then clone, install the CLI, and bootstrap:
 
 ```bash
 git clone <your-fork-url> applywright
 cd applywright
-python3 bootstrap.py   # bootstraps profile/ from the example, inits the tracker, creates folders
+pipx install .          # installs the `applywright` command onto your PATH
+applywright bootstrap   # profile/ from the example, tracker init, output/ inbox/ temp/
 ```
 
-The skills call scripts as `python3 scripts/<name>.py`, so `python3` must be on your
-PATH. macOS and Linux already use that name. On Windows, install Python from the
-Microsoft Store (it provides `python3`); a winget/python.org install only provides
-`python`. The exact per-OS commands are in `SETUP-WITH-AI.md`.
+If `applywright` is reported as not found after install, run `pipx ensurepath`,
+open a new terminal, and retry. That command must be on your PATH for the agent
+to use it; `pipx ensurepath` adds pipx's bin directory (`~/.local/bin`) to your
+shell profile. Verify the whole toolchain with `applywright doctor`. Per-OS
+details are in `SETUP-WITH-AI.md`.
 
 The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through config, CV, bullets, and persona, and saves progress so you can stop and resume. Or edit the files by hand:
 
@@ -93,11 +95,11 @@ You'll see these most often:
 - **`cd` plus output redirection** in one compound command, flagged as "path resolution bypass."
 - **Brace groups containing quotes**, flagged as "expansion obfuscation." The JD-saving step writes frontmatter this way.
 - **First touch of a directory** (for example creating an `output/{company}` folder), which asks once per directory.
-- **A script's first run** (`export-pdf.py`, `write-jd.py`, and similar). All helpers run as `python3 scripts/*.py`.
+- **A command's first run** (`applywright fetch`, `applywright export-pdf`, and similar). Everything runs as `applywright ...`.
 
 All of these are expected and safe to approve. At each prompt:
 - Pick **Yes** to run that one command.
-- Pick **"Yes, and always allow..."** or **"don't ask again for: python3 scripts/*.py"** to stop being asked for that pattern again.
+- Pick **"Yes, and always allow..."** or **"don't ask again for: applywright *"** to stop being asked for that pattern again.
 
 Runs get quieter as you approve the patterns you trust. A bulk run of many jobs prompts a few times at the start, then settles into almost none. If you'd rather skip the prompts entirely, pre-allow the tools in Claude Code's settings.
 
@@ -105,7 +107,7 @@ Runs get quieter as you approve the patterns you trust. A bulk run of many jobs 
 
 Set `tracker.mode` in `profile/config.yaml`.
 
-- **csv**: rows go to `output/applications.csv` via `scripts/tracker.py`. No setup. Columns: `filed_at, short_id, company, role, url, source, stage, fit, comments, submission_date`. Move applications through stages by editing the `stage` column.
+- **csv**: rows go to `output/applications.csv` via `applywright tracker`. No setup. Columns: `filed_at, short_id, company, role, url, source, stage, fit, comments, submission_date`. Move applications through stages by editing the `stage` column.
 - **notion**: rows go to a Notion database via the Notion MCP. Requires the MCP configured in Claude Code and two database IDs in `profile/config.yaml` under `tracker.notion`.
 
 Either way, the agent checks the tracker before filing and won't record a duplicate URL.
@@ -124,7 +126,8 @@ applywright/
 ├── output/              # filed applications + applications.csv (gitignored)
 ├── inbox/               # jobs.txt (bulk queue) + jd.md (paste fallback)
 ├── skills/              # workflow playbooks the agent loads as needed
-├── scripts/             # helpers: PDF export, queue, tracker, injection scan
+├── src/applywright/     # the applywright CLI (installed via pipx install .)
+├── pyproject.toml       # package metadata for the applywright command
 ├── templates/           # Typst templates (CV, cover letter, document)
 └── temp/                # scratch (gitignored)
 ```
@@ -149,7 +152,7 @@ Setup, per chat:
 The idea is the same (fetch, scan, assess fit, tailor, draft a cover letter or answers), with these differences from the Claude Code version:
 - **Nothing auto-opens.** The browser can't open files on your machine. Claude returns the fit report, the tailored resume, and any cover letter inline, and you copy or download them.
 - **No `open` step, no local tracker writes.** You update your CSV yourself. If you connect the Notion connector in the browser, Claude can record applications there.
-- **PDF export runs in Claude's sandbox or on your machine.** Claude can run the Typst export in its own sandbox and hand you a finished PDF to download, or return the tailored `cv.md` for you to export locally with `scripts/export-pdf.py`.
+- **PDF export runs in Claude's sandbox or on your machine.** Claude can run the Typst export in its own sandbox and hand you a finished PDF to download, or return the tailored `cv.md` for you to export locally with `applywright export-pdf`.
 - **No approval prompts.** The browser sandbox runs without Claude Code's per-command yes/no gates, so the run doesn't pause the same way.
 - **More manual.** Files move in and out by upload and download instead of living in one local folder. There's no bulk queue and no dedup against a local tracker.
 

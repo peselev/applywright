@@ -224,15 +224,19 @@ def transform_horizontal_rules(text: str) -> str:
     return re.sub(r'#horizontalrule\b', replacement, text)
 
 
-def main():
-    text = sys.stdin.read()
+def process(text: str) -> str:
+    """Run the full pandoc-to-Typst cleanup pipeline on a string."""
     text = remove_anchor_ids(text)
     text = split_inline_hard_breaks(text)
     text = rejoin_wrapped_lines(text)
     text = transform_centered_lines(text)
     text = transform_pipe_lines(text)
     text = transform_horizontal_rules(text)
-    sys.stdout.write(text)
+    return text
+
+
+def main():
+    sys.stdout.write(process(sys.stdin.read()))
 
 
 if __name__ == '__main__':

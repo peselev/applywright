@@ -19,7 +19,7 @@ Before anything else, work out how far setup has already gotten.
    - `profile/config.yaml` still contains `Jordan Lin` or `example.com` means identity is not done (Step 3).
    - `profile/cv.md` still contains `Jordan Lin` or `Meridian Analytics` means the CV is not done (Step 4).
    - `profile/master-bullets.md` still contains the example family prose means the bullets are not done (Step 5).
-   - `python3 scripts/tracker.py status` errors or shows nothing means the tracker is not set up (Step 8).
+   - `applywright tracker status` errors or shows nothing means the tracker is not set up (Step 8).
 3. Tell the user in one line where you are resuming, then continue.
 
 Announce the shape up front: "Setup is 8 steps. I'll go through them with you one at a time. You can stop whenever; I save progress." Do not dump all 8 steps at once. Move one step at a time.
@@ -29,10 +29,10 @@ Announce the shape up front: "Setup is 8 steps. I'll go through them with you on
 Run the environment check:
 
 ```bash
-python3 scripts/doctor.py
+applywright doctor
 ```
 
-- If it reports required tools missing, install them and run `python3 scripts/doctor.py` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
+- If it reports required tools missing, install them and run `applywright doctor` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
 - On macOS, if Homebrew is missing, tell the user to install it from https://brew.sh. On Windows, winget ships with App Installer. Then re-run this skill.
 - Do not continue past a failing export smoke test. A broken PDF pipeline means every application export will fail later. Show the exact error and ask the user to fix it first.
 
@@ -40,7 +40,7 @@ Checkpoint Step 1.
 
 ## Step 2: Bootstrap profile/
 
-- If `profile/` does not exist, create it from the template: `cp -r profile.example profile`. (`python3 bootstrap.py` also does this; this is the fallback if the user skipped it.)
+- If `profile/` does not exist, create it from the template: `cp -r profile.example profile`. (`applywright bootstrap` also does this; this is the fallback if the user skipped it.)
 - Ensure the convention doc exists: if `profile/cv-rules.md` is missing, copy it with `cp profile.example/cv-rules.md profile/cv-rules.md`.
 - Confirm the file set is present: `config.yaml`, `cv.md`, `master-bullets.md`, `persona.md`, `cv-rules.md`, `cover-letter-field-notes.md`, `answers-field-notes.md`.
 
@@ -128,10 +128,10 @@ Checkpoint Step 7.
 
 ## Step 8: Smoke test and tracker
 
-1. Initialize the tracker: `python3 scripts/tracker.py init`, then `python3 scripts/tracker.py status` to confirm it reads back.
+1. Initialize the tracker: `applywright tracker init`, then `applywright tracker status` to confirm it reads back.
 2. Compile the user's CV to confirm their `cv.md` is valid input:
    ```bash
-   python3 scripts/export-pdf.py profile/cv.md temp/onboard-cv-smoke.pdf cv
+   applywright export-pdf profile/cv.md temp/onboard-cv-smoke.pdf cv
    ```
    The `{bullet_2}` / `{bullet_3}` placeholders will appear literally in this test PDF. That is expected; they are filled per application, not here. If the compile fails, fix the `cv.md` formatting (usually a stray `|||` or `@@@` marker) before finishing.
 3. Clean up: `rm -f temp/onboard-cv-smoke.pdf`.

@@ -3,7 +3,7 @@
 Fetch a job description from a URL into a local file. Cross-platform port of
 fetch-jd.sh (no curl dependency; uses urllib from the standard library).
 
-Usage: python scripts/fetch-jd.py <URL> <output-file> <method>
+Usage: applywright fetch <URL> <output-file> <method>
   URL:          The job posting URL to fetch
   output-file:  Where to write the raw response (file is overwritten)
   method:       "web_fetch" (direct) or "jina" (via r.jina.ai reader proxy)
@@ -38,13 +38,13 @@ USER_AGENT = (
 TIMEOUT_SECONDS = 30
 
 
-def main() -> int:
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <URL> <output-file> <method>", file=sys.stderr)
+def main(argv) -> int:
+    if len(argv) != 3:
+        print("Usage: applywright fetch <URL> <output-file> <method>", file=sys.stderr)
         print("  method: web_fetch | jina", file=sys.stderr)
         return 1
 
-    url, output_file, method = sys.argv[1], sys.argv[2], sys.argv[3]
+    url, output_file, method = argv[0], argv[1], argv[2]
 
     # Build the URL to actually hit based on method.
     if method == "web_fetch":
@@ -87,4 +87,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

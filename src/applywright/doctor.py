@@ -5,18 +5,19 @@ Applywright environment check. Cross-platform port of doctor.sh.
 Reports presence of required tools and runs a one-shot PDF export smoke test.
 Read-only and idempotent; safe to run anytime.
 
-Usage: python scripts/doctor.py
+Usage: applywright doctor
 Exit 0 = environment OK. Exit 1 = something required is missing or broken.
 """
 
-import subprocess
 import sys
 from pathlib import Path
 from shutil import which
 
+from . import export_pdf
 
-def main() -> int:
-    root = Path(__file__).resolve().parent.parent
+
+def main(argv=None) -> int:
+    root = Path.cwd()
     temp_dir = root / "temp"
     temp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -56,17 +57,12 @@ def main() -> int:
             "# Smoke test\n\nIf this renders as a PDF, the export pipeline works.\n",
             encoding="utf-8",
         )
-        export = root / "scripts" / "export-pdf.py"
-        result = subprocess.run(
-            [sys.executable, str(export), str(smoke_md), str(smoke_pdf), "document"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        if result.returncode == 0 and smoke_pdf.exists():
-            print("  [ok]   export-pdf.py produced a PDF")
+        rc = export_pdf.main([str(smoke_md), str(smoke_pdf), "document"])
+        if rc == 0 and smoke_pdf.exists():
+            print("  [ok]   export pipeline produced a PDF")
             _unlink(smoke_pdf)
         else:
-            print("  [MISS] export-pdf.py failed; the PDF pipeline is broken")
+            print("  [MISS] export failed; the PDF pipeline is broken")
             miss += 1
         _unlink(smoke_md)
     else:
@@ -75,7 +71,7 @@ def main() -> int:
 
     if miss > 0:
         print(f"Result: {miss} required item(s) missing or broken.")
-        print("Install the missing tools (see SETUP-WITH-AI.md), then re-run python scripts/doctor.py")
+        print("Install the missing tools (see SETUP-WITH-AI.md), then re-run applywright doctor")
         return 1
 
     print("Result: environment OK.")

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "applywright"
+description = "Agentic job-application pipeline driven by Claude Code."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = []
+dynamic = ["version"]
+
+[project.scripts]
+applywright = "applywright.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "applywright.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

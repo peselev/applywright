@@ -20,20 +20,20 @@ mutations off the shell, avoiding Claude Code's static-analysis prompts (same
 reason log-append.py and write-jd.py exist).
 
 Usage:
-    python3 scripts/inbox.py claim
+    applywright inbox claim
         Find the first pending (un-marked) URL, prepend "⏳ " to it in the file,
         and print the bare URL to stdout. Prints nothing (empty stdout, exit 0)
         if there is no pending URL. Skips lines already marked ⏳ or ❌.
 
-    python3 scripts/inbox.py done "<url>"
+    applywright inbox done "<url>"
         Remove the line whose URL matches <url> (with or without a marker).
         Use after a job is fully processed (proceed or skip).
 
-    python3 scripts/inbox.py fail "<url>"
+    applywright inbox fail "<url>"
         Mark the line whose URL matches <url> with ❌ (replacing any ⏳).
         Use when auto-fetch exhausted all automatic methods in auto mode.
 
-    python3 scripts/inbox.py status
+    applywright inbox status
         Print a one-line count summary to stdout: pending/in-progress/failed.
 
 All commands operate on inbox/jobs.txt relative to the current working
@@ -174,19 +174,19 @@ def cmd_status():
 
 
 def main(argv):
-    if len(argv) < 2:
+    if len(argv) < 1:
         sys.stderr.write(__doc__)
         return 1
-    cmd = argv[1]
+    cmd = argv[0]
     if cmd == "claim":
         return cmd_claim()
     if cmd == "status":
         return cmd_status()
     if cmd in ("done", "fail"):
-        if len(argv) < 3:
+        if len(argv) < 2:
             sys.stderr.write(f"{cmd}: needs a URL argument\n")
             return 1
-        target = argv[2]
+        target = argv[1]
         return cmd_done(target) if cmd == "done" else cmd_fail(target)
     sys.stderr.write(f"unknown command: {cmd}\n")
     sys.stderr.write(__doc__)
@@ -194,4 +194,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv))
+    raise SystemExit(main(sys.argv[1:]))

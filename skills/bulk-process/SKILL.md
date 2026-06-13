@@ -15,20 +15,20 @@ A plain list of job URLs, one per line. Blank lines and `#` comment lines are ig
 - `❌ <url>` — auto-fetch failed; left in place for the user to handle manually
 - no marker — pending
 
-**All reads and writes of jobs.txt go through `scripts/inbox.py`.** Never edit jobs.txt by hand or with shell redirection. The script re-reads the file fresh on every call and writes it back atomically, matching lines by content — that is what makes it safe for the user to append new URLs to the bottom mid-run. If you cache the file in memory and write it back yourself, you will clobber their live additions. Don't.
+**All reads and writes of jobs.txt go through `applywright inbox`.** Never edit jobs.txt by hand or with shell redirection. The script re-reads the file fresh on every call and writes it back atomically, matching lines by content — that is what makes it safe for the user to append new URLs to the bottom mid-run. If you cache the file in memory and write it back yourself, you will clobber their live additions. Don't.
 
 The three subcommands:
 
 ```bash
-python3 scripts/inbox.py claim          # mark first pending URL ⏳, print the bare URL (empty if none)
-python3 scripts/inbox.py done "<url>"   # remove that URL's line (after a job is fully processed)
-python3 scripts/inbox.py fail "<url>"   # mark that URL ❌ (auto-fetch gave up)
-python3 scripts/inbox.py status         # print "pending=N in_progress=N failed=N"
+applywright inbox claim          # mark first pending URL ⏳, print the bare URL (empty if none)
+applywright inbox done "<url>"   # remove that URL's line (after a job is fully processed)
+applywright inbox fail "<url>"   # mark that URL ❌ (auto-fetch gave up)
+applywright inbox status         # print "pending=N in_progress=N failed=N"
 ```
 
 ## Step 0: Pre-flight
 
-Run `python3 scripts/inbox.py status`. Report it in one line.
+Run `applywright inbox status`. Report it in one line.
 
 If `in_progress` > 0, there are leftover ⏳ lines from a previous run that crashed or was interrupted. `claim` skips them, so they will not be reprocessed automatically. Mention them to the user once ("N URL(s) still marked ⏳ from a previous run — clear or re-queue them manually if you want them retried") and continue with pending URLs. Do not silently clear or rerun them.
 
@@ -42,7 +42,7 @@ Repeat until `claim` returns empty:
 
 1. **Claim the next URL:**
    ```bash
-   python3 scripts/inbox.py claim
+   applywright inbox claim
    ```
    Capture stdout. If it's **empty**, the queue is drained — go to Step 2 (roll-up). Otherwise you have one URL, now marked ⏳ in the file.
 
@@ -57,33 +57,33 @@ Repeat until `claim` returns empty:
 
    - **Proceeded** → after process-job finishes, remove the URL and tally:
      ```bash
-     python3 scripts/inbox.py done "<url>"
+     applywright inbox done "<url>"
      ```
      `proceeded += 1`. Record `✓ {company} — {role} — proceed ({verdict} {score}/10)`.
 
    - **Skipped** → same removal, different tally:
      ```bash
-     python3 scripts/inbox.py done "<url>"
+     applywright inbox done "<url>"
      ```
      `skipped += 1`. Record `✓ {company} — {role} — skipped ({verdict} {score}/10)`.
 
    - **already-filed** → process-job's Step 0 dedup found this URL already in the tracker. Nothing new was filed. Remove it from the queue and tally:
      ```bash
-     python3 scripts/inbox.py done "<url>"
+     applywright inbox done "<url>"
      ```
      `already_filed += 1`. Record `• {url} — already filed (skipped dedup)`.
 
    - **fetch-failed** → process-job returns this when every automatic fetch method failed (no JD, no folder, no tracker row). Do **not** remove the URL — mark it ❌ so it stays visible for manual handling:
      ```bash
-     python3 scripts/inbox.py fail "<url>"
+     applywright inbox fail "<url>"
      ```
      `failed += 1`. Record `❌ {url} — fetch failed`.
 
 3. **Loop.** Call `claim` again. Because the script re-reads jobs.txt each time, any URLs the user appended while the previous job ran are now in the queue and will be picked up in order. `claim` skips ⏳ and ❌ lines, so the failed one you just marked won't be re-grabbed.
 
-**Run each inbox.py call as its own separate bash invocation.** Do not chain `done`/`fail` with `claim` using `&&`, `;`, or an `echo "--- next ---"` separator in a single block. Chained/piped commands trigger an approval prompt even when each piece is individually allowlisted (Claude Code prefix-matches the whole command string). One command per call: run `done "<url>"`, then on the next call run `claim`. Same convention process-job uses for its cleanup commands.
+**Run each `applywright inbox` call as its own separate bash invocation.** Do not chain `done`/`fail` with `claim` using `&&`, `;`, or an `echo "--- next ---"` separator in a single block. Chained/piped commands trigger an approval prompt even when each piece is individually allowlisted (Claude Code prefix-matches the whole command string). One command per call: run `done "<url>"`, then on the next call run `claim`. Same convention process-job uses for its cleanup commands.
 
-**Do not parallelize.** One job at a time. Each process-job run truncates `inbox/jd.md` and `temp/fetched-jd.md` during its own cleanup; running two at once would corrupt that shared scratch. jobs.txt is the only cross-job state, and only inbox.py touches it.
+**Do not parallelize.** One job at a time. Each process-job run truncates `inbox/jd.md` and `temp/fetched-jd.md` during its own cleanup; running two at once would corrupt that shared scratch. jobs.txt is the only cross-job state, and only `applywright inbox` touches it.
 
 **On a hard error inside process-job** (not fetch-failed — e.g., PDF export fails, tracker write errors): process-job logs it and stops that job. In bulk, treat it like a failure: leave the ⏳ as-is or mark ❌ with a note, record `❌ {url} — {what failed}`, and continue to the next URL. Never let one broken job halt the whole queue. Surface the specific error in the roll-up so the user can retry it.
 
@@ -104,7 +104,7 @@ Queue drained — {proceeded + skipped + already_filed + failed} processed
 {if any ⏳ remain: "N URL(s) still marked ⏳ (interrupted) — check inbox/jobs.txt."}
 ```
 
-Run `python3 scripts/inbox.py status` once more to confirm the final counts and include them. Then stop. Don't ask follow-ups.
+Run `applywright inbox status` once more to confirm the final counts and include them. Then stop. Don't ask follow-ups.
 
 ## Notes
 

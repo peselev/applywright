@@ -3,7 +3,7 @@
 Export markdown to PDF using a Typst template. Cross-platform port of
 export-pdf.sh (no /tmp, no `--root /`, no bash).
 
-Usage: python scripts/export-pdf.py <input.md> <output.pdf> <kind> [--input key=value ...]
+Usage: applywright export-pdf <input.md> <output.pdf> <kind> [--input key=value ...]
   kind: "cv"           uses templates/cv.typ (resume layout)
         "document"     uses templates/document.typ (JDs, fit reports)
         "cover-letter" uses templates/cover-letter.typ (letter layout, footer)
@@ -28,7 +28,7 @@ Cross-platform notes vs. the old bash version:
   - Helper scripts are invoked via sys.executable, so they run under whatever
     Python (or venv) is running this script, regardless of `python`/`python3`.
 
-Requires: pandoc >= 3.1, typst, on PATH. Run `python scripts/doctor.py` to check.
+Requires: pandoc >= 3.1, typst, on PATH. Run `applywright doctor` to check.
 """
 
 import os
@@ -36,6 +36,9 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from .postprocess import process as postprocess
+from .strip_images import strip_images
 
 VALID_KINDS = ("cv", "document", "cover-letter")
 
@@ -45,11 +48,11 @@ def fail(message: str, code: int) -> "int":
     return code
 
 
-def main() -> int:
-    args = sys.argv[1:]
+def main(argv) -> int:
+    args = list(argv)
     if len(args) < 3:
         return fail(
-            f"usage: {sys.argv[0]} input.md output.pdf kind [--input key=value ...]",
+            "usage: applywright export-pdf input.md output.pdf kind [--input key=value ...]",
             1,
         )
 
@@ -71,21 +74,16 @@ def main() -> int:
         else:
             return fail(f"ERROR: unexpected argument: {rest[i]} (expected --input key=value)", 1)
 
-    script_dir = Path(__file__).resolve().parent
-    root = script_dir.parent  # repo root
+    # The repo root is the current working directory: the tool is run from the
+    # repo folder, where templates/, profile/, output/, and temp/ live.
+    root = Path.cwd()
     template = root / "templates" / f"{kind}.typ"
-    stripper = script_dir / "strip-images-for-pdf.py"
-    postproc = script_dir / "postprocess-typst.py"
 
     input_path = Path(input_md)
     if not input_path.is_file():
         return fail(f"ERROR: input not found: {input_md}", 1)
     if not template.is_file():
         return fail(f"ERROR: template not found: {template}", 1)
-    if not stripper.is_file():
-        return fail(f"ERROR: image stripper not found: {stripper}", 1)
-    if not postproc.is_file():
-        return fail(f"ERROR: postprocessor not found: {postproc}", 1)
 
     if _which("pandoc") is None:
         return fail("ERROR: pandoc not installed. brew install pandoc | winget install JohnMacFarlane.Pandoc", 2)
@@ -103,9 +101,9 @@ def main() -> int:
 
     try:
         # Step 1: strip external images (writes a temp copy; original untouched).
-        subprocess.run(
-            [sys.executable, str(stripper), str(input_path), str(tmp_stripped)],
-            check=True,
+        tmp_stripped.write_text(
+            strip_images(input_path.read_text(encoding="utf-8")),
+            encoding="utf-8",
         )
 
         # Step 2: markdown -> Typst.
@@ -114,14 +112,11 @@ def main() -> int:
             check=True,
         )
 
-        # Step 3: post-process (stdin -> stdout, like the old `< raw > content`).
-        with open(tmp_raw, "rb") as raw_in, open(tmp_content, "wb") as content_out:
-            subprocess.run(
-                [sys.executable, str(postproc)],
-                stdin=raw_in,
-                stdout=content_out,
-                check=True,
-            )
+        # Step 3: post-process the pandoc output (||| grids, anchors, etc.).
+        tmp_content.write_text(
+            postprocess(tmp_raw.read_text(encoding="utf-8")),
+            encoding="utf-8",
+        )
 
         # Step 4: render. content_path is root-relative (POSIX, forward slashes)
         # so Typst resolves <root>/temp/<name> on every OS.
@@ -160,4 +155,4 @@ def _which(name: str):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

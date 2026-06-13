@@ -19,7 +19,7 @@ Patterns replaced:
 Local images (relative paths, file://) are left alone — those resolve from
 disk and don't fail.
 
-Usage: ./strip-images-for-pdf.py <input.md> <output.md>
+Internal helper (imported by export_pdf). Exposes strip_images(text) -> str.
 
 Exit codes:
   0  — success (file written even if no images were stripped)

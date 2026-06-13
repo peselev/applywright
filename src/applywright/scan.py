@@ -12,7 +12,7 @@ Layer 2 (semantic injection — prose-level manipulation attempts) is the
 agent's job and runs separately in the process-job skill.
 
 Usage:
-    ./scan-injection.py <jd-file>
+    applywright scan <jd-file>
 
 Output: JSON to stdout with the structure:
     {
@@ -210,8 +210,8 @@ def deduplicate_flags(flags):
     return out
 
 
-def main():
-    args = sys.argv[1:]
+def main(argv):
+    args = list(argv)
     summary = False
     if '--summary' in args:
         summary = True
@@ -264,4 +264,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main(sys.argv[1:]))

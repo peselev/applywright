@@ -130,7 +130,7 @@ Save the letter as `output/{short-id}/cover-letter-{short-id}.md`.
 
 Open it:
 ```bash
-python3 scripts/open.py output/{short-id}/cover-letter-{short-id}.md
+applywright open output/{short-id}/cover-letter-{short-id}.md
 ```
 
 Show in chat — four lines:
@@ -159,7 +159,7 @@ Re-run the core checklist (shared) and the cover-letter-specific checklist after
 
 Re-open the file after every rewrite:
 ```bash
-python3 scripts/open.py output/{short-id}/cover-letter-{short-id}.md
+applywright open output/{short-id}/cover-letter-{short-id}.md
 ```
 
 ## Step 8: Export to PDF
@@ -169,7 +169,7 @@ When the user says the letter is final (e.g., "done", "export it", "looks good")
 Run the export with the `cover-letter` template. Note the output filename is the clean, recruiter-facing **`{surname} - cover letter.pdf`** — not the internal short-id name (substitute the `surname` from `profile/config.yaml`). The footer is passed in as template inputs (the template renders it as a page footer, so it must not be in the markdown body). Read `profile/config.yaml` and pass the contact values:
 
 ```bash
-python3 scripts/export-pdf.py \
+applywright export-pdf \
   "output/{short-id}/cover-letter-{short-id}.md" \
   "output/{short-id}/{surname} - cover letter.pdf" \
   cover-letter \
@@ -185,7 +185,7 @@ Substitute the real config values and `{short-id}`. `footer_site` is the clean t
 If export succeeds, log via the script (see CLAUDE.md logging conventions):
 
 ```bash
-python3 scripts/log-append.py "output/{short-id}/log-{short-id}.md" "cover-letter-export result=ok"
+applywright log-append "output/{short-id}/log-{short-id}.md" "cover-letter-export result=ok"
 ```
 
 If export fails: log the error the same way (`cover-letter-export result=fail error="..."`), tell the user the exact error output, stop. Do not try to work around it.
