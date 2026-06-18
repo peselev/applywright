@@ -9,6 +9,18 @@ Read this whole file before starting. This skill sets up a new user on a new mac
 
 Your job is to orchestrate the setup and to transcribe the user's real information into the profile files. **You do not invent professional facts.** Names, employers, dates, titles, metrics, and bullet content come from the user: their answers, a resume they paste or point you to, or their portfolio site. If a detail is missing, write a visible `TODO:` marker and move on. Never fabricate a metric or an accomplishment to fill a gap. This is the same anti-fabrication rule the writing skills follow (`skills/shared/writing-rules.md`).
 
+## First: which kind of assistant are you?
+
+Applywright's pipeline runs *inside Claude Code* — it executes local commands (`applywright ...`) and reads/writes files in the repo on the user's machine. Before running this flow, check what you actually are, reasoning from concrete signals rather than a label (an assistant's self-description isn't always reliable):
+
+- **You have local execution** — a Bash/terminal tool, and this repo's files are on disk where you can read and edit them. Then you're in Claude Code. Proceed with the setup below.
+- **You're a web or chat assistant** — no terminal, no local filesystem, you can only converse and maybe fetch URLs (this is the claude.ai web assistant case). Then you *cannot run the pipeline here.* Your job is to get the user onto Claude Code first:
+  - Walk them through installing the toolchain and Claude Code per `SETUP-WITH-AI.md` (you can read it from the repo or GitHub and relay the steps for their OS).
+  - **Recommend the Claude Code desktop app, especially for a first-time or less-technical user** — it's friendlier than the terminal for someone new, and it's where Applywright actually runs. (The CLI is equally fine for users who prefer a terminal.)
+  - Once they have Claude Code installed and open in the repo folder, hand off: tell them to ask their Claude Code session to "set me up" so this orientation skill runs where it can actually execute. Then stop — don't try to fake the local steps from a web chat.
+
+If you're in Claude Code, continue.
+
 ## Step 0: Detect state and resume
 
 Before anything else, work out how far setup has already gotten.
@@ -42,7 +54,7 @@ Carry that comfort level through the whole run — it sets how much hand-holding
    - `applywright tracker status` errors or shows nothing means the tracker is not set up (Step 8).
 3. Tell the user in one line where you are resuming, then continue.
 
-Announce the shape up front: "Setup is 8 steps. I'll go through them with you one at a time. You can stop whenever; I save progress." Do not dump all 8 steps at once. Move one step at a time. If the user said they're new to the command line, add one reassuring line here that you'll explain each command as you go.
+Announce the shape up front: "Setup is 8 steps, then I'll offer to file your first job with you. I'll go through them one at a time. You can stop whenever; I save progress." Do not dump all the steps at once. Move one step at a time. If the user said they're new to the command line, add one reassuring line here that you'll explain each command as you go.
 
 ## Step 1: Environment check
 
@@ -55,6 +67,12 @@ applywright doctor
 - If it reports required tools missing, install them and run `applywright doctor` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
 - On macOS, if Homebrew is missing: it installs with a single command pasted into Terminal (the command is on https://brew.sh, under "Install Homebrew" — it is not a click-to-download app). Match the Pre-flight B comfort level: for a command-line-comfortable user, just point them at brew.sh and let them run it. For a less-comfortable user, paste the exact install command for them, tell them it's safe and will ask for their Mac password (which won't show as they type), and wait for it to finish before re-running. On Windows, winget ships with App Installer. Then re-run this skill.
 - Do not continue past a failing export smoke test. A broken PDF pipeline means every application export will fail later. Show the exact error and ask the user to fix it first.
+
+**If the user is on Windows, get ahead of three things that trip people up** (surface these as they become relevant, not as a wall of warnings):
+- **A PATH change doesn't reach an already-open terminal.** After installing pipx, Claude Code, pandoc, or typst, a tool can be installed correctly yet still show "not recognized" in the window that was already open. The fix is to open a *fresh* terminal (or, in this session, the installer usually prints the one-time PATH command to run). Installed-but-not-on-PATH is not the same as not-installed — never reinstall to "fix" it (see CLAUDE.md).
+- **Pasting into Claude Code can silently fail in the legacy PowerShell console.** `Ctrl+V` is intercepted by PSReadLine and nothing appears. Tell them to right-click or press `Shift+Insert` instead, or to run Claude Code inside **Windows Terminal**, where `Ctrl+V` works normally.
+- **Very long pastes (a full job description, ~100+ lines) can truncate.** For long text, have them drop it into `inbox/jd.md` or point the agent at a file with `@path\to\file.txt` rather than pasting.
+- The `unknown font family: carlito` / `helvetica` warnings during the smoke test are **harmless** — typst falls back to the next font in the list (Arial by default). Nothing to fix.
 
 Checkpoint Step 1.
 
@@ -83,6 +101,8 @@ Checkpoint Step 3.
 ## Step 4: CV (cv.md) and the locked-vs-dynamic convention
 
 Show the user `profile/cv-rules.md`, then set expectations before building.
+
+**Start with the default; decide on more tailoring after you've seen one run.** The out-of-the-box setup tailors just two bullets (below). It's tempting to design a more elaborate multi-slot scheme now, but it's much easier to judge whether you need it *after* you've watched one real application go through — which you'll do at the end of setup (the first-run step). So the recommended path is: set up the default here, file one real job together at the end, then expand the tailoring if that first result makes you want to. You can always come back and add slots later. If the user already knows they want more, that's fine too (covered below) — but default-first is the lower-friction route.
 
 **The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, two different families). Everything else on the CV is fixed and identical on every application. This is the only configuration the engine fills automatically today.
 
@@ -154,11 +174,26 @@ Checkpoint Step 7.
    applywright export-pdf profile/cv.md temp/onboard-cv-smoke.pdf cv
    ```
    The `{bullet_2}` / `{bullet_3}` placeholders will appear literally in this test PDF. That is expected; they are filled per application, not here. If the compile fails, fix the `cv.md` formatting (usually a stray `|||` or `@@@` marker) before finishing.
-3. Clean up: `rm -f temp/onboard-cv-smoke.pdf`.
+
+The smoke PDF lands in `temp/` (gitignored scratch); no need to delete it.
 
 Checkpoint Step 8.
 
-## Step 9: Done
+## Step 9: File your first job together (offer)
+
+Setup is done; this step is offered, not required. Say something like: "Want to file your first application together right now, so we can make sure the whole pipeline works end to end? Or you can dive in on your own — either's fine."
+
+If they decline, skip to Step 10.
+
+If they accept:
+
+- **Explain the approval setup once, before the prompts would appear.** This repo ships a small allow rule (`.claude/settings.json`) so the pipeline's `applywright ...` commands run without asking you to approve each step. It's scoped to that one command, not all shell access, and you can remove it if you'd rather approve each call. Confirm the user is comfortable with it before proceeding. (If they're not, that's fine — they'll just see an approval prompt per command and can approve as they go.)
+- **On Windows**, remind them of the paste tip before they hand you a URL: right-click or `Shift+Insert` to paste in the legacy console, or use Windows Terminal where `Ctrl+V` works.
+- Ask for one real job URL and run the normal `process-job` pipeline on it, in manual mode so they can see each stage (fetch, scan, fit, and — if it's a fit — the CV tailoring and one-page export). Narrate lightly so a first-timer follows what's happening.
+- Watch for and clear the usual first-run hiccups (a stale-PATH "not recognized", a fetch that needs the ATS URL, an approval prompt they weren't expecting). The goal is one clean pass so they know it works.
+- **Tie it back to Step 4's default-first call.** Once they've seen one result, ask whether the two-bullet default served them well or whether they want to tailor more bullets. This is the moment that question is easy to answer, which is why setup deferred it to here.
+
+## Step 10: Done
 
 - Mark `profile/.orientation-progress.md` complete.
 - Tell the user they are ready: paste a job URL to file their first application (the `process-job` pipeline), or queue several in `inbox/jobs.txt` and say "process my inbox."
@@ -180,6 +215,7 @@ cli-comfort: somewhat        # comfortable | somewhat | not-really (from Pre-fli
 - [ ] 6 persona
 - [ ] 7 field notes
 - [ ] 8 smoke test
+- [ ] 9 first run together (offered)
 next: Step 4 (CV)
 ```
 

@@ -21,6 +21,13 @@ There are two ways to do it. Pick one.
 3. Claude hands you a zipped `profile/` to download and the per-OS commands below.
 4. You run the commands, drop the downloaded `profile/` into the repo, and start.
 
+A web Claude session can guide setup but cannot run the pipeline — that happens in
+Claude Code on your machine. If you're new to this or prefer not to live in a
+terminal, install the **Claude Code desktop app** rather than the CLI; it's the
+friendlier way to run Applywright day to day. The CLI is equally fine if you like
+a terminal. Either way, once Claude Code is installed and open in the repo folder,
+tell it "set me up" and the orientation flow takes over where it can actually run.
+
 ## Option B: do it yourself
 
 ### 1. Install the toolchain
@@ -101,20 +108,41 @@ Edit `profile/config.yaml`, `profile/cv.md`, `profile/master-bullets.md`, and
 claude
 ```
 
-## Recommended Claude Code allowlist
+## Claude Code allowlist (already shipped)
 
 Applywright keeps file mutations inside audited commands rather than freehand
-shell. Everything runs through the one `applywright` command, so a single allow
-pattern covers the whole pipeline:
+shell. Every step runs through the one `applywright` command, so a single allow
+pattern covers the whole pipeline — and this repo already ships it, in
+`.claude/settings.json`:
 
 ```
-Bash(applywright *)
+Bash(applywright:*)
 ```
 
-That replaces every per-script entry. pandoc and typst are invoked internally by
-`applywright export-pdf`, so the agent never calls them directly and they do not
-need their own allowlist entries. Approve other prompts (new directories, the
-brace-group frontmatter write) as they appear; runs get quieter as you do.
+So a clean checkout runs without a wall of approval prompts out of the box. It's
+scoped to the `applywright` command only (not `Bash(*)`); pandoc and typst are
+invoked internally by `applywright export-pdf`, so the agent never calls them
+directly. If you'd rather approve each call yourself, delete that line (or the
+file). Any personal allow rules you add live in `.claude/settings.local.json`,
+which Claude Code keeps out of version control.
+
+## Windows: three things that trip people up
+
+Setup on Windows almost always works; these are the snags worth knowing in advance:
+
+- **A PATH change doesn't reach a terminal that's already open.** After installing
+  pipx, Claude Code, pandoc, or typst, the command can be installed correctly yet
+  still show "not recognized" in the open window. Open a *fresh* terminal (the
+  installer usually also prints a one-time PATH command). Installed-but-not-visible
+  is not missing — don't reinstall to fix it.
+- **Pasting into Claude Code can silently fail in the legacy PowerShell console.**
+  `Ctrl+V` is swallowed by PSReadLine. Use right-click or `Shift+Insert`, or run
+  Claude Code inside **Windows Terminal**, where `Ctrl+V` works.
+- **Very long pastes (a full JD, ~100+ lines) can truncate.** Drop long text into
+  `inbox/jd.md`, or point the agent at a file with `@path\to\file.txt`.
+
+The `unknown font family: carlito` / `helvetica` warnings during the smoke test are
+harmless — typst falls back to the next font (Arial by default).
 
 ## Tracking
 

@@ -32,11 +32,11 @@ These rules are about managing your own context across an interactive session wh
 
 - **Retain jobs by default in interactive use.** When the user is processing roles one at a time, keep what you've filed available in the conversation. The whole point of an interactive session is that they can then ask things like "I have four JDs from the same company — which should I prioritize?", "I have one referral, which role should I use it on?", or "these look like pipeline roles, apply to all or just one?". Don't silently drop a job they might want to compare.
 
-- **At roughly 8–10 jobs filed in one interactive session, offer a reset.** Retaining every job's JD, CV, and fit text adds up, and a heavy context can dull your judgment on later jobs. Around the 8–10 mark, surface the tradeoff and let the user choose between two options:
+- **Once the session gets heavy, offer a reset.** Retaining every job's JD, CV, and fit text adds up, and a heavy context can dull your judgment on later jobs. The same retention threshold bulk-process uses applies here — about 6 filed jobs, a tunable heuristic for current context budgets, not a hard limit (if the user's model has a large context window or they ask to keep more, that overrides it). Once you're past it, surface the tradeoff and let the user choose between two options:
   - **Keep comparing here** — stay in this session with everything retained, accepting that quality may drift as context grows.
   - **Start a fresh session** — the only true reset (you can't purge what's already loaded mid-session, so this is the real fix). Before they switch, write a short plain summary so nothing is lost: one line per job processed this session — company, role, verdict/score, and the single most notable thing about it. No special format, no hand-off document; just a quick list they can carry into the new session.
 
-  Phrase it plainly, for example: *"We've filed about ten roles this session and the context is getting heavy, which can dull my read on later ones. Want to keep comparing here, or start a fresh session? If you start fresh, I'll jot a one-line summary of each role first so nothing's lost."* Offer this once around the threshold; don't nag every job after.
+  Phrase it plainly, for example: *"We've filed a fair few roles this session and the context is getting heavy, which can dull my read on later ones. Want to keep comparing here, or start a fresh session? If you start fresh, I'll jot a one-line summary of each role first so nothing's lost."* Offer this once around the threshold; don't nag every job after.
 
 ## Step 0: Dedup check
 

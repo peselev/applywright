@@ -87,7 +87,21 @@ Repeat until `claim` returns empty:
 
 **Do not spawn a subagent per job.** Process the queue by looping in *this* agent, calling the process-job pipeline inline for each URL. Do not hand each job to a fresh subagent (e.g. a Task call per URL). A subagent starts cold and re-reads everything from scratch — `CLAUDE.md`, the process-job / fetch-jd / assess-fit skills, and the whole profile (persona, master-bullets, cv) — and re-loads any MCP tool schemas, every single job. Across a queue that multiplies token cost several-fold for no benefit: each job is already isolated by the intake reset between jobs, so there's nothing a subagent's isolation buys here. Looping in the main agent keeps that shared instruction/profile context loaded once and reused.
 
-**Bulk mode is forget-as-you-go.** This is an unattended run that ends in a tally, not a discussion of individual roles. After each job is filed and logged, you don't need to keep its JD, CV, fit text, or tool output in working context — it's all written to `output/{short-id}/`. Carry forward only the one-line roll-up entry for that job (verdict, score, what failed if anything) and let the rest go. This is what keeps a long queue from ballooning the context. (If the user wants to compare roles afterward, the per-job folders and the tracker hold everything needed.)
+**Context retention across the run — decide it, don't hard-wire it.** Whether to keep each job's context (so the user can compare roles afterward) or forget it as you go (to stay sharp on later jobs) depends on the queue, so work it out as you go rather than assuming one or the other.
+
+*Retention threshold: about 6 jobs.* This is a heuristic for **current** context budgets, not a hard rule — the real goal is "don't let context grow heavy enough to dull your judgment on later jobs," and ~6 is just today's proxy for that. If the user's model has a much larger context window, or they simply say "keep them all," raise or ignore it; an explicit instruction from the user always overrides this number. Don't treat 6 as sacred.
+
+Decide when you pick up the **second** job (you can't tell from job one alone), and **re-check on every later pickup**, because the user can append URLs to `jobs.txt` while you work — a queue of 4 can become 11 mid-run. The decision branches:
+
+- **Same company as a job already in this run** (e.g. several roles at one employer): these are the most worth comparing — which to prioritize, where to spend a referral, apply to all or some.
+  - If the same-company set is **small (≤6)**: keep their JD + fit context and offer, once all are filed, to compare and discuss them.
+  - If it's **large (>6)**: don't try to hold them all. Recommend processing them individually here with no context retained, then starting a **fresh session** for the in-depth comparison — a fresh window gives the sharpest read, and the per-job folders hold everything needed.
+- **Different companies** → decide by the live total queue count:
+  - **6 or fewer** total: keep full context (JD + fit) for each, so a post-run comparison is possible.
+  - **More than 6**: announce up front that you'll process each job individually, forgetting its JD / fit / output from context as soon as it's filed and carrying only the one-line roll-up entry. Comparison then comes from the saved files, not live memory.
+- **If the count crosses the threshold mid-run** (started ≤6 and retaining, then grew past 6): switch to forget-as-you-go from that point. You can't un-load the jobs already in context, so keep those, stop adding full context for new ones, and tell the user you've switched — and that a fresh session is the only true reset if they want the sharpest read for the rest.
+
+In all cases the per-job folders under `output/{short-id}/` and the tracker hold everything verbatim, so "let's compare" can always pull the rich detail from disk regardless of what's in live context.
 
 **On a hard error inside process-job** (not fetch-failed — e.g., PDF export fails, tracker write errors): process-job logs it and stops that job. In bulk, treat it like a failure: leave the ⏳ as-is or mark ❌ with a note, record `❌ {url} — {what failed}`, and continue to the next URL. Never let one broken job halt the whole queue. Surface the specific error in the roll-up so the user can retry it.
 
