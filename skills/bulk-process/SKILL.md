@@ -85,6 +85,10 @@ Repeat until `claim` returns empty:
 
 **Do not parallelize.** One job at a time. Each process-job run truncates `inbox/jd.md` and `temp/fetched-jd.md` during its own cleanup; running two at once would corrupt that shared scratch. jobs.txt is the only cross-job state, and only `applywright inbox` touches it.
 
+**Do not spawn a subagent per job.** Process the queue by looping in *this* agent, calling the process-job pipeline inline for each URL. Do not hand each job to a fresh subagent (e.g. a Task call per URL). A subagent starts cold and re-reads everything from scratch — `CLAUDE.md`, the process-job / fetch-jd / assess-fit skills, and the whole profile (persona, master-bullets, cv) — and re-loads any MCP tool schemas, every single job. Across a queue that multiplies token cost several-fold for no benefit: each job is already isolated by the intake reset between jobs, so there's nothing a subagent's isolation buys here. Looping in the main agent keeps that shared instruction/profile context loaded once and reused.
+
+**Bulk mode is forget-as-you-go.** This is an unattended run that ends in a tally, not a discussion of individual roles. After each job is filed and logged, you don't need to keep its JD, CV, fit text, or tool output in working context — it's all written to `output/{short-id}/`. Carry forward only the one-line roll-up entry for that job (verdict, score, what failed if anything) and let the rest go. This is what keeps a long queue from ballooning the context. (If the user wants to compare roles afterward, the per-job folders and the tracker hold everything needed.)
+
 **On a hard error inside process-job** (not fetch-failed — e.g., PDF export fails, tracker write errors): process-job logs it and stops that job. In bulk, treat it like a failure: leave the ⏳ as-is or mark ❌ with a note, record `❌ {url} — {what failed}`, and continue to the next URL. Never let one broken job halt the whole queue. Surface the specific error in the roll-up so the user can retry it.
 
 ## Step 2: Roll-up

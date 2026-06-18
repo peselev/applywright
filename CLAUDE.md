@@ -170,7 +170,7 @@ Pass only the message — everything after `[TS] ` — as the second argument. T
 
 **Never** write the timestamp yourself with `$(date ...)`, `printf` + command substitution, or any inline shell date call. Command substitution trips Claude Code's static-analysis prompt and stops the pipeline. `applywright log-append` exists precisely to avoid that. This applies to every skill that logs (process-job, fetch-jd, assess-fit, cover-letter).
 
-The log *file header* in process-job Step 2 (the `# Application log` block) carries no timestamp — it is plain literal text written with a quoted heredoc. The very first `applywright log-append` call (a `started` entry) records the start time. Every log line, without exception, is written by the script so no shell date call ever appears.
+The log *file header* in process-job Step 2 (the `# Application log` block) carries no timestamp — it is plain literal text written by `applywright log-start`, which also creates the application folder. The very first `applywright log-append` call (a `started` entry) records the start time. Every log line, without exception, is written by the script so no shell date call ever appears.
 
 ## Bash command conventions (avoid approval prompts)
 

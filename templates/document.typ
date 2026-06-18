@@ -9,6 +9,11 @@
 
 #let content_path = sys.inputs.at("content_path", default: "")
 
+// Profile-wide font (profile/config.yaml -> style.font), injected by
+// `applywright export-pdf`. Default Arial, with Arial as the fallback.
+#let _font = sys.inputs.at("font", default: "Arial")
+#let _font_stack = if _font == "Arial" { ("Arial",) } else { (_font, "Arial") }
+
 // --- Page setup ---
 #set page(
   paper: "us-letter",
@@ -16,7 +21,7 @@
 )
 
 #set text(
-  font: ("Calibri", "Carlito", "Helvetica", "Arial"),
+  font: _font_stack,
   size: 11pt,
   hyphenate: false,
 )

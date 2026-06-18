@@ -34,6 +34,11 @@
 #let footer_site = sys.inputs.at("footer_site", default: "")
 #let footer_href = sys.inputs.at("footer_href", default: "")
 
+// Profile-wide font (profile/config.yaml -> style.font), injected by
+// `applywright export-pdf`. Default Arial, with Arial as the fallback.
+#let _font = sys.inputs.at("font", default: "Arial")
+#let _font_stack = if _font == "Arial" { ("Arial",) } else { (_font, "Arial") }
+
 // --- Page setup: generous top margin for white space at the top ---
 #set page(
   paper: "us-letter",
@@ -52,7 +57,7 @@
 )
 
 #set text(
-  font: ("Calibri", "Carlito", "Helvetica", "Arial"),
+  font: _font_stack,
   size: 11pt,
   hyphenate: false,
 )

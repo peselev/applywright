@@ -38,3 +38,10 @@ tracker:
   notion:
     applications_db: ""
     companies_db: ""
+
+style:
+  # Font for the CV, cover letter, and exported documents. Default "Arial"
+  # (near-universal on macOS and Windows). The chosen font is tried first, with
+  # Arial as an automatic fallback if it isn't installed. To experiment, change
+  # this one value and re-export — applywright export-pdf applies it everywhere.
+  font: "Arial"

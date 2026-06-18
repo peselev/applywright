@@ -97,11 +97,9 @@ After a step finishes, the agent opens the file it just produced so you can read
 
 The engine runs multi-step Bash. Claude Code gates certain command shapes behind a yes/no prompt before they run. This is Claude Code's safety layer working as intended. The run has not failed; the agent is waiting for you. It will look like it stops mid-flow, sits on a prompt, then continues once you answer.
 
-You'll see these most often:
-- **`cd` plus output redirection** in one compound command, flagged as "path resolution bypass."
-- **Brace groups containing quotes**, flagged as "expansion obfuscation." The JD-saving step writes frontmatter this way.
-- **First touch of a directory** (for example creating an `output/{company}` folder), which asks once per directory.
-- **A command's first run** (`applywright fetch`, `applywright export-pdf`, and similar). Everything runs as `applywright ...`.
+Every step in the pipeline now runs as a single `applywright ...` subcommand (fetching, scanning, writing the JD, starting the log, resetting intake, exporting the PDF, tracking). There's no longer any raw shell in the per-job loop — no `cd`-plus-redirection, no quoted heredocs, no first-touch `mkdir` — so the shipped allow for `Bash(applywright:*)` covers the whole run.
+
+Without that allow, the one prompt you'd still see is **a command's first run** (`applywright fetch`, `applywright export-pdf`, `applywright log-start`, and so on), asked once per command until you approve the pattern.
 
 All of these are expected and safe to approve. At each prompt:
 - Pick **Yes** to run that one command.

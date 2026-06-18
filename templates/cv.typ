@@ -10,15 +10,28 @@
 
 #let content_path = sys.inputs.at("content_path", default: "")
 
+// Font is a profile-wide setting (profile/config.yaml -> style.font), injected
+// by `applywright export-pdf` as --input font=. Default Arial. The chosen font
+// is tried first, with Arial as the fallback so a missing/misspelled name still
+// renders. (When the choice already is Arial, the stack collapses to one entry.)
+#let _font = sys.inputs.at("font", default: "Arial")
+#let _font_stack = if _font == "Arial" { ("Arial",) } else { (_font, "Arial") }
+
+// One-page auto-fit knobs (process-job tightens these on the retry path when the
+// CV spills onto a second page). Values are Typst length literals, evaluated in
+// code mode. Defaults match the original hand-tuned layout.
+#let _margin_bottom = eval(sys.inputs.at("margin_bottom", default: "0.5in"), mode: "code")
+#let _body_size = eval(sys.inputs.at("body_size", default: "10pt"), mode: "code")
+
 // --- Page setup ---
 #set page(
   paper: "us-letter",
-  margin: (top: 0.45in, bottom: 0.5in, left: 0.55in, right: 0.55in),
+  margin: (top: 0.45in, bottom: _margin_bottom, left: 0.55in, right: 0.55in),
 )
 
 #set text(
-  font: ("Calibri", "Carlito", "Helvetica", "Arial"),
-  size: 10pt,
+  font: _font_stack,
+  size: _body_size,
   hyphenate: false,
 )
 
@@ -73,4 +86,12 @@
 // --- Render content ---
 #if content_path != "" [
   #include content_path
+]
+
+// Total physical page count, emitted as queryable metadata for the one-page
+// auto-fit check. `applywright export-pdf` reads it with:
+//   typst query ... templates/cv.typ "<aw-pages>"
+// and parses the `value` field. Invisible (zero-size), so it never adds a page.
+#context [
+  #metadata(counter(page).final().at(0)) <aw-pages>
 ]

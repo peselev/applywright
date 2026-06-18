@@ -29,14 +29,11 @@ Receive the job URL (from chat or from a calling skill). The calling skill (proc
 **If URL leads to LinkedIN**, check if it's a regular LinkedIn format (https://www.linkedin.com/jobs/view/[ID]/?[digital_marketing_info]]), and if so, transform it into LinkedIN guest URL: https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/[ID]. Use the transformed URL going forward
 
 ### Clean residual content
-Truncate (do not delete) `inbox/jd.md` and `temp/fetched-jd.md` so previous content doesn't bleed into this run:
+Clear the JD-intake files so content from a previous run doesn't bleed into this one. `reset-intake` truncates `inbox/jd.md` and `temp/fetched-jd.md` and removes any leftover `temp/fetched-jd.pdf`, all in one idempotent command:
 
 ```bash
-: > inbox/jd.md
-: > temp/fetched-jd.md
+applywright reset-intake
 ```
-
-The script will create `temp/` if missing, but no harm in checking first.
 
 ### Logging context
 You will log every fetch attempt. Where the log entries go depends on context:

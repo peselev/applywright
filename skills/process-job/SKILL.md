@@ -24,6 +24,20 @@ This pipeline runs in one of two modes. Resolve the mode **before** Step 1 and c
 
 Log the resolved mode on the Step 2 line: `mode={auto|manual}`.
 
+## Session context (interactive runs)
+
+These rules are about managing your own context across an interactive session where the user pastes jobs one at a time and may want to compare them. (Unattended `inbox` runs are different — see bulk-process, which forgets each job as it goes.)
+
+- **Never spawn a subagent to process a job.** Run the pipeline inline, in this agent. A fresh subagent re-reads `CLAUDE.md`, the skills, and the entire profile from scratch every time, which multiplies token cost for no benefit here — each job is already isolated by the intake reset. This holds whether you're doing one job or several.
+
+- **Retain jobs by default in interactive use.** When the user is processing roles one at a time, keep what you've filed available in the conversation. The whole point of an interactive session is that they can then ask things like "I have four JDs from the same company — which should I prioritize?", "I have one referral, which role should I use it on?", or "these look like pipeline roles, apply to all or just one?". Don't silently drop a job they might want to compare.
+
+- **At roughly 8–10 jobs filed in one interactive session, offer a reset.** Retaining every job's JD, CV, and fit text adds up, and a heavy context can dull your judgment on later jobs. Around the 8–10 mark, surface the tradeoff and let the user choose between two options:
+  - **Keep comparing here** — stay in this session with everything retained, accepting that quality may drift as context grows.
+  - **Start a fresh session** — the only true reset (you can't purge what's already loaded mid-session, so this is the real fix). Before they switch, write a short plain summary so nothing is lost: one line per job processed this session — company, role, verdict/score, and the single most notable thing about it. No special format, no hand-off document; just a quick list they can carry into the new session.
+
+  Phrase it plainly, for example: *"We've filed about ten roles this session and the context is getting heavy, which can dull my read on later ones. Want to keep comparing here, or start a fresh session? If you start fresh, I'll jot a one-line summary of each role first so nothing's lost."* Offer this once around the threshold; don't nag every job after.
+
 ## Step 0: Dedup check
 
 Before fetching, check whether this URL has already been filed, so the same job is never recorded twice. You have the URL from chat (or from the bulk-process caller).
@@ -63,25 +77,13 @@ Once fetch-jd has fully completed (including opening the file), proceed to step 
 
 ## Step 2: Compute short ID and create folder
 
-See `CLAUDE.md` for the short-ID rules. After computing:
+See `CLAUDE.md` for the short-ID rules. After computing, create the folder and the log file header in one command. `log-start` creates the parent folder and writes the header (plain literal text, no timestamp) — no `mkdir` and no heredoc:
 
 ```bash
-mkdir -p output/{short-id}
+applywright log-start "output/{short-id}/log-{short-id}.md" --id {short-id} --url {url}
 ```
 
-Create the log file header — plain literal text, no timestamp, quoted heredoc so nothing expands:
-
-```bash
-cat > output/{short-id}/log-{short-id}.md <<'EOF'
-# Application log — {short-id}
-
-URL: {url}
-
----
-EOF
-```
-
-(Substitute the real `{short-id}` and `{url}` values into the text before running — they are literal strings, not shell variables.)
+(Substitute the real `{short-id}` and `{url}` values — they are literal strings.)
 
 Record the start time as the first log line, then write the fetch-jd entries you accumulated in Step 1. All log lines go through `applywright log-append`, which generates the timestamp (see CLAUDE.md logging conventions — never use `$(date)`):
 
@@ -294,7 +296,27 @@ Run the export script:
 applywright export-pdf "output/{short-id}/cv-{short-id}.md" "output/{short-id}/{surname} - Resume.pdf" cv
 ```
 
-If it succeeds: log `[TS] step=08 pdf-export engine={typst|pandoc} result=ok`
+On success the script prints an `OK:` line that includes the rendered page count, e.g. `OK: output/.../{surname} - Resume.pdf (pages=1)`. A resume must be **one page**. Read that count and, if it is greater than 1, run the one-page auto-fit before continuing. The body text in `cv.md` was picked from the master list, so its length isn't known in advance — this is why the check exists.
+
+Auto-fit ladder — stop as soon as a step gets you to `pages=1`, and re-run the same export command with the extra `--input` each time (the template reads them; the markdown is untouched):
+
+1. **Tighten the bottom margin.** Re-export with `--input margin_bottom=0.4in` appended:
+   ```bash
+   applywright export-pdf "output/{short-id}/cv-{short-id}.md" "output/{short-id}/{surname} - Resume.pdf" cv --input margin_bottom=0.4in
+   ```
+   Check the new `pages=` value. If it's 1, done.
+2. **Drop the body font by 1pt.** If still over a page, re-export keeping the tighter margin and adding `--input body_size=9pt`:
+   ```bash
+   applywright export-pdf "output/{short-id}/cv-{short-id}.md" "output/{short-id}/{surname} - Resume.pdf" cv --input margin_bottom=0.4in --input body_size=9pt
+   ```
+   Check `pages=` again.
+3. **Ask the user.** If it *still* doesn't fit at 9pt, stop and tell the user the CV runs long even after tightening, show which bullets are in play, and ask how to proceed (cut a bullet, shorten one, accept two pages). Do not shrink further on your own — below 9pt the resume stops reading cleanly, and do not edit the template.
+
+Notes:
+- Only adjust via `--input`. Never edit `templates/cv.typ` or rewrite `cv.md` to force the fit.
+- If the `OK:` line has no `pages=` value (the count couldn't be read), skip the auto-fit and proceed — don't block the application on it.
+
+If it succeeds: log `[TS] step=08 pdf-export engine={typst|pandoc} result=ok pages={final-count} fit={none|margin|font|asked}` (record which rung of the ladder produced the one-page result, or `asked` if you had to fall through to the user).
 
 If it fails: log the error verbatim, tell the user, and stop. Do not try to fix it silently.
 
@@ -328,18 +350,10 @@ Log: `[TS] step=09 tracker-row mode={csv|notion} stage=to-apply internal-id={sho
 
 Now that the application is fully filed (CV exported, PDF created, tracker row added), clear `inbox/jd.md`, `temp/fetched-jd.md`, and the temp PDF so it's ready for the next job.
 
-**Important:** keep the markdown files (truncate). Delete the temp PDF outright since it can be regenerated from the markdown.
-
-Run as three separate commands (not chained — avoids the cd+redirection Claude Code prompt):
+**Important:** keep the markdown files (truncate), drop the temp PDF. `reset-intake` does all three (truncate `inbox/jd.md` and `temp/fetched-jd.md`, remove `temp/fetched-jd.pdf`) in one idempotent command, so there's no raw bash here:
 
 ```bash
-: > inbox/jd.md
-```
-```bash
-: > temp/fetched-jd.md
-```
-```bash
-rm -f temp/fetched-jd.pdf
+applywright reset-intake
 ```
 
 Only do this if every earlier step succeeded. If anything failed, leave the files alone so the user can retry without re-pasting.
@@ -403,16 +417,10 @@ Log: `[TS] step=07-skip tracker-row mode={csv|notion} stage=decided-against inte
 
 ## Step 8-SKIP: Empty the inbox (skip path)
 
-Same cleanup as the proceed path — three separate commands:
+Same cleanup as the proceed path — one command:
 
 ```bash
-: > inbox/jd.md
-```
-```bash
-: > temp/fetched-jd.md
-```
-```bash
-rm -f temp/fetched-jd.pdf
+applywright reset-intake
 ```
 
 Log: `[TS] step=08-skip inbox-cleared`
