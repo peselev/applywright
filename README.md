@@ -107,7 +107,15 @@ All of these are expected and safe to approve. At each prompt:
 - Pick **Yes** to run that one command.
 - Pick **"Yes, and always allow..."** or **"don't ask again for: applywright *"** to stop being asked for that pattern again.
 
-Runs get quieter as you approve the patterns you trust. A bulk run of many jobs prompts a few times at the start, then settles into almost none. If you'd rather skip the prompts entirely, pre-allow the tools in Claude Code's settings.
+Runs get quieter as you approve the patterns you trust. A bulk run of many jobs prompts a few times at the start, then settles into almost none.
+
+If you'd rather skip the prompts from the very first run, this repo ships a small pre-approval for you. `.claude/settings.json` holds a single rule:
+
+```json
+{ "permissions": { "allow": ["Bash(applywright:*)"] } }
+```
+
+That tells Claude Code to run the project's own `applywright ...` commands without asking each time. It is scoped to that one command, not to all shell access (it is deliberately not `Bash(*)`), so it covers this pipeline's CLI and nothing else. If you'd rather approve each call yourself, delete the file or remove that line and the prompts come back. Any personal allow rules you add for your own machine belong in `.claude/settings.local.json`, which Claude Code keeps out of version control, so they stay local and never ship with the repo.
 
 ## Tracking: CSV (default) or Notion (optional)
 
