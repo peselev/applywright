@@ -32,6 +32,7 @@ Requires: pandoc >= 3.1, typst, on PATH. Run `applywright doctor` to check.
 """
 
 import os
+import json
 import subprocess
 import sys
 import tempfile
@@ -100,6 +101,7 @@ def main(argv) -> int:
     tmp_raw = _mktemp(temp_dir, f"{kind}-raw-", ".typ")
     tmp_content = _mktemp(temp_dir, f"{kind}-content-", ".typ")
 
+    pages = None
     try:
         # Step 1: strip external images (writes a temp copy; original untouched).
         tmp_stripped.write_text(
@@ -119,6 +121,15 @@ def main(argv) -> int:
             encoding="utf-8",
         )
 
+        # Font is a profile-wide setting (profile/config.yaml -> style.font),
+        # applied to every export unless the caller passed an explicit
+        # --input font=. This keeps font centralized so it can't drift across
+        # the cv / document / cover-letter templates.
+        if not any(v.startswith("font=") for v in extra_inputs):
+            cfg_font = _read_config_font(root)
+            if cfg_font:
+                extra_inputs += ["--input", f"font={cfg_font}"]
+
         # Step 4: render. content_path is root-relative (POSIX, forward slashes)
         # so Typst resolves <root>/temp/<name> on every OS.
         content_rel = "/temp/" + tmp_content.name
@@ -131,6 +142,13 @@ def main(argv) -> int:
             output_pdf,
         ]
         subprocess.run(cmd, check=True)
+
+        # One-page auto-fit (CV only) needs the rendered page count. The CV
+        # template emits it as <aw-pages> metadata; read it back with typst
+        # query while the content file still exists. Best-effort: any failure
+        # leaves pages=None and the OK line simply omits the count.
+        if kind == "cv":
+            pages = _count_pages(template, root, content_rel, extra_inputs)
     except subprocess.CalledProcessError as exc:
         return fail(f"ERROR: export step failed ({exc})", 2)
     finally:
@@ -140,8 +158,72 @@ def main(argv) -> int:
             except OSError:
                 pass
 
-    print(f"OK: {output_pdf}")
+    if pages is not None:
+        print(f"OK: {output_pdf} (pages={pages})")
+    else:
+        print(f"OK: {output_pdf}")
     return 0
+
+
+def _read_config_font(root: Path):
+    """Return profile/config.yaml's style.font value, or None.
+
+    Minimal, dependency-free reader (the repo declares no YAML dependency, and
+    every other config value is read by the agent in the skills). It scans for a
+    top-level `style:` section and returns its `font:` value, stripping quotes
+    and inline comments. Anything it can't parse yields None, and the templates
+    fall back to their Arial default.
+    """
+    cfg = root / "profile" / "config.yaml"
+    if not cfg.is_file():
+        return None
+    try:
+        section = None
+        for raw in cfg.read_text(encoding="utf-8").splitlines():
+            if raw[:1] and not raw[:1].isspace():
+                stripped = raw.strip()
+                if stripped.startswith("#"):
+                    continue
+                section = stripped[:-1].strip() if stripped.endswith(":") else None
+                continue
+            if section == "style":
+                s = raw.strip()
+                if s.startswith("font:"):
+                    val = s.split(":", 1)[1].strip()
+                    if val[:1] in ('"', "'"):
+                        end = val.find(val[0], 1)
+                        if end != -1:
+                            return val[1:end] or None
+                    val = val.split("#", 1)[0].strip()
+                    return val or None
+        return None
+    except OSError:
+        return None
+
+
+def _count_pages(template: Path, root: Path, content_rel: str, extra_inputs: list):
+    """Return the rendered page count via `typst query`, or None on any failure.
+
+    The CV template emits the total physical page count as metadata labeled
+    <aw-pages>. `typst query` accepts the same --root/--input options as
+    compile, so we pass the same content_path (and any font input) and parse the
+    JSON it prints. Best-effort by design: the one-page loop simply skips the
+    auto-fit if no count comes back.
+    """
+    cmd = [
+        "typst", "query",
+        "--root", str(root),
+        "--input", f"content_path={content_rel}",
+        *extra_inputs,
+        str(template),
+        "<aw-pages>",
+    ]
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True, check=True).stdout
+        data = json.loads(out)
+        return int(data[0]["value"])
+    except (subprocess.CalledProcessError, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError):
+        return None
 
 
 def _mktemp(directory: Path, prefix: str, suffix: str) -> Path:
