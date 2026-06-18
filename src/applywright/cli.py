@@ -14,7 +14,9 @@ from . import (
     fetch,
     inbox,
     log_append,
+    log_start,
     opener,
+    reset_intake,
     scan,
     tracker,
     write_jd,
@@ -28,6 +30,8 @@ COMMANDS = {
     "tracker": tracker.main,
     "inbox": inbox.main,
     "log-append": log_append.main,
+    "log-start": log_start.main,
+    "reset-intake": reset_intake.main,
     "open": opener.main,
     "doctor": doctor.main,
     "bootstrap": bootstrap.main,
@@ -43,6 +47,8 @@ Commands:
   tracker <init|seen|add|status> ...    CSV application tracker
   inbox <claim|done|fail|status> ...    bulk job queue (inbox/jobs.txt)
   log-append <logfile> <message>        append a timestamped log line
+  log-start <logfile> --id .. --url ..  create the log file + header
+  reset-intake                          clear the JD-intake files (no args)
   open <file>                           open a file in the OS default app
   doctor                                check tools + run a PDF smoke test
   bootstrap                             set up profile/, tracker, folders
