@@ -70,6 +70,10 @@ def main(argv=None) -> int:
             "# Smoke test\n\nIf this renders as a PDF, the export pipeline works.\n",
             encoding="utf-8",
         )
+        # The export shells out to pandoc + typst and takes a second or two.
+        # Print a flushed progress line first so the pause doesn't look like a
+        # hang (early users mistook the silent wait for a frozen check).
+        print("  [..]   building a small test PDF (pandoc + typst, ~1-2s)...", flush=True)
         rc = export_pdf.main([str(smoke_md), str(smoke_pdf), "document"])
         if rc == 0 and smoke_pdf.exists():
             print("  [ok]   export pipeline produced a PDF")

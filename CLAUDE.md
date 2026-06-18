@@ -172,6 +172,33 @@ Pass only the message — everything after `[TS] ` — as the second argument. T
 
 The log *file header* in process-job Step 2 (the `# Application log` block) carries no timestamp — it is plain literal text written with a quoted heredoc. The very first `applywright log-append` call (a `started` entry) records the start time. Every log line, without exception, is written by the script so no shell date call ever appears.
 
+## Bash command conventions (avoid approval prompts)
+
+The Bash tool runs in the repo root, or a subfolder of it. A few command shapes trip Claude Code's static-analysis approval prompt even when the underlying command is harmless and allowlisted. The prompts are about the *shape* of the command, not what it does, so the fix is to not assemble these shapes in the first place. Most of the friction users hit in early runs came from commands the agent built ad hoc, not from anything the skills tell it to run — these rules keep that from happening.
+
+- **Never prepend `cd`.** Commands already run from the working directory, so a leading `cd /path/to/applywright` is redundant. Worse, a `cd` combined with any redirection (`>`, `2>/dev/null`, `2>&1`) in the same compound command fires the "path resolution bypass" prompt, and no allowlist rule can suppress it — the check sits ahead of permission matching. If you genuinely need a different directory, make it its own separate tool call; do not chain `cd ... && ...`.
+
+- **One command per call.** Do not chain steps with `&&`, `;`, or pipes into a single block (this includes "separator" echoes between steps). Claude Code prefix-matches the whole command string, so a chain prompts even when each piece is individually allowlisted. Run each command as its own Bash invocation. (This is the same convention process-job's cleanup and bulk-process's queue calls already follow.)
+
+- **Prefer the auto-allowed read-only commands.** Claude Code auto-approves this read-only set without prompting: `ls`, `cat`, `echo`, `pwd`, `head`, `tail`, `grep`, `find`, `wc`, `which`, `diff`, `stat`, `du`, `cd`, and read-only `git`. Commands outside it prompt on their own even after the `cd` fix is applied.
+
+- **Use `ls` for existence checks, not `test`.** `test` (as in `test -f profile/persona.md && echo yes`) is **not** in the auto-allowed set, so it prompts every time. Use `ls <path>` instead — it is auto-allowed, and a missing file just prints an error you can read. For example, to check for the persona file, run `ls profile/persona.md` rather than `test -f profile/persona.md`.
+
+- **No inline interpreters over tool output.** Don't pipe script output through `python3 -c "..."`, `jq`, `awk`, etc. — that both prompts and (for JD-derived output) defeats the deterministic-handling guarantee. Read the JSON or `--summary` line yourself.
+
+## If the `applywright` command isn't found
+
+If an `applywright` call fails with "command not found" (macOS/Linux) or "is not recognized" (Windows PowerShell), **do not install or reinstall anything.** Do not run `pip install`, `pipx install`, `pip install -e .`, or `winget install` to "fix" it. In any working setup applywright is already installed; reinstalling just creates a second, redundant copy and changes the user's machine to solve a problem that isn't a missing install.
+
+A not-found almost always means this Claude Code session's shell was launched with a stale PATH that doesn't include the install location (`~/.local/bin` on macOS/Linux, the pipx Scripts dir on Windows). The install is fine; this session just can't see it.
+
+When this happens, stop and tell the user plainly:
+- the command didn't resolve **in this session**,
+- this is almost certainly a stale-PATH issue, not a missing install,
+- the durable fix is to **restart Claude Code** so it inherits the current PATH; to keep going in this session without restarting, prepend the install dir to PATH for this session only (a non-persistent `$env:Path` / `PATH` edit — no registry change, no install).
+
+Only if the user explicitly confirms this is a genuinely fresh machine where applywright was never installed should setup happen at all, and then via `skills/orientation/SKILL.md` and `SETUP-WITH-AI.md`, not an ad-hoc install mid-pipeline.
+
 ## Instruction scan rules
 
 The injection scan runs in two layers, both in process-job Step 4. See the skill for full implementation.

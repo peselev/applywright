@@ -57,6 +57,12 @@ Never assert a company fact from memory. If you can't source it, leave it out. T
 
 This is a few factual lines, not a research report. The goal is to capture what the verdict already used so it isn't re-fetched later.
 
+### Location check (always)
+
+Capture the role's location(s) as the JD actually states them, and do **not** treat the first city you see as the only location. Job boards routinely truncate the field to a primary city plus a "+N locations" / "N+ locations" / "and N more" indicator (e.g. `Sunnyvale, CA +6 locations`). When you see that indicator — or any sign the role is multi-location, hybrid-across-cities, or "remote within X" — the additional locations are not visible in the truncated string, so the role is **not** necessarily tied to the one city shown.
+
+When this happens, surface it rather than silently assuming the single city. The point is to let the user check whether one of the unlisted locations works for them, since a role that looks like it's in the wrong city may actually include the right one. Record a short location note for Step 6 (fit file) and Step 7 (chat summary): the stated primary location, the "+N" indicator if present, and a one-line "additional locations not shown — confirm before ruling out." Do not let location alone change the fit score; it's a flag for the user, not a scoring input.
+
 ## Step 3: Match against the user's background
 
 For each item from Step 2, classify the user's match:
@@ -164,6 +170,7 @@ A few factual lines about the company, each with a source. Captured here so the 
 - {what the company does} {(source)}
 - {stage / size / funding if known} {(source)}
 - {the product area this role sits in} {(source)}
+- {location: the stated primary location; if the JD shows "+N locations" or otherwise multi-location, say so and add "additional locations not shown — confirm before ruling out"} {(JD)}
 - {any notable recent thing, if known} {(source)}
 
 ---
@@ -231,12 +238,15 @@ Verdict: {No fit | Weak | Strong | Exceptional} ({N}/10)
 {One-line summary}
 Bullets I'd use: {KEY-1} + {KEY-2}  ({theme-1} + {theme-2})
 Flags: {GAP / KEYWORD: <term> / CLOSE-CALL / OVERLAP — only if any fired; omit this line otherwise}
+Location: {primary location} (+{N} more — confirm before ruling out)   ← include this line ONLY when the JD is multi-location / shows "+N locations"; omit it otherwise
 Cover letter angle: {one sentence — which differentiating strength makes the most specific, defensible argument for this role}
 
 Full analysis: output/{short-id}/fit-{short-id}.md
 ```
 
 The **Bullets** line names the two theme clusters in parentheses so the pairing logic is visible at a glance. The **Flags** line appears only when Step 5d raised something — drop it entirely when there's nothing to flag. Keep flags terse here (one word each, plus the term for KEYWORD); the detail lives in the fit file's Selection notes.
+
+The **Location** line appears only when the role is multi-location or the JD truncated the field with a "+N locations" indicator (the Step 2 location check). It exists so the user doesn't rule a role out on a city that may not be the only option. Omit it for ordinary single-location roles.
 
 The "Cover letter angle" line is a thesis seed, not a draft sentence. It should name a specific pattern from the differentiating strengths section and connect it to the role's most important hire signal. Example: "Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." This line feeds the cover-letter skill's thesis derivation step.
 

@@ -13,6 +13,26 @@ Your job is to orchestrate the setup and to transcribe the user's real informati
 
 Before anything else, work out how far setup has already gotten.
 
+### Pre-flight A: where the repo lives, and its folder name (first run only)
+
+On a genuinely first run (no `profile/`), take ten seconds on the folder before diving in:
+
+- **Folder name.** If the current folder is named `applywright-main` (the default when someone downloads the GitHub zip rather than cloning), mention it: the `-main` suffix is just GitHub's zip naming, and they can rename the folder to `applywright` if they like. It is purely cosmetic — every command resolves the project by walking up to `pyproject.toml`, so nothing breaks either way. Offer the rename, don't require it.
+- **Location.** If the folder sits somewhere volatile — a `Downloads` folder, a temp path, a cloud-synced folder mid-sync — suggest moving it to a stable working location before going further, since `profile/` (their real data) and `output/` (their applications) will live inside it. If it's already in a sensible spot, say nothing and move on.
+
+This is a light touch, not an interrogation. One or two sentences, then continue. Skip it entirely on a resume (profile already exists).
+
+### Pre-flight B: command-line comfort (first run only)
+
+Ask once, up front: **"Before we start — how comfortable are you working in a terminal / command line? Totally fine either way, it just tells me how much to explain as we go."** Offer a simple choice (e.g. comfortable / somewhat / not really).
+
+- If they're **comfortable**, keep instructions terse and don't over-explain commands.
+- If they're **not** (or unsure), put them at ease in a sentence or two: the command line is just a text box where you type a command and press Enter; you'll tell them exactly what to paste at each step and what a good result looks like; nothing here is destructive, and they can stop any time. Then walk each command with a one-line "this does X, you should see Y" so they're never staring at an opaque prompt.
+
+Carry that comfort level through the whole run — it sets how much hand-holding the later steps get. Note it in the progress file so a resumed session keeps the same tone.
+
+### Resume detection
+
 1. If `profile/.orientation-progress.md` exists, read it. It lists completed steps and a `next:` line. Resume there.
 2. If it does not exist, detect state from the filesystem:
    - `profile/` missing means start at Step 1.
@@ -22,7 +42,7 @@ Before anything else, work out how far setup has already gotten.
    - `applywright tracker status` errors or shows nothing means the tracker is not set up (Step 8).
 3. Tell the user in one line where you are resuming, then continue.
 
-Announce the shape up front: "Setup is 8 steps. I'll go through them with you one at a time. You can stop whenever; I save progress." Do not dump all 8 steps at once. Move one step at a time.
+Announce the shape up front: "Setup is 8 steps. I'll go through them with you one at a time. You can stop whenever; I save progress." Do not dump all 8 steps at once. Move one step at a time. If the user said they're new to the command line, add one reassuring line here that you'll explain each command as you go.
 
 ## Step 1: Environment check
 
@@ -33,7 +53,7 @@ applywright doctor
 ```
 
 - If it reports required tools missing, install them and run `applywright doctor` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
-- On macOS, if Homebrew is missing, tell the user to install it from https://brew.sh. On Windows, winget ships with App Installer. Then re-run this skill.
+- On macOS, if Homebrew is missing: it installs with a single command pasted into Terminal (the command is on https://brew.sh, under "Install Homebrew" — it is not a click-to-download app). Match the Pre-flight B comfort level: for a command-line-comfortable user, just point them at brew.sh and let them run it. For a less-comfortable user, paste the exact install command for them, tell them it's safe and will ask for their Mac password (which won't show as they type), and wait for it to finish before re-running. On Windows, winget ships with App Installer. Then re-run this skill.
 - Do not continue past a failing export smoke test. A broken PDF pipeline means every application export will fail later. Show the exact error and ask the user to fix it first.
 
 Checkpoint Step 1.
@@ -142,7 +162,7 @@ Checkpoint Step 8.
 
 - Mark `profile/.orientation-progress.md` complete.
 - Tell the user they are ready: paste a job URL to file their first application (the `process-job` pipeline), or queue several in `inbox/jobs.txt` and say "process my inbox."
-- Remind them `profile/` is gitignored and not backed up by git. If they want an off-machine copy, point them at the README backup section.
+- **Back up their data.** `profile/` (their real identity, CV, and bullets) and `output/` (every application they file) are the valuable, irreplaceable part of this folder, and they live only on this machine. They are deliberately kept out of version control, so pushing the repo to GitHub will not save them. Recommend a backup to wherever they already keep important files: iCloud Drive, Google Drive, OneDrive, Dropbox, or a private GitHub repo if they happen to use git. Say it in plain terms — "these two folders are your data; copy them somewhere safe" — and don't assume they know what git or "gitignored" means. Point them at the README backup section for specifics.
 - Point them at the README "Daily use" and "Approval prompts" sections so the first run is not a surprise.
 
 ## Resumability: the progress file
@@ -151,6 +171,7 @@ After each step, write or update `profile/.orientation-progress.md` with the fil
 
 ```
 # Orientation progress
+cli-comfort: somewhat        # comfortable | somewhat | not-really (from Pre-flight B; sets explanation depth on resume)
 - [x] 1 environment
 - [x] 2 profile bootstrapped
 - [x] 3 identity + tracker
@@ -162,7 +183,7 @@ After each step, write or update `profile/.orientation-progress.md` with the fil
 next: Step 4 (CV)
 ```
 
-On the next invocation, Step 0 reads this and resumes at `next:`.
+On the next invocation, Step 0 reads this and resumes at `next:`. Read the `cli-comfort` line too, so a resumed session keeps the same explanation depth instead of re-asking.
 
 ## DO NOT do these
 
