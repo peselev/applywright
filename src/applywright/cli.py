@@ -54,6 +54,16 @@ Run from your Applywright repo, or any subfolder of it."""
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
 
+    # Line-buffer stdout so each line shows the moment it's printed — even when
+    # output is piped, or a slow pandoc/typst call follows a print(). Without
+    # this, a print() before a multi-second subprocess can sit in the buffer and
+    # make the check look frozen. reconfigure() is 3.7+; guard the odd case where
+    # stdout isn't a normal text stream.
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except (AttributeError, ValueError):
+        pass
+
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(USAGE)
         return 0
