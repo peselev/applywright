@@ -48,6 +48,7 @@ applywright/
 │   ├── application-answers/SKILL.md ← free-form application-form question answers
 │   └── shared/
 │       ├── writing-rules.md     ← the user's voice: anti-fabrication, banned words, AI-tells, Fluff Test, core checklist (used by cover-letter + application-answers)
+│       ├── editing-intent.md    ← read the intent behind a user's edit/input (final vs direction vs example vs spec); check before acting
 │       └── rating-and-learning.md ← ok/star rating + propose-then-write learning loop (used by both writing skills)
 ├── pyproject.toml             ← installable package metadata; `applywright` console command
 ├── src/applywright/           ← the CLI (installed via `pipx install .`); run `applywright <command>`

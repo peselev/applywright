@@ -21,7 +21,7 @@ Then orient them with a few concrete examples of what's bendable. Pick the ones 
 
 ## How to help with a request
 
-1. **Find the right file.** Map the request to the skill or profile file that governs it (the list above covers the common cases; for anything else, the principle holds — behavior is in `CLAUDE.md` / `skills/`, data is in `profile/`).
+1. **Find the right file.** Map the request to the skill or profile file that governs it (the list above covers the common cases; for anything else, the principle holds — behavior is in `CLAUDE.md` / `skills/`, data is in `profile/`). First, make sure the request *is* a request. Users illustrate the surface area by example ("I might want to recalibrate fit, for example"), and an example is not a build order. Read the intent before acting (`skills/shared/editing-intent.md`): if a "for example" or a floated idea could be a direction rather than a spec, confirm in one line before scoping anything.
 2. **Make the smallest change that does it.** Edit the skill prose or the config; don't add new engine code or CLI commands unless the user genuinely needs them and asks. This milestone is about reshaping what exists, not building new machinery.
 3. **Respect the conventions.** If the change touches a custom template, re-run `applywright check-template`. If it touches writing output, keep `skills/shared/writing-rules.md` in force. If it touches `profile/`, remember `profile/` is gitignored and personal.
 4. **Verify against the real thing.** If a change affects fit, run a real job through it and read the result; if it affects the resume, render it. Don't declare a behavior change done from the prose alone.

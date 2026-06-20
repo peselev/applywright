@@ -63,7 +63,7 @@ Show the draft for one question, then stop and let the user react. Do not draft 
 
 ## Step 4: Iterate
 
-The user edits the same way they do for cover letters: they may reply in chat, or edit text you've shown. The `{curly-brace}` convention applies if they're editing a file — anything in `{}` is an instruction to act on and then remove; anything outside `{}` is their final text, preserved verbatim. Rewrite the full answer each pass and note what changed in one line. Re-run the checklist after every rewrite.
+The user edits the same way they do for cover letters: they may reply in chat, or edit text you've shown. The `{curly-brace}` convention applies if they're editing a file — anything in `{}` is an instruction to act on and then remove; anything outside `{}` is their final text, preserved verbatim. Rewrite the full answer each pass and note what changed in one line. Re-run the checklist after every rewrite. As with cover letters, read `skills/shared/editing-intent.md` and apply it: catch the idea behind each edit (final wording, a direction, an example, or a line that fights the point), keep the idea even when the wording is rough, and check proactively when a reading is ambiguous or costly to get wrong.
 
 ## Step 5: Finalize and rate each answer
 

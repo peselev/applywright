@@ -264,7 +264,7 @@ The skill ends here. The user makes the decision in their next message. Control 
 
 ## On the user's overrides
 
-If the user reads the assessment and pushes back — e.g., "I do have that experience, you missed a role on my CV" — accept the override. They are the decision-maker. Don't argue or re-litigate. If they want the file updated to reflect the correction, update it. If they just want to proceed despite a "weak" verdict, that's their call.
+If the user reads the assessment and pushes back — e.g., "I do have that experience, you missed a role on my CV" — accept the override. They are the decision-maker. Don't argue or re-litigate. If they want the file updated to reflect the correction, update it. If they just want to proceed despite a "weak" verdict, that's their call. When the pushback corrects your read of their background, treat it as a model correction (`skills/shared/editing-intent.md`): play back the corrected understanding, and carry it through the rest of the assessment — the bullet picks and the verdict rationale may both need to move, not just the one line they challenged.
 
 ## When NOT to use this skill
 

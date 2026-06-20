@@ -263,6 +263,7 @@ The cutoff is the assess-fit rubric: Strong = 6-8, Exceptional = 9-10 (proceed);
 - "I think you missed X" / "I do have Y experience" — accept the override (update fit file if needed), re-show the verdict + bullets, ask again
 - "Why did you pick AI over REPORT-1?" — answer the question, then re-prompt for decision
 - Anything ambiguous — ask one clarifying question
+- When the user proposes or reshapes bullets, read the intent behind it (`skills/shared/editing-intent.md`): a firm swap to act on, a direction to explore, or an example floated to make a point. A user musing "maybe something more growth-flavored here" is not the same as "swap in PLG-3b." When it's not obvious, confirm in one line before rebuilding the CV around it.
 
 Log the user's decision: `[TS] step=06 mode=manual decision={proceed-as-picked|proceed-with-overrides|skip} bullets={KEY-1,KEY-2 or "custom"}`
 

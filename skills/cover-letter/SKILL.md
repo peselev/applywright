@@ -155,6 +155,8 @@ Rules for the editing loop:
 - In chat, show one line per change: what you changed and what you did. Example: `thesis paragraph — made the chunking tradeoff more specific per your note`
 - If a `{}` comment is ambiguous, make your best interpretation, state it in the change note, and ask at the end if it was right — do not stop mid-pass to clarify
 
+**Read the intent behind every edit, not just the words.** The verbatim/`{}` rules above protect the user's text mechanically; `skills/shared/editing-intent.md` is how you apply them with judgment. A change the user made carries an idea — sometimes it's final wording to keep, sometimes a direction to develop, sometimes an example of what they're after, sometimes a line whose literal text undercuts the point they were making. Catch which it is, keep the idea even when the expression is rough, and check proactively when a reading is ambiguous or expensive to get wrong. Read that file before working an edit pass.
+
 Re-run the core checklist (shared) and the cover-letter-specific checklist after every rewrite. Do not show the checklist in chat — only surface failures.
 
 Re-open the file after every rewrite:
