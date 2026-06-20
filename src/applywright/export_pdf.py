@@ -79,7 +79,7 @@ def main(argv) -> int:
     # The repo root is the nearest ancestor whose pyproject.toml declares the
     # applywright package. Run from anywhere inside the repo.
     root = find_root(require=["templates"])
-    template = root / "templates" / f"{kind}.typ"
+    template = _resolve_template(root, kind)
 
     input_path = Path(input_md)
     if not input_path.is_file():
@@ -163,6 +163,27 @@ def main(argv) -> int:
     else:
         print(f"OK: {output_pdf}")
     return 0
+
+
+def _resolve_template(root: Path, kind: str) -> Path:
+    """Pick the Typst template for `kind`, preferring a user override.
+
+    A custom template at profile/{kind}-template.typ takes precedence over the
+    shipped templates/{kind}.typ when it exists. This lets a user pin their own
+    resume / cover-letter design — gitignored, under profile/ — without editing
+    the repo, so a later change to the shipped template (theirs or upstream)
+    can't silently restyle their output.
+
+    The override must honor the same sys.inputs contract as the shipped template
+    it replaces: read content_path and font, and (for the CV) keep the
+    <aw-pages> metadata anchor plus the margin_bottom / body_size knobs that the
+    one-page auto-fit depends on. `applywright check-template` validates this.
+    A missing override simply falls through to the shipped default.
+    """
+    override = root / "profile" / f"{kind}-template.typ"
+    if override.is_file():
+        return override
+    return root / "templates" / f"{kind}.typ"
 
 
 def _read_config_font(root: Path):

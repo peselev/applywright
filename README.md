@@ -148,6 +148,12 @@ applywright/
 
 Behavior lives in `CLAUDE.md` and `skills/*/SKILL.md`. Edit those to change how it works; most tweaks need no code. The voice rules for written application materials are in `skills/shared/writing-rules.md`; tune them to your taste.
 
+## Look and feel: font and templates
+
+**Font** is one value: `style.font` in `profile/config.yaml`. Set it once (Arial by default) and every export — CV, cover letter, documents — uses it. The chosen font is tried first with Arial as an automatic fallback, so a name that isn't installed still produces a PDF.
+
+**Your own design.** To change the layout, not just the font, drop a `profile/cv-template.typ` or `profile/cover-letter-template.typ`. The exporter prefers a `profile/{kind}-template.typ` over the shipped `templates/{kind}.typ` when it's present. Because it lives in the gitignored `profile/`, your design is personal and survives `git pull` — an upstream change to the shipped template can't restyle your resume. Start by copying the shipped template (`cp templates/cv.typ profile/cv-template.typ`) and editing from there. A custom template must keep the inputs the engine passes in (`content_path`, `font`, and for the CV the `<aw-pages>` page-count anchor plus the `margin_bottom` / `body_size` auto-fit knobs); run `applywright check-template` to confirm it does before relying on it. Templates are single-column by design.
+
 ## Privacy
 
 `profile/`, `output/`, `temp/` contents, `.env`, and the paste buffer are gitignored. Your CV, bullets, and applications are never tracked by git unless you change that.

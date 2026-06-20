@@ -9,6 +9,7 @@ import sys
 from . import __version__
 from . import (
     bootstrap,
+    check_template,
     doctor,
     export_pdf,
     fetch,
@@ -27,6 +28,7 @@ COMMANDS = {
     "write-jd": write_jd.main,
     "scan": scan.main,
     "export-pdf": export_pdf.main,
+    "check-template": check_template.main,
     "tracker": tracker.main,
     "inbox": inbox.main,
     "log-append": log_append.main,
@@ -44,6 +46,7 @@ Commands:
   write-jd --source ... --dest ...      write a JD file with frontmatter
   scan <file> [--summary]               Layer-1 injection scan (JSON to stdout)
   export-pdf <in.md> <out.pdf> <kind>   render a PDF (kind: cv | document | cover-letter)
+  check-template [path] [--kind ..]     validate a profile/ template against the contract
   tracker <init|seen|add|status> ...    CSV application tracker
   inbox <claim|done|fail|status> ...    bulk job queue (inbox/jobs.txt)
   log-append <logfile> <message>        append a timestamped log line

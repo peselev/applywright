@@ -93,6 +93,16 @@ Fields:
 - `portfolio.url` (optional; if set, Step 6 can auto-build the persona). `portfolio.llms_txt` (optional).
 - `tracker.mode`: `csv` (default, zero setup) or `notion`.
   - For `notion`: the user needs the Notion MCP configured in Claude Code plus two database IDs. Point them to the Tracking / Notion section in `CLAUDE.md` for the schema, then set `tracker.notion.applications_db` and `tracker.notion.companies_db`. If they are not ready, leave `csv` for now; they can switch later.
+- `style.font`: the font used for the CV, cover letter, and exported documents.
+
+**Ask the font question here, then write `style.font`.** Phrase it simply: "What font would you like on your resume and cover letter? Arial is the safe default — it's on virtually every Mac and Windows machine, so the PDF renders the same everywhere." Offer a short menu: **Arial** (default) / Calibri / Helvetica / Georgia / Times New Roman / type-your-own. Write the chosen name verbatim into the `style:` block:
+
+```yaml
+style:
+  font: "Calibri"
+```
+
+If `profile/config.yaml` has no `style:` section yet (an older profile, or one bootstrapped before this field existed), add the whole block. The chosen font is tried first at export time, with Arial as an automatic fallback if it isn't installed on the machine — so a missing or misspelled name still produces a PDF rather than failing. There's no need to vet whether the font exists; the fallback handles it.
 
 Read the identity block back so the user can confirm it before you move on.
 

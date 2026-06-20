@@ -52,6 +52,7 @@ applywright/
 │   ├── write_jd.py             ← `applywright write-jd`: writes the JD file with frontmatter
 │   ├── scan.py                 ← `applywright scan`: Layer 1 mechanical injection scan
 │   ├── export_pdf.py           ← `applywright export-pdf`: markdown → PDF via Typst
+│   ├── check_template.py       ← `applywright check-template`: validate a profile/ template against the contract
 │   ├── tracker.py              ← `applywright tracker`: CSV application tracker
 │   ├── inbox.py                ← `applywright inbox`: atomic claim/done/fail for the bulk queue
 │   ├── log_append.py           ← `applywright log-append`: timestamped log line
@@ -60,10 +61,13 @@ applywright/
 │   ├── bootstrap.py            ← `applywright bootstrap`: profile/ from example, tracker, folders
 │   ├── postprocess.py          ← internal: cleans pandoc's typst output before compile
 │   └── strip_images.py         ← internal: replaces external image refs for clean PDF compile
-└── templates/
+└── templates/                ← shipped default presentation (single-column)
     ├── cv.typ                 ← styled resume template
+    ├── cover-letter.typ       ← business-letter template (contact footer)
     └── document.typ           ← generic readable document (JDs, fit reports)
 ```
+
+**Custom presentation templates.** A user can override the shipped look without editing the repo by dropping `profile/cv-template.typ` and/or `profile/cover-letter-template.typ`. `applywright export-pdf` prefers a `profile/{kind}-template.typ` over `templates/{kind}.typ` when present (see `export_pdf._resolve_template`). These live under the gitignored `profile/`, so they're personal and survive `git pull`. An override must keep the same `sys.inputs` contract as the template it replaces — read `content_path` and `#include` it, read `font`, and for the CV keep the `<aw-pages>` anchor plus `margin_bottom` / `body_size` — or font selection and the one-page auto-fit break silently. Run `applywright check-template` to validate. Templates are single-column by design; two-column is out of scope.
 
 ## First-time setup
 
