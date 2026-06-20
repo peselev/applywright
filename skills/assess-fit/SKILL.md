@@ -1,6 +1,6 @@
 ---
 name: assess-fit
-description: Evaluate fit between a job description and the user's background, AND pick two bullets from the master file to use in the tailored CV. Reads the saved JD, the user's CV, persona file, and master bullets; produces a structured fit assessment with a verdict (No fit / Weak / Strong / Exceptional), a 1-10 score, what-they-want vs what-the-user-brings, differentiating strengths, real gaps, a reasoned recommendation, and two bullet picks. Bullet selection is case-first: it picks two different case families, the best-fitting variant inside each (using each variant's Theme keys and JD-fit signal), then cross-checks the two so they span different themes instead of doubling one. Raises selection flags (gap / keyword / close-call / overlap) when they apply. Writes the full analysis to `output/{short-id}/fit-{short-id}.md` and shows a summary in chat. Called by process-job between the injection scan and the proceed/skip decision. Does NOT decide to proceed or skip — the user makes that call after reading the assessment, and may override the bullet picks at the same time.
+description: Evaluate fit between a job description and the user's background, AND pick two bullets from the master file to use in the tailored CV. Reads the saved JD, the user's CV, persona file, and master bullets; produces a structured fit assessment with a verdict (No fit / Weak / Strong / Exceptional), a 1-10 score, a one-line application strategy (high-confidence base / high-ceiling swing / stretch / skip), a leveling check that flags when the role's real scope reads above or below its posted title, what-they-want vs what-the-user-brings, differentiating strengths, real gaps, a reasoned recommendation, and two bullet picks. Bullet selection is case-first: it picks two different case families, the best-fitting variant inside each (using each variant's Theme keys and JD-fit signal), then cross-checks the two so they span different themes instead of doubling one. Raises selection flags (gap / keyword / close-call / overlap) when they apply. Writes the full analysis to `output/{short-id}/fit-{short-id}.md` and shows a summary in chat. Called by process-job between the injection scan and the proceed/skip decision. Does NOT decide to proceed or skip — the user makes that call after reading the assessment, and may override the bullet picks at the same time.
 ---
 
 # Assess Fit
@@ -66,6 +66,22 @@ Capture the role's location(s) as the JD actually states them, and do **not** tr
 
 When this happens, surface it rather than silently assuming the single city. The point is to let the user check whether one of the unlisted locations works for them, since a role that looks like it's in the wrong city may actually include the right one. Record a short location note for Step 6 (fit file) and Step 7 (chat summary): the stated primary location, the "+N" indicator if present, and a one-line "additional locations not shown — confirm before ruling out." Do not let location alone change the fit score; it's a flag for the user, not a scoring input.
 
+### Leveling check (always)
+
+Separate from content match, read the role's **altitude** — the scope of ownership the JD actually describes — and compare it to the **posted title**. The two often disagree, and the gap changes how to play the application even when content fit is high. This is the Datadog case: a JD that says "operate like a GM for the Enterprise SKU," "own the P&L," and "define what 'Enterprise Ready' means for the platform" is Group-PM / product-line-GM work, whatever the "Senior PM" on the title says.
+
+Read altitude from scope signals, not from the title:
+- **Pulls up** (higher altitude): owns a P&L, defines a cross-product standard the rest of the platform conforms to, launches a 0-to-1 SKU or product line, "operate like a GM," sets strategy rather than executing it, builds or owns a team/headcount.
+- **Pulls down** (lower altitude): executes a defined roadmap, owns one bounded surface, "supports" or "partners with" a senior PM, ships features against someone else's strategy.
+
+Then judge three things and record a **leveling note** for Step 6 (fit file) and Step 7 (chat summary):
+
+1. **Scope vs title** — does the role's real scope read **above**, **at**, or **below** its posted title?
+2. **Salary-band tiebreaker** (only when scope reads above title) — if the JD states a band, compare it to what the posted title would normally pay. A band consistent with the posted title means they genuinely intend a fill at that level: the user is in the pool, but the in-pool bar is high, so the application must lead with altitude/ownership evidence. A band well above the posted title suggests a higher-level req wearing a junior title, where the user may be outranked by candidates a level up. If no band is stated, say so — don't guess.
+3. **Candidate altitude** — where the user's demonstrated altitude sits relative to the role's real scope, inferred fresh from `persona.md` and `cv.md` (e.g. owned product strategy for a $40M ARR platform, ran three squads). When the JD scope is genuinely ambiguous, or the user's altitude for this specific scope is unclear, **say the unknown out loud** rather than forcing a confident read — e.g. "scope reads group-PM, but the JD is vague on whether the P&L is real or aspirational." This mirrors how the assessment already flags open questions ("the unknowns are infrastructure-engineering domain and a 2-weeks/month travel load").
+
+Do not let leveling change the fit score; like the location check, it's a flag for the user, not a scoring input. Its job is to stop a high content score from being misread as an easy get, and to stop a clean level fit from being overlooked because its content score came in a point lower.
+
 ## Step 3: Match against the user's background
 
 For each item from Step 2, classify the user's match:
@@ -76,7 +92,9 @@ For each item from Step 2, classify the user's match:
 
 Then separately identify:
 - **Differentiating strengths** — things the user brings that aren't in the JD but matter for the role. E.g., a startup operations background for a role at a Series B. If the field notes name a recurring strongest-differentiator or a proven "default going forward" framing that fits this role, foreground it here.
-- **Real gaps** — things the JD requires that the user doesn't have. Be honest, not generous.
+- **Real gaps** — things the JD requires that the user doesn't have. Be honest, not generous. Sort each into one of two kinds, because they don't weigh the same:
+  - **coachable / adjacent** — the user lacks direct experience but has transferable or domain-adjacent work that closes the distance quickly (e.g. no query-engine/storage product experience, but deep platform-PM experience right next to it). A learnable, bridgeable gap.
+  - **disqualifying** — a hard requirement the user genuinely lacks with no adjacent bridge (e.g. a regulated-domain bar or years-in-X minimum they can't credibly meet). The kind that actually keeps an application out.
 
 **Honor "Fit assessment should surface" requests.** If a field-notes entry that fits this role carries a "Fit assessment should surface" line (e.g. "surface the kill/shelved decision as the thesis seed for AI-judgment roles"), weave that signal into the assessment using the existing structure — usually under Differentiating strengths or in the Recommendation. Do not add a new section for it, and only act on requests genuinely relevant to this role; ignore the rest.
 
@@ -92,6 +110,19 @@ Assign a 1-10 score based on the overall picture. Use this rubric:
 | 1-3 | No fit | Multiple critical gaps; misaligned domain/seniority/scope. Default to skip. |
 
 The verdict is determined by the score range — don't pick verdict and score independently.
+
+**Weigh the two gap kinds differently (Step 3).** Disqualifying gaps drive the score down — several of them is a Weak or No fit. Coachable/adjacent gaps should not tank a score the way disqualifying ones do: a role that's a near-perfect match but for one coachable gap is still Strong, not Weak. Score on the gaps that would actually keep the user out, not on every box the JD lists.
+
+### Application strategy (one line)
+
+Beyond the score, give a one-line **strategy** read that combines content fit with the leveling check (Step 2), so the score isn't misread as application priority — a high content score can be a hard get, and a slightly lower one can be the cleaner bet. Pick one:
+
+- **high-confidence base** — strong content match, well-leveled (scope at or below title, the user's altitude fits). Good odds per unit of effort; apply with confidence.
+- **high-ceiling swing** — strong content match, but scope reads above the posted title (the Datadog 82714 case). Attainable yet high-bar; worth it only if the application leads with altitude/ownership rather than feature-mapping.
+- **stretch** — gaps exist but they're coachable/adjacent, or the scope sits a level above the user's demonstrated altitude. Worth a shot given genuine interest; not a high-confidence bet.
+- **skip** — disqualifying gaps, no fit, or badly mis-leveled with no realistic in.
+
+This is application guidance, not a second score, and it does not change the proceed/skip gate (that still keys off the score). Record it for the fit file (top) and the chat summary.
 
 ## Step 5: Pick two bullets from the master file
 
@@ -164,6 +195,8 @@ File template:
 
 **Score:** {N}/10
 
+**Strategy:** {high-confidence base | high-ceiling swing | stretch | skip} — {≤1 line why}
+
 **One-line summary:** {one sentence — what's the headline?}
 
 ---
@@ -200,8 +233,14 @@ For each item above, classified:
 
 ## Real gaps
 
-- {gap 1} — {1 line on how big a deal this is}
+Label each gap **coachable/adjacent** or **disqualifying** (Step 3) — the kind matters more than the count.
+
+- {gap 1} — {coachable/adjacent | disqualifying} — {1 line on how big a deal this is}
 - {gap 2} — ...
+
+## Leveling
+
+One or two lines from the Step 2 leveling check: the role's real scope altitude versus its posted title (above / at / below); the salary-band tiebreaker if scope reads above title and a band is stated; where the user's demonstrated altitude sits; and any unknown stated plainly. If scope and title align, say so in one line — a clean level fit is itself worth knowing.
 
 ## Recommendation
 
@@ -240,9 +279,11 @@ Show 4-6 lines:
 ```
 {verdict-emoji} {Company} — {Role}
 Verdict: {No fit | Weak | Strong | Exceptional} ({N}/10)
+Strategy: {high-confidence base | high-ceiling swing | stretch | skip} — {≤1 line}
 {One-line summary}
 Bullets I'd use: {KEY-1} + {KEY-2}  ({theme-1} + {theme-2})
 Flags: {GAP / KEYWORD: <term> / CLOSE-CALL / OVERLAP — only if any fired; omit this line otherwise}
+Leveling: {scope vs title + one line on how to play it}   ← include this line ONLY when scope reads above/below the title, or there's a leveling unknown worth flagging; omit it when scope and title align (the Strategy line already conveys a clean fit)
 Location: {primary location} (+{N} more — confirm before ruling out)   ← include this line ONLY when the JD is multi-location / shows "+N locations"; omit it otherwise
 Cover letter angle: {one sentence — which differentiating strength makes the most specific, defensible argument for this role}
 
@@ -252,6 +293,8 @@ Full analysis: output/{short-id}/fit-{short-id}.md
 The **Bullets** line names the two theme clusters in parentheses so the pairing logic is visible at a glance. The **Flags** line appears only when Step 5d raised something — drop it entirely when there's nothing to flag. Keep flags terse here (one word each, plus the term for KEYWORD); the detail lives in the fit file's Selection notes.
 
 The **Location** line appears only when the role is multi-location or the JD truncated the field with a "+N locations" indicator (the Step 2 location check). It exists so the user doesn't rule a role out on a city that may not be the only option. Omit it for ordinary single-location roles.
+
+The **Leveling** line appears only when the role's scope reads above or below its posted title, or there's a leveling unknown worth flagging (the Step 2 leveling check). It's what stops a high content score from being read as an easy get. When scope and title align cleanly, omit the line — the Strategy line ("high-confidence base") already says the level fits. Keep it to scope-vs-title plus one line on how to play it; the fuller read lives in the fit file's Leveling section.
 
 The "Cover letter angle" line is a thesis seed, not a draft sentence. It should name a specific pattern from the differentiating strengths section and connect it to the role's most important hire signal. Example: "Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." This line feeds the cover-letter skill's thesis derivation step.
 
