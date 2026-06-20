@@ -32,11 +32,11 @@ Source: {short-id} ({date})
 
 ## Standing style direction (applies to every letter)
 
-Durable, cross-application preferences — not per-letter notes. Where possible
-they're encoded in the files the agent reads at write time (`writing-rules.md`
-for voice, `cover-letter/SKILL.md` for structure) so they take effect
-automatically; they're recorded here for the human record. Add your own as you
-discover them.
+Durable, cross-application preferences — not per-letter notes. They live here, in
+this file: the `cover-letter` skill reads it before drafting and `assess-fit`
+reads it as background, so anything you put here takes effect from here. They sit
+on top of the shared voice rules in `skills/shared/writing-rules.md`, and stay in
+your private `profile/` copy. Add your own as you discover them.
 
 (none yet)
 
