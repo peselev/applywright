@@ -34,7 +34,11 @@ applywright/
 │   └── jobs.txt                ← bulk queue: one job URL per line (see bulk-process skill)
 ├── temp/                     ← scratch directory used by fetch-jd for auto-fetched content
 ├── skills/
-│   ├── orientation/SKILL.md     ← first-time setup: env check + profile interview (run once)
+│   ├── orientation/SKILL.md     ← setup Milestones 1-2: environment + content; ends by writing a Design handoff (run once)
+│   ├── build-resume-template/   ← setup Milestone 3: design the user's own resume/cover-letter template
+│   │   ├── SKILL.md
+│   │   └── typst-cookbook.md    ← Typst design patterns + the template contract scaffold
+│   ├── customize/SKILL.md       ← setup Milestone 4: optional, on-demand pipeline personalization (teaser)
 │   ├── process-job/SKILL.md     ← the main filing pipeline (runs auto or manual)
 │   ├── bulk-process/SKILL.md    ← loop over inbox/jobs.txt, each job via process-job in auto mode
 │   ├── fetch-jd/SKILL.md        ← JD fetching with fallbacks
@@ -71,7 +75,7 @@ applywright/
 
 ## First-time setup
 
-If the user is new (no populated `profile/`, or they say "set me up", "get started", "onboard me", "first run"), run `skills/orientation/SKILL.md`. It checks the environment, bootstraps `profile/`, and interviews them into config, CV, master-bullets, and persona. It is resumable and runs once. It is not part of the application pipeline.
+If the user is new (no populated `profile/`, or they say "set me up", "get started", "onboard me", "first run"), run `skills/orientation/SKILL.md`. Setup runs as four milestones: **(1) Environment** and **(2) Content** are orientation itself — it checks the environment, bootstraps `profile/`, interviews the user into config/CV/master-bullets/persona, and files one real job to prove the pipeline; it then writes a handoff document and points to the next milestone. **(3) Design** is the `build-resume-template` skill (the user's own resume/cover-letter look), run later in a fresh session. **(4) Personalize** is the optional `customize` skill, teased at the end of Design. Setup is built to be orchestrated from a regular Claude chat (web/desktop), with the local pipeline running on the user's machine; it is resumable and runs once. None of it is part of the application pipeline.
 
 ## Pipeline
 
