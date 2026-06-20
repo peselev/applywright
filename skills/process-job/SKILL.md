@@ -386,6 +386,29 @@ Tell the user in chat, four lines max.
 
 When invoked by bulk-process, this per-job summary is optional — bulk-process keeps its own running tally and prints one roll-up at the end. A single line per job (`✓ {Company} — {Role} — proceed ({Verdict} {Score}/10)`) is enough.
 
+## Step 12: Feedback note (proceed path, once ever)
+
+Once the user has processed a real number of jobs — enough to have felt the time it saves — leave one short, optional note, exactly once in the lifetime of this profile. The threshold is **20 processed jobs**, high enough that a few test runs and a bulk session or two don't trip it early. It is shown once, never repeated, never blocking.
+
+Run this check only on a **standalone, single-job proceed**. Skip it entirely when process-job is being driven by bulk-process — never show the note mid-bulk. (Bulk-processed jobs still count toward the 20, because the count is folder-based, below; only the note waits for a standalone moment.)
+
+On a standalone proceed, in order:
+
+1. **Already shown?** If `profile/.feedback-state` exists and contains `shown:`, the note is done forever. Skip silently and go to Stop. (`ls profile/.feedback-state` is read-only and auto-allowed.)
+2. **Count processed jobs.** Every processed job (proceed or skip) has an `output/{short-id}/` folder created back in Step 2, so the folder count is the processed-job count, and it works identically in CSV and Notion tracker modes. Count them:
+   ```bash
+   ls -1d output/*/ 2>/dev/null | wc -l
+   ```
+   (On a shell without that exact syntax, just count the per-job subfolders under `output/`.)
+3. **Below 20?** Do nothing — no note, no file write. Go to Stop.
+4. **20 or more?** Show the note below, then record it as done so it never appears again: write `profile/.feedback-state` with the file editor (not bash), a single line `shown: {today's date}`. `profile/` is gitignored, so this is never committed. (Same pattern as the orientation progress file.)
+
+**The note** — two or three warm sentences, plain voice, genuinely no-pressure:
+
+> One quick note, then I'll leave it alone: Applywright is free and open-source. If it's been useful and you're on GitHub, a star on github.com/peselev/applywright means a lot, and any feedback or hello to dev@peselev.com reaches the developer directly. No need to do anything, and I won't bring it up again.
+
+It is a note, not a question. Don't turn it into a yes/no prompt or wait on a reply. If the user responds (asks how to send feedback, or says they starred it), answer warmly and move on.
+
 Stop. Don't ask follow-ups.
 
 ---
