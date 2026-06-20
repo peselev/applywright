@@ -12,6 +12,7 @@ Read this whole file before starting. Steps run in order.
 - `output/{short-id}/fit-{short-id}.md` — primary source for thesis derivation
 - `profile/persona.md` — for portfolio anchors and persona voice
 - `profile/master-bullets.md` — for proof selection (if not already clear from fit file)
+- `profile/cover-letter-field-notes.md` — accumulated learnings about what makes your cover letters land (read it before drafting; it may already have guidance that applies to this role)
 - `output/{short-id}/job-description-{short-id}.md` — for bridge (company's stated bet)
 - `short-id` — passed in by the user or inferred from context
 
@@ -57,6 +58,8 @@ The bridge is one sentence that connects to their specific bet, not generic enth
 ## Step 4: Write the cover letter
 
 Read `skills/shared/writing-rules.md` before writing a single word — it holds the voice (anti-fabrication, banned words/phrases, AI-tell rules, the Fluff Test, and the core checklist). The cover-letter-specific structure and checklist items are below and in Step 6.
+
+Then read `profile/cover-letter-field-notes.md` and apply any guidance that fits this letter. It accrues learnings across applications — go-to framings, openers that have landed, phrasings to avoid — proposed and approved at the end of past sessions (Step 9, Part 2). If it has something relevant to this role or thesis, use it; if it's empty or nothing applies, move on. This is the read half of the same loop the learning step writes to, and it mirrors how `application-answers` consults `profile/answers-field-notes.md` before drafting.
 
 Letter structure — four short paragraphs:
 

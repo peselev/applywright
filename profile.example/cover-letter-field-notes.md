@@ -1,42 +1,44 @@
 # Cover Letter — Writer's Room
 
-Human-maintained. The agent only writes here after showing a proposal and
-getting your approval (see `skills/shared/rating-and-learning.md`).
+Human-maintained, with agent proposals. The agent only writes here after showing
+a proposal and getting your approval (see `skills/shared/rating-and-learning.md`).
 
-Purpose: track what worked, what didn't, and what to feed the fit assessment
-differently next time. One entry per application (optional — only when there's
-something worth noting). Over time this becomes a calibration log for the skill.
+Purpose: track the cover-letter moves that land, keyed by reusable framing, so
+future letters start from proven framings instead of from scratch. The
+`cover-letter` skill reads this file before drafting, and the `assess-fit` skill
+reads it too (it's part of how the agent learns your strengths and voice over
+time). Each entry can also tell the fit assessment what to surface next time.
 
 ---
 
 ## How to use this file
 
-After each cover letter cycle, add an entry answering:
-- What was the thesis, and did it land?
-- What would have made a better thesis?
-- What did the fit assessment give you that was useful?
-- What did the fit assessment miss or frame wrong?
-- Any AI-tell patterns that slipped through?
+Entries accumulate from **starred** (⭐) letters. Each entry names a reusable
+move (not an application), the framing that worked, what the skill should reach
+for by default next time, and — optionally — what the fit assessment should
+surface to make that framing easy to write. Keep it scannable.
+
+Entry format:
+
+```
+### {reusable move — e.g. "thesis from the kill-decision", "open for the recruiter, frame path as range"}
+Framing that worked: {the transferable move}
+Default going forward: {what the cover-letter skill should reach for by default}
+Fit assessment should surface: {optional — what the fit step should output to make this easy; omit if N/A}
+Source: {short-id} ({date})
+```
 
 ---
 
-## Entry format
+## Standing style direction (applies to every letter)
 
-```
-### {short-id} — {Company} — {Role}
-Date: {date}
+Durable, cross-application preferences — not per-letter notes. Where possible
+they're encoded in the files the agent reads at write time (`writing-rules.md`
+for voice, `cover-letter/SKILL.md` for structure) so they take effect
+automatically; they're recorded here for the human record. Add your own as you
+discover them.
 
-Thesis used: {one sentence}
-Did it land: {yes / no / unknown}
-
-What worked:
-
-What didn't:
-
-What to feed the fit assessment differently:
-
-Other notes:
-```
+(none yet)
 
 ---
 

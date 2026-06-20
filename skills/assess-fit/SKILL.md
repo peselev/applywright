@@ -13,6 +13,7 @@ This skill compares one job (JD) against the user's professional materials and p
 - `profile/cv.md` — the user's base CV
 - `profile/persona.md` — distilled snapshot of the user's portfolio (managed by refresh-persona)
 - `profile/master-bullets.md` — library of high-impact bullets the user can use to tailor the CV (see structure below)
+- `profile/cover-letter-field-notes.md` and `profile/answers-field-notes.md` — **optional.** Accumulated learnings from past cover letters and application answers: the candidate's strongest differentiators, the framings that have landed, the candidate's voice, and explicit "Fit assessment should surface" requests. The agent has been learning about the candidate while writing these documents; this is where that knowledge lives. They may be missing or near-empty early on — that's fine, just skip them. They are the **lowest-weight** input: background that sharpens *which* strengths you foreground and what you surface for the downstream skills, never evidence that changes the score.
 
 If `persona.md` doesn't exist, tell the user to run refresh-persona first, then return without doing anything. Do not proceed without it.
 
@@ -31,9 +32,11 @@ The **bullet is only the prose paragraph** after the blank line. The `Theme keys
 
 All variants of one family describe the **same underlying project**. That has a consequence used in Step 5: two bullets from the same family would put the same project on the CV twice, so the two picks must come from **two different families**.
 
-## Step 1: Read all four inputs
+## Step 1: Read the inputs
 
-Read them in this order: JD, CV, persona, master-bullets. Hold them in working memory for the next steps.
+Read them in this order: JD, CV, persona, master-bullets — then `profile/cover-letter-field-notes.md` and `profile/answers-field-notes.md` if they exist. Hold them in working memory for the next steps.
+
+The field notes are background on the candidate, not role requirements. Weight them last: they tell you which of the candidate's strengths have proven strongest and how the candidate positions, plus any "Fit assessment should surface" requests to honor in the output. They never raise or lower the score on their own — the score stays grounded in JD-vs-(CV/persona) evidence.
 
 ## Step 2: Extract what the role needs
 
@@ -72,8 +75,10 @@ For each item from Step 2, classify the user's match:
 - **gap** — no evidence either way, or explicit absence
 
 Then separately identify:
-- **Differentiating strengths** — things the user brings that aren't in the JD but matter for the role. E.g., a startup operations background for a role at a Series B.
+- **Differentiating strengths** — things the user brings that aren't in the JD but matter for the role. E.g., a startup operations background for a role at a Series B. If the field notes name a recurring strongest-differentiator or a proven "default going forward" framing that fits this role, foreground it here.
 - **Real gaps** — things the JD requires that the user doesn't have. Be honest, not generous.
+
+**Honor "Fit assessment should surface" requests.** If a field-notes entry that fits this role carries a "Fit assessment should surface" line (e.g. "surface the kill/shelved decision as the thesis seed for AI-judgment roles"), weave that signal into the assessment using the existing structure — usually under Differentiating strengths or in the Recommendation. Do not add a new section for it, and only act on requests genuinely relevant to this role; ignore the rest.
 
 ## Step 4: Score and verdict
 

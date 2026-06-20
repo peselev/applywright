@@ -70,6 +70,7 @@ delve, tapestry, multifaceted, pivotal, realm, synergy, paradigm, holistic, nuan
 - **Vary sentence length.** Mix short (8-12 words) with longer (20-28 words). Three consecutive same-length sentences read as AI.
 - **No same-structure consecutive openers.** Two adjacent sentences or paragraphs must not open with the same construction (e.g. both starting "The hard part of..." / "The key to...").
 - **No adverbs from this list:** meticulously, notably, subsequently, remarkably, seamlessly, thereby, inherently, fundamentally
+- **Open on a plate, never abruptly.** Give the reader a normal place to land before the substance arrives. No punchy sentence-fragment cold-opens, no dropping straight into a bare claim mid-thought. The user finds abrupt in-medias-res openers jarring and off-voice. **Scale the setup to the answer length:** a long answer leads with a calm orienting sentence ("I believe there is one core skill a PM needs to possess: ...") then delivers specifics; a short, pointed 1-2 line answer needs only a few words of setup, not a full intro — but it still must set the answer up rather than start cold. Brevity is fine; abruptness is not.
 
 ---
 
