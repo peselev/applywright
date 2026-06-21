@@ -18,7 +18,7 @@ Setup is four milestones. This skill covers the first two; the other two are sep
 3. **Design** — give the resume and cover letter the user's own look. Run later, in a fresh session, via the **`build-resume-template`** skill.
 4. **Personalize** — optional, on-demand tuning of the pipeline itself. The **`customize`** skill, teased at the end of Design.
 
-Tell the user this shape in a sentence at the start. You're doing Milestones 1 and 2 now; 3 and 4 come later, deliberately, in their own sessions.
+This list is your own reference. The user-facing version — the full plan, laid out before Milestone 1 begins — is Pre-flight C below. Milestones 1 and 2 happen now; 3 and 4 come later, deliberately, in their own fresh sessions.
 
 ## How this is meant to be run
 
@@ -53,6 +53,19 @@ Ask once, up front: **"Before we start — how comfortable are you working in a 
 
 Carry that comfort level through the whole run — it sets how much hand-holding the later steps get. Note it in the progress file so a resumed session keeps the same tone.
 
+### Pre-flight C: announce the plan (first run only)
+
+Before starting Milestone 1, lay out the whole journey so the user knows what they're walking into — a map before the hike, not a step in it. Match the depth to their Pre-flight B comfort level: terser for a comfortable user, a little more reassurance for a nervous one. Skip it entirely on a resume.
+
+Walk the four milestones. For each, give three things in a line or two: the **gist**, what they **need to have ready**, and what they'll **have when it's done**.
+
+1. **Environment — now.** Gist: install the toolchain and Claude Code, and confirm the pipeline runs. Need: a paid Claude plan with Claude Code, and a willingness to paste a few one-time terminal commands. Done: `applywright doctor` passes and a test PDF exports, so the machine can file jobs.
+2. **Content — now.** Gist: write their identity and CV, set up their project families, do a practice run on one job to see the pipeline on the default look, then build the full story bank and persona. Need: their real career details (an existing resume makes this fast), real metrics for their bullets, optionally a portfolio URL, and one real job URL for the practice run. Done: a working profile, a pipeline they've watched run, and a handoff document for Design.
+3. **Design — later, fresh session.** Gist: give the resume (and optionally the cover letter) their own look, and choose their font. Need: a sense of the look they want — a target resume or screenshot, a template they like, or just a described vibe — plus the handoff document and their zipped folder uploaded to a fresh chat. Done: their own `cv-template.typ` and a font they picked.
+4. **Personalize — later, optional, on-demand.** Gist: tune the pipeline itself, like fit scoring for their field, an extra resume section, or tailoring more bullets. Need: nothing in particular; run it when a need comes up. Done: whatever change they wanted — it's open-ended, not a checklist.
+
+Two things to land while you're here: Milestones 1 and 2 happen now in this session, while 3 and 4 are deliberately later in their own fresh sessions; and nothing in this pipeline ever submits an application — Applywright assembles each one into a folder for the user to review and send themselves.
+
 ### Resume detection
 
 1. If `profile/.orientation-progress.md` exists, read it. It lists completed steps and a `next:` line. Resume there.
@@ -60,7 +73,11 @@ Carry that comfort level through the whole run — it sets how much hand-holding
    - `profile/` missing means start at Milestone 1.
    - `profile/config.yaml` still contains `Jordan Lin` or `example.com` means identity is not done.
    - `profile/cv.md` still contains `Jordan Lin` or `Meridian Analytics` means the CV is not done.
-   - `profile/master-bullets.md` still contains the example family prose means the bullets are not done.
+   - `profile/master-bullets.md` has three states, not two. Read it in this order:
+     - Still the shipped example (the example family prose, e.g. the `PLATFORM-MAIN` / `AI-MAIN` headlines) → the family skeleton isn't done; resume at Step 2.3.
+     - The user's own families are present but the file has **no** `JD-fit signal:` lines → the **skeleton is done, the full bank is not**; resume at Step 2.8.
+     - The user's families carry `JD-fit signal:` lines → the **full bank is done**.
+     - The marker is structural, not a sentinel: the 2.3 skeleton writes only `-MAIN` headlines (no variant metadata), and 2.8 is what adds the variants with their `JD-fit signal:` lines. So the presence of those lines separates skeleton from full.
    - `applywright tracker status` errors or shows nothing means the tracker is not set up.
 3. Tell the user in one line where you are resuming, then continue.
 
@@ -184,7 +201,7 @@ The story bank (`master-bullets.md`) is the library `assess-fit` picks from. **Y
 - **Ask whether the user has a list of their key projects or themes.** If they do, use it to name the families. If not, derive the families from their resume and CV.
 - Group the work into 3 to 6 **families** — distinct projects or themes (the example uses PLATFORM, AI, GROWTH, DATA, ONBOARD). Two picks always come from two different families, so the families must be genuinely distinct.
 - Give each family a single `-MAIN` headline bullet, lifted or lightly summarized from the resume, so the picker has real text to drop into `{bullet_2}` / `{bullet_3}` at the practice run. That's the whole job here: structure plus one headline each.
-- Everything that makes the bank strong — numbered variants, `Theme keys`, `JD-fit signal` lines, polished metrics — is built in 2.8, not now.
+- Everything that makes the bank strong — numbered variants, `Theme keys`, `JD-fit signal` lines, polished metrics — is built in 2.8, not now. Keep it that way: writing no `JD-fit signal:` lines at this stage is also what lets a resumed session tell a skeleton apart from a finished bank (see Step 0).
 - Do not invent families. A user with three real projects has three families.
 
 Checkpoint, noting which families exist.
@@ -242,7 +259,7 @@ The pipeline is proven, so now invest in the content that makes applications str
 
 **Decide tailoring depth.** Now that the user has seen one run, put Step 2.2's question to them: did the two-bullet default serve them, or do they want to tailor more bullets across more roles? If more, set it up with the scheme in 2.2 (uniquely named placeholders plus a `cv-rules.md` slots-map row).
 
-Checkpoint, noting the bank and persona are complete.
+Checkpoint, noting the bank and persona are complete. The variants you add here (each with its `JD-fit signal:` line) are what flip `master-bullets.md` from skeleton to full, so mark `M2.8` done in the progress file once at least one family carries variants.
 
 ## Step 2.9: Write the Design handoff and point to the next milestone
 
@@ -277,12 +294,12 @@ content-path: A              # A (chat builds) | B (Claude Code builds), from St
 - [x] M1 profile bootstrapped
 - [x] M2.1 identity + tracker
 - [ ] M2.2 cv.md
-- [ ] M2.3 project families (skeleton)
+- [ ] M2.3 master-bullets skeleton (families + -MAIN headlines)
 - [ ] M2.4 persona (light)
 - [ ] M2.5 field notes
 - [ ] M2.6 smoke test
 - [ ] M2.7 practice run
-- [ ] M2.8 content bank + persona
+- [ ] M2.8 master-bullets full bank + persona
 - [ ] M2.9 design handoff written
 next: M2.2 (CV)
 ```
