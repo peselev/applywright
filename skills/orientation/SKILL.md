@@ -257,11 +257,38 @@ The pipeline is proven, so now invest in the content that makes applications str
 
 **The persona (`persona.md`).** Expand the light summary from 2.4 into the full version: the deeper case study for each family (the problem, what they did, the result with metrics, any public link). If `portfolio.url` is set and you can run the pipeline, run `refresh-persona` to build it from the site; otherwise write it from the interview. Keep it factual and sourced from the user.
 
+**Targeting — what they want next (`persona.md`).** This is the one part of the profile the résumé can't supply, so it is always a short interview, never derived. Ask where they're trying to go and fill the persona's `## What I'm looking for` and `## What I'm NOT looking for` sections from their answers:
+- **Looking for** — target roles or titles, level (e.g. Senior / Staff / Principal / Director), stage or company type (e.g. Series B through public, infra-heavy, PLG), and the must-haves that make a role worth their time.
+- **NOT looking for** — the dealbreakers and anti-targets: the role shapes, domains, or company types they'd decline even if the skills matched.
+These are the hand-written sections `refresh-persona` deliberately preserves and never scrapes, so what you write here is their lasting source. Keep it concrete and in the user's words; if they're unsure, capture what they know and leave the rest as a `TODO:` rather than inventing a preference.
+
 **Decide tailoring depth.** Now that the user has seen one run, put Step 2.2's question to them: did the two-bullet default serve them, or do they want to tailor more bullets across more roles? If more, set it up with the scheme in 2.2 (uniquely named placeholders plus a `cv-rules.md` slots-map row).
 
 Checkpoint, noting the bank and persona are complete. The variants you add here (each with its `JD-fit signal:` line) are what flip `master-bullets.md` from skeleton to full, so mark `M2.8` done in the progress file once at least one family carries variants.
 
-## Step 2.9: Write the Design handoff and point to the next milestone
+## Step 2.9: Setup check — confirm the pipeline has what it needs
+
+Before the handoff, close the loop. Setup has many small steps, and it's easy for one to fall through — a family left with a `TODO:` metric, an empty targeting section, a placeholder that never got real content. This step catches that by checking the finished profile against what the live pipeline actually assumes, then reading back to the user, in plain language, what Applywright now knows about them. Run it best from Claude Code, where you can see the real files on disk; in the chat (Path A), run it against what the user has saved and ask them to confirm anything you can't see.
+
+**Check the profile against the pipeline's assumptions.** The contract isn't a list to memorize — it's the pipeline skills themselves. Read `skills/process-job/SKILL.md` (the main pipeline) and the skill it leans on, `skills/assess-fit/SKILL.md`, and confirm every input they assume is present and real in `profile/`. Concretely, at least:
+- `config.yaml` — real identity (no `Jordan Lin` / `example.com` left), a tracker mode set, and `applywright tracker status` reads back (the tracker was initialized in 2.6).
+- `cv.md` — real content, the `{bullet_2}` / `{bullet_3}` placeholders still intact in the most recent role, and it compiles (the smoke test in 2.6 and the practice run in 2.7 both proved this).
+- `master-bullets.md` — at least two distinct families, each with a `-MAIN` and the variants `assess-fit` selects on (`Theme keys`, `JD-fit signal`). Two picks come from two families, so two is the floor.
+- `persona.md` — `Positioning`, `Case studies`, and both targeting sections (`What I'm looking for`, `What I'm NOT looking for`) filled, not left as the shipped example.
+- `cv-rules.md` and the two field-notes files present.
+- No stray `TODO:` markers the user meant to resolve.
+
+Where a real check exists, run it rather than eyeballing: `applywright doctor` for the toolchain, `applywright tracker status` for the tracker. For the rest, read the files.
+
+**Report and fix gaps.** If anything is missing or still a placeholder, tell the user plainly and offer to fix it now — this is the cheapest moment to catch it, before Design and before real applications. If everything's present, say so in one line.
+
+**Read back what Applywright knows.** Then give the user a short, plain-English summary in two parts, so they can sanity-check that the tool understood them:
+- **Background** — who they are and the shape of their experience: their roles, the project families and the headline result of each, the strongest metrics. This is what the fit step weighs as "what they bring."
+- **Job search** — what they're targeting and what they're ruling out: target roles, level, stage, must-haves, dealbreakers, drawn from the persona targeting sections. This is the forward-looking half, and it's the part most likely to be thin if the setup leaned on a résumé.
+
+Keep each to a paragraph or short list, not a recitation of every file. The point is for the user to catch anything that reads wrong ("that's not the level I'm after," "you missed my growth work") while it's still trivial to fix. End by confirming the profile is complete and ready, then move to the handoff.
+
+## Step 2.10: Write the Design handoff and point to the next milestone
 
 Content is done and the pipeline is proven. Now tell the user it's time to give the resume their own look — Milestone 3, Design — and that it runs best in a **fresh** session, because design is long, token-heavy, and benefits from a clean context.
 
@@ -299,8 +326,9 @@ content-path: A              # A (chat builds) | B (Claude Code builds), from St
 - [ ] M2.5 field notes
 - [ ] M2.6 smoke test
 - [ ] M2.7 practice run
-- [ ] M2.8 master-bullets full bank + persona
-- [ ] M2.9 design handoff written
+- [ ] M2.8 master-bullets full bank + persona + targeting
+- [ ] M2.9 setup check (pipeline-readiness + readback)
+- [ ] M2.10 design handoff written
 next: M2.2 (CV)
 ```
 
