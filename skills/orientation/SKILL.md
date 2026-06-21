@@ -1,6 +1,6 @@
 ---
 name: orientation
-description: First-time setup for a new Applywright user. Use when someone has just downloaded or cloned the repo and needs to get going. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". This skill runs the first two of Applywright's four setup milestones — (1) Environment: install the toolchain and Claude Code, verify the pipeline runs; (2) Content: write profile/config.yaml, cv.md, master-bullets.md, and persona.md from the user's real information, then file one real job together to prove the pipeline end-to-end with the default design. It is built to be run from the regular Claude assistant (web/desktop chat), which orchestrates the setup while the local environment comes together. It is resumable via profile/.orientation-progress.md. At the end of Content it writes a handoff document and points the user to the next milestone, "build-resume-template" (design), which a fresh session picks up. Milestone 4, "customize", is a later, optional teaser. Never invents the user's work history, metrics, or bullets — all professional content comes from the user. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
+description: First-time setup for a new Applywright user. Use when someone has just downloaded or cloned the repo and needs to get going. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". This skill runs the first two of Applywright's four setup milestones — (1) Environment: install the toolchain and Claude Code, verify the pipeline runs; (2) Content: write profile/config.yaml and cv.md from the user's real information, set up their project families, do a practice run on one job to prove the pipeline end-to-end with the default look, then build the master-bullets story bank and persona once it's proven. It is built to be run from the regular Claude assistant (web/desktop chat), which orchestrates the setup while the local environment comes together. It is resumable via profile/.orientation-progress.md. At the end of Content it writes a handoff document and points the user to the next milestone, "build-resume-template" (design), which a fresh session picks up. Milestone 4, "customize", is a later, optional teaser. Never invents the user's work history, metrics, or bullets — all professional content comes from the user. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
 ---
 
 # Orientation — first-time setup (Milestones 1 & 2)
@@ -14,7 +14,7 @@ Your job is to orchestrate the setup and to transcribe the user's real informati
 Setup is four milestones. This skill covers the first two; the other two are separate skills a fresh session runs later.
 
 1. **Environment** — install the toolchain and Claude Code, confirm the pipeline runs. *(this skill)*
-2. **Content** — write the profile from the user's real information, then file one real job together to prove it works with the default design. Ends by writing a handoff document for the next milestone. *(this skill)*
+2. **Content** — set up identity, CV, and project families from the user's real information, do a practice run on one job to prove the pipeline with the default look, then build the story bank and persona. Ends by writing a handoff document for the next milestone. *(this skill)*
 3. **Design** — give the resume and cover letter the user's own look. Run later, in a fresh session, via the **`build-resume-template`** skill.
 4. **Personalize** — optional, on-demand tuning of the pipeline itself. The **`customize`** skill, teased at the end of Design.
 
@@ -70,7 +70,7 @@ Do not dump every step at once. Move one step at a time. If the user said they'r
 
 # Milestone 1 — Environment
 
-Goal: the toolchain and Claude Code are installed, and `applywright doctor` passes. Once it does, move straight into Milestone 2 in the same session.
+Goal: the toolchain and Claude Code are installed, and `applywright doctor` passes. Once it does, move into Milestone 2. Its first action is a real choice you must put to the user: do the content work here in chat, or switch to Claude Code (Step 2.0). Don't skip past it.
 
 ## Step 1.1: Environment check
 
@@ -118,15 +118,17 @@ There are two honest ways to do the content work. Lay out the tradeoff and let t
 
 Recommend based on what they have: existing resume + likes chat → Path A; building from scratch or prefers automation → Path B. Then follow the chosen path below. Record the choice in the progress file.
 
+**Surface this choice out loud; do not silently default to Path A.** An existing resume makes Path A the obvious pick, but the user still chooses. State both options and the tradeoff in a sentence or two, then let them decide. This is the moment the Claude Code switch is offered — if it isn't put here, it never gets put at all.
+
 ### If Path B: hand off to Claude Code now
 
 Give the user a short kickoff prompt to paste into a fresh Claude Code session opened in the Applywright folder, for example:
 
-> "Set me up — continue Applywright orientation at the Content milestone. The environment is already installed and `applywright doctor` passes. Write my profile from my real information (interview me or read the resume I'll give you), then file one real job with me to prove the pipeline, and at the end write the handoff document for the Design milestone."
+> "Set me up — continue Applywright orientation at the Content milestone. The environment is already installed and `applywright doctor` passes. Write my identity and CV from my real information (interview me or read the resume I'll give you), set up my project families, then do a practice run on one job with me to prove the pipeline, build my story bank and persona once it works, and at the end write the handoff document for the Design milestone."
 
 Tell them to come back to a regular Claude chat for Design (Milestone 3) afterward. Then stop the local-thinking work here — Claude Code owns the content milestone from this point, using the same steps below.
 
-## Step 2.1: Identity, tracker, and font (config.yaml)
+## Step 2.1: Identity and tracker (config.yaml)
 
 Interview the user, then edit `profile/config.yaml` with the file editor (Path B: Claude Code edits it directly; Path A: you produce the block and the user pastes it in). Do not write it with a bash heredoc or `>` redirection: quoted bash file-writes trip Claude Code's approval prompt and are easy to corrupt.
 
@@ -135,16 +137,8 @@ Fields:
 - `portfolio.url` (optional; if set, the persona step can auto-build from it). `portfolio.llms_txt` (optional).
 - `tracker.mode`: `csv` (default, zero setup) or `notion`.
   - For `notion`: the user needs the Notion MCP configured in Claude Code plus two database IDs. Point them to the Tracking / Notion section in `CLAUDE.md` for the schema, then set `tracker.notion.applications_db` and `tracker.notion.companies_db`. If they are not ready, leave `csv` for now; they can switch later.
-- `style.font`: the font used for the CV, cover letter, and exported documents.
 
-**Ask the font question here, then write `style.font`.** Phrase it simply: "What font would you like on your resume and cover letter? Arial is the safe default — it's on virtually every Mac and Windows machine, so the PDF renders the same everywhere." Offer a short menu: **Arial** (default) / Calibri / Helvetica / Georgia / Times New Roman / type-your-own. Write the chosen name verbatim into the `style:` block:
-
-```yaml
-style:
-  font: "Calibri"
-```
-
-If `profile/config.yaml` has no `style:` section yet, add the whole block. The chosen font is tried first at export time, with Arial as an automatic fallback if it isn't installed on the machine — so a missing or misspelled name still produces a PDF rather than failing. There's no need to vet whether the font exists; the fallback handles it. (Changing the *layout*, not just the font, is the Design milestone's job — not here.)
+**Leave `style.font` at its shipped default (`Arial`).** Font is a Design decision, not a Content one — the user picks it in Milestone 3, where they can see it in context with the layout rather than guessing in the abstract. Arial renders identically across macOS and Windows, so every practice export looks right without asking now. (`profile.example/config.yaml` already ships `font: "Arial"`; don't touch it here.)
 
 Read the identity block back so the user can confirm it before you move on. Checkpoint.
 
@@ -152,7 +146,7 @@ Read the identity block back so the user can confirm it before you move on. Chec
 
 Show the user `profile/cv-rules.md`, then set expectations before building.
 
-**Start with the default; decide on more tailoring after you've seen one run.** The out-of-the-box setup tailors just two bullets (below). It's tempting to design a more elaborate multi-slot scheme now, but it's much easier to judge whether you need it *after* you've watched one real application go through — which you'll do at the end of this milestone (the first-run step). So the recommended path is: set up the default here, file one real job together at the end, then expand the tailoring if that first result makes you want to. If the user already knows they want more, that's fine too (covered below) — but default-first is the lower-friction route.
+**Start with the default; decide on more tailoring after the practice run.** The out-of-the-box setup tailors just two bullets (below). It's tempting to design a more elaborate multi-slot scheme now, but it's much easier to judge whether you need it *after* you've watched one job go through the pipeline — which you'll do at the practice run (Step 2.7), and you'll make the call when you build the real bank (Step 2.8). So the recommended path is: set up the default here, do the practice run, then expand the tailoring in 2.8 if that first result makes you want to. If the user already knows they want more, that's fine too (covered below) — but default-first is the lower-friction route.
 
 **The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, two different families). Everything else on the CV is fixed and identical on every application. This is the only configuration the engine fills automatically today.
 
@@ -183,28 +177,23 @@ Be honest about the limit: the engine auto-fills only `{bullet_2}` and `{bullet_
 
 Checkpoint.
 
-## Step 2.3: Story bank (master-bullets.md)
+## Step 2.3: Project families (skeleton)
 
-This is the library `assess-fit` picks from. Two picks always come from two different families, so the families must be distinct projects or themes (every variant of one family is the same project).
+The story bank (`master-bullets.md`) is the library `assess-fit` picks from. **You do not write the full bank here.** That's the heavy, interview-driven content work, and it's deferred until after the practice run has proven the pipeline (Step 2.8). Here you set up only the **family skeleton**, so the practice run has something real to pick from.
 
-Explain the structure, then build it with the user:
-- Group their experience into 3 to 6 **families**. The example uses PLATFORM, AI, GROWTH, DATA, ONBOARD; the user names their own from their real work.
-- Each family gets a `-MAIN` headline bullet (the strongest single version) and optionally 1 to 3 numbered variants angled at different JD types.
-- Each variant carries two metadata lines that are for selection only and never go on the CV:
-  - `*Theme keys: ...*` (the themes it leads with).
-  - `JD-fit signal: ...` (when to pick this variant).
-- The bullet itself is the prose paragraph after the metadata, in the user's words, with real metrics.
+- **Ask whether the user has a list of their key projects or themes.** If they do, use it to name the families. If not, derive the families from their resume and CV.
+- Group the work into 3 to 6 **families** — distinct projects or themes (the example uses PLATFORM, AI, GROWTH, DATA, ONBOARD). Two picks always come from two different families, so the families must be genuinely distinct.
+- Give each family a single `-MAIN` headline bullet, lifted or lightly summarized from the resume, so the picker has real text to drop into `{bullet_2}` / `{bullet_3}` at the practice run. That's the whole job here: structure plus one headline each.
+- Everything that makes the bank strong — numbered variants, `Theme keys`, `JD-fit signal` lines, polished metrics — is built in 2.8, not now.
+- Do not invent families. A user with three real projects has three families.
 
-This is the longest step. Build one family at a time and checkpoint after each, so the user can stop and resume. Do not fabricate accomplishments to fill a family. A user with three real families has three families.
+Checkpoint, noting which families exist.
 
-Checkpoint, noting which families are done.
+## Step 2.4: Persona (light, for the practice run)
 
-## Step 2.4: Persona (persona.md)
+`assess-fit` reads `persona.md` for context, and the cover-letter skill later reads it for case-study URLs. The full case-study version is part of the deferred content work (Step 2.8). Here, write only a **short positioning summary** — a few lines on who the user is and what they do — so the practice run's fit step has context to read. Source it from the resume and the user's answers.
 
-The fit step reads this for context, and the cover-letter skill reads it for case-study URLs.
-
-- If `portfolio.url` is set and you can run the pipeline (Path B / Claude Code): run the `refresh-persona` skill. It fetches the site and distills it into `profile/persona.md`.
-- If there is no URL, or you're in the chat (Path A) and can't run `refresh-persona`: build `persona.md` by hand from the interview (and the portfolio site, if you can fetch the URL). Capture a short positioning summary, then the deeper version of each master-bullet project as a case study (the problem, what they did, the result with metrics, and any public link). Keep it factual and sourced from the user.
+If `portfolio.url` is set and you can run the pipeline (Path B / Claude Code), you may run `refresh-persona` now to build a fuller version from the site, or leave it for 2.8 — either is fine. The deeper per-project case studies are 2.8's job.
 
 Checkpoint.
 
@@ -227,19 +216,35 @@ Checkpoint.
 
 Checkpoint.
 
-## Step 2.7: File the first job together
+## Step 2.7: Practice run — process one job end to end
 
-This proves the whole pipeline end to end, on the **default template** — which is the point. The design isn't theirs yet, and that's fine; right now you're validating that content + pipeline produce a real application.
+This is a **practice run, not a real application.** Its only job is to prove the pipeline works end to end on the **default look**: dedup, fetch, scan, fit, tailoring, one-page export, tracker row. The user's design isn't built yet and the story bank is still a skeleton, so the output is a throwaway for learning the mechanics. Make that explicit so the user never mistakes this result for a finished, submittable resume.
 
 - **Explain the approval setup once, before the prompts would appear.** This repo ships a small allow rule (`.claude/settings.json`) so the pipeline's `applywright ...` commands run without asking you to approve each step. It's scoped to that one command, not all shell access, and the user can remove it if they'd rather approve each call. Confirm they're comfortable before proceeding.
 - **On Windows**, remind them of the paste tip before they hand you a URL: right-click or `Shift+Insert` in the legacy console, or use Windows Terminal.
-- Ask for one real job URL and run the normal `process-job` pipeline on it, in manual mode so they can see each stage (fetch, scan, fit, and — if it's a fit — the CV tailoring and one-page export). Narrate lightly so a first-timer follows along.
+- Ask for one real job URL and run the normal `process-job` pipeline on it, in manual mode so they can see each stage (fetch, scan, fit, and — if it's a fit — the CV tailoring and one-page export). Narrate lightly so a first-timer follows along. Because the bank is a skeleton, the fit step picks from the `-MAIN` headlines you set up in 2.3 — enough to show substitution working, not a polished result.
 - Watch for and clear the usual first-run hiccups (a stale-PATH "not recognized", a fetch that needs the ATS URL, an unexpected approval prompt). The goal is one clean pass.
-- **Tie it back to Step 2.2's default-first call.** Once they've seen one result, ask whether the two-bullet default served them well or whether they want to tailor more bullets. This is the moment that question is easy to answer.
+- **Say plainly that this is a dry run.** They should not submit this output. After Design (M3) and the real bullet bank (2.8), they re-export or file fresh.
+- Seeing one run is what makes the tailoring-depth question answerable. You'll put that question to them in 2.8, not here.
 
 Checkpoint.
 
-## Step 2.8: Write the Design handoff and point to the next milestone
+## Step 2.8: Build the real content (story bank and persona)
+
+The pipeline is proven, so now invest in the content that makes applications strong. This is the longest stretch of setup, and it lands here on purpose: the user has watched the machine work, so the effort goes into something they already trust.
+
+**The story bank (`master-bullets.md`).** Flesh out the families from 2.3 into the real library `assess-fit` draws from. Build one family at a time and checkpoint after each, so the user can stop and resume:
+- Keep each family's `-MAIN` headline (the strongest single version) and add 1 to 3 numbered variants angled at different JD types.
+- Each variant carries two metadata lines that are for selection only and never go on the CV: `*Theme keys: ...*` (the themes it leads with) and `JD-fit signal: ...` (when to pick this variant).
+- The bullet itself is the prose paragraph after the metadata, in the user's words, with real metrics. Interview for the numbers. Do not fabricate accomplishments to fill a family; if a metric is unknown, write `TODO: confirm metric`.
+
+**The persona (`persona.md`).** Expand the light summary from 2.4 into the full version: the deeper case study for each family (the problem, what they did, the result with metrics, any public link). If `portfolio.url` is set and you can run the pipeline, run `refresh-persona` to build it from the site; otherwise write it from the interview. Keep it factual and sourced from the user.
+
+**Decide tailoring depth.** Now that the user has seen one run, put Step 2.2's question to them: did the two-bullet default serve them, or do they want to tailor more bullets across more roles? If more, set it up with the scheme in 2.2 (uniquely named placeholders plus a `cv-rules.md` slots-map row).
+
+Checkpoint, noting the bank and persona are complete.
+
+## Step 2.9: Write the Design handoff and point to the next milestone
 
 Content is done and the pipeline is proven. Now tell the user it's time to give the resume their own look — Milestone 3, Design — and that it runs best in a **fresh** session, because design is long, token-heavy, and benefits from a clean context.
 
@@ -247,8 +252,8 @@ Write a **handoff document** the user will drop into that fresh session. It is t
 
 - **The project.** Applywright (`github.com/peselev/applywright`), what it is in two lines, and the **local path** where it's installed on the user's machine.
 - **The user.** Everything you learned that matters for design and beyond: their field/role, the shape of their career, their portfolio URL, anything they said about taste or what they want the resume to feel like.
-- **Conventions agreed.** Anything you and the user settled on during setup (tailoring scheme, font choice, tracker mode, voice tweaks).
-- **What's completed.** Milestones 1 and 2 done; the profile files written; the first job filed (name it).
+- **Conventions agreed.** Anything you and the user settled on during setup (tailoring scheme, tracker mode, voice tweaks). Font is not set here — it's a Design decision, so flag it as still at the default for M3 to pick.
+- **What's completed.** Milestones 1 and 2 done; identity, CV, story bank, and persona written; the practice run completed (name the job).
 - **Pinned / promised / deferred.** Anything raised but not done — "wants an executive-summary section," "asked about two-column, told it's out of scope," "wants to tailor the prior role's bullets later." This thread is how a later milestone honors a wish raised early. Do not drop it.
 - **Next step.** Milestone 3, Design, via the `build-resume-template` skill, in a fresh regular-Claude chat.
 
@@ -270,14 +275,15 @@ cli-comfort: somewhat        # comfortable | somewhat | not-really (sets explana
 content-path: A              # A (chat builds) | B (Claude Code builds), from Step 2.0
 - [x] M1 environment
 - [x] M1 profile bootstrapped
-- [x] M2.1 identity + tracker + font
+- [x] M2.1 identity + tracker
 - [ ] M2.2 cv.md
-- [ ] M2.3 master-bullets (done: PLATFORM, AI)
-- [ ] M2.4 persona
+- [ ] M2.3 project families (skeleton)
+- [ ] M2.4 persona (light)
 - [ ] M2.5 field notes
 - [ ] M2.6 smoke test
-- [ ] M2.7 first run together
-- [ ] M2.8 design handoff written
+- [ ] M2.7 practice run
+- [ ] M2.8 content bank + persona
+- [ ] M2.9 design handoff written
 next: M2.2 (CV)
 ```
 
@@ -286,6 +292,8 @@ On the next invocation, Step 0 reads this and resumes at `next:`. Read the `cli-
 ## DO NOT do these
 
 - **Do not invent professional facts.** No employer, date, title, metric, or bullet that the user did not give you. A missing detail becomes a `TODO:` marker, not a guess.
+- **Do not build the full story bank before the practice run.** Set up only the family skeleton in 2.3 (families plus one `-MAIN` headline each), prove the pipeline at 2.7, then build the real bank and persona at 2.8. The heavy content work is deferred on purpose.
+- **Do not present the practice run as a submittable application.** It uses the default look and a skeleton bank; it's a dry run. Say so.
 - **Do not rewrite the locked CV parts per application.** Only `{bullet_2}` and `{bullet_3}` are dynamic. Keep them as literal text in `cv.md`.
 - **Do not edit `config.yaml` or `cv.md` with bash heredocs or `>` redirection.** Use the file editor. Quoted bash file-writes trip the approval prompt and corrupt easily.
 - **Do not skip the export smoke test.** A broken pipeline at setup means every later export fails.
