@@ -12,14 +12,16 @@ There are two ways to do it. Pick one.
 1. Open claude.ai and paste this:
 
    > Read https://github.com/peselev/applywright and help me set it up. Explain
-   > what it does, then interview me to build my `profile/`, and give me the exact
-   > install commands for my operating system.
+   > what it does, then interview me to build my `profile/`, and set me up to run
+   > it on my machine with as little command-line work as possible.
 
 2. Claude reads the repo, explains the pipeline, and interviews you to fill in
    `profile/` (identity, CV, master-bullets, persona). It writes nothing it
    cannot source from your answers, an existing resume, or your portfolio.
-3. Claude hands you a zipped `profile/` to download and the per-OS commands below.
-4. You run the commands, drop the downloaded `profile/` into the repo, and start.
+3. Claude checks whether you already have Applywright on your machine, and hands you the right download:
+   - **If you already have the `applywright` folder on disk** (you downloaded or cloned it earlier), Claude gives you a zipped `profile/` to drop into that folder.
+   - **If you don't have it yet**, Claude gives you the whole thing as a single download — the tool with your `profile/` already inside — so you just unzip it once. No GitHub, no git, nothing to clone.
+4. You point the **Claude Code desktop app** at that folder and tell it "set me up." Orientation takes over from there and walks you through the rest — the one-time installs included — keeping terminal use to a minimum. (You only run commands yourself if you choose Option B.)
 
 A web Claude session can guide setup but cannot run the pipeline — that happens in
 Claude Code on your machine. If you're new to this or prefer not to live in a
