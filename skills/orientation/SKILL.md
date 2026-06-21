@@ -38,7 +38,7 @@ This setup is built to run from the **regular Claude assistant** (the web or des
 - It can **search the web** when the user isn't sure what they want. Design especially benefits — "I want something clean in navy, what would suit a finance resume?" is a question the chat can actually research.
 - It can **try things in a sandbox** that never touches the user's machine. A layout experiment that goes wrong costs nothing: close the chat and nothing local changed.
 
-So the pattern is: the chat thinks and proposes; the user's machine does the local steps (installing tools, holding `profile/`, running the pipeline). You'll hand the user commands to run and read back what they report, the same way these instructions already handle the install steps.
+So the pattern is: the chat thinks and proposes; the user's machine does the local steps (installing tools, holding `profile/`, running the pipeline). When you're in the chat you'll hand the user commands and read back what they report — but for the install steps the better path is to let Claude Code run them with the user just approving (see Milestone 1, "Who runs the commands"). Pasteable commands are the fallback, not the default.
 
 **If you are running inside Claude Code instead** (you have a terminal and this repo's files are on disk), that's fine — you can do Milestones 1 and 2 directly, writing `profile/` and running the pipeline yourself, and the cross-session handoff at the end of Milestone 2 becomes unnecessary (you're already where the files live). When you reach Design, you can either continue in Claude Code or suggest the user move to a regular Claude chat for the web-search and sandbox freedom. Don't force the move; just offer it.
 
@@ -51,7 +51,23 @@ This is setup-of-setup, not one of the four user-facing milestones. It is a **ha
 - **A topic plan is not the announcement.** Listing the profile topics you'll cover is Milestone 2 content. It does **not** satisfy Gate 1. The four-milestone map is the whole-journey frame, and it is a different artifact that comes first.
 - **No content until the gate clears.** Do not bootstrap `profile/` or write any profile file until Gate 1 (plan shown) and Gate 2 (comfort asked) are done. Stamp the gate items into the progress file the moment `profile/` is bootstrapped (Step 1.2); a resumed session that finds them unchecked re-runs the gate.
 
-Begin with the resume check (Resume detection, below). If the progress file shows the gate already cleared, you're resuming — skip the first-run gate and jump to its `next:` step. Otherwise, run Gates 1–3 now.
+First, run Resume detection (just below) to tell a fresh start from a resume. On a resume where the gate items are already recorded, jump to its `next:` step. On a fresh start — or if those items are unchecked — run Gates 1–3 before any other output.
+
+## Resume detection
+
+1. If `profile/.orientation-progress.md` exists, read it. It lists the Milestone 0 gate items, completed steps, and a `next:` line. If the gate items (`GATE plan shown`, `GATE comfort asked`) are unchecked, run Milestone 0's gate first, then resume at `next:`. Otherwise resume at `next:` directly.
+2. If it does not exist, detect state from the filesystem:
+   - `profile/` missing means start at Milestone 1.
+   - `profile/config.yaml` still contains `Jordan Lin` or `example.com` means identity is not done.
+   - `profile/cv.md` still contains `Jordan Lin` or `Meridian Analytics` means the CV is not done.
+   - `profile/master-bullets.md` has more than two states. Read it together with the progress file:
+     - Still the shipped example (e.g. the `PLATFORM-MAIN` / `AI-MAIN` example prose) → families aren't set up; resume at Step 2.3.
+     - The user's family names are present but the `-MAIN` slots are placeholders (`TODO: write and approve...`) with no `JD-fit signal:` lines → the skeleton is done, the bank isn't built; resume at Step 2.8.
+     - Real bullets and `JD-fit signal:` lines are present, but the progress file has no `M2.8 master-bullets approved` line → the bank is drafted but not user-approved; resume at Step 2.8's approval gate.
+     - The progress file records `M2.8 master-bullets approved` → the bank is complete.
+     - The markers are structural plus the approval line: 2.3 writes only placeholders, 2.8 writes the real `-MAIN` and variants (with their `JD-fit signal:` lines), and the user's explicit approval is recorded in the progress file. Never treat a drafted-but-unapproved bank as done.
+   - `applywright tracker status` errors or shows nothing means the tracker is not set up.
+3. Tell the user in one line where you are resuming, then continue.
 
 ## Gate 1: announce the plan (the four-milestone map)
 
@@ -86,22 +102,6 @@ On a genuinely first run (no `profile/`), take ten seconds on the folder before 
 
 This is a light touch, not an interrogation. One or two sentences, then continue. Skip it entirely on a resume (profile already exists).
 
-## Resume detection
-
-1. If `profile/.orientation-progress.md` exists, read it. It lists the Milestone 0 gate items, completed steps, and a `next:` line. If the gate items (`GATE plan shown`, `GATE comfort asked`) are unchecked, run Milestone 0's gate first, then resume at `next:`. Otherwise resume at `next:` directly.
-2. If it does not exist, detect state from the filesystem:
-   - `profile/` missing means start at Milestone 1.
-   - `profile/config.yaml` still contains `Jordan Lin` or `example.com` means identity is not done.
-   - `profile/cv.md` still contains `Jordan Lin` or `Meridian Analytics` means the CV is not done.
-   - `profile/master-bullets.md` has more than two states. Read it together with the progress file:
-     - Still the shipped example (e.g. the `PLATFORM-MAIN` / `AI-MAIN` example prose) → families aren't set up; resume at Step 2.3.
-     - The user's family names are present but the `-MAIN` slots are placeholders (`TODO: write and approve...`) with no `JD-fit signal:` lines → the skeleton is done, the bank isn't built; resume at Step 2.8.
-     - Real bullets and `JD-fit signal:` lines are present, but the progress file has no `M2.8 master-bullets approved` line → the bank is drafted but not user-approved; resume at Step 2.8's approval gate.
-     - The progress file records `M2.8 master-bullets approved` → the bank is complete.
-     - The markers are structural plus the approval line: 2.3 writes only placeholders, 2.8 writes the real `-MAIN` and variants (with their `JD-fit signal:` lines), and the user's explicit approval is recorded in the progress file. Never treat a drafted-but-unapproved bank as done.
-   - `applywright tracker status` errors or shows nothing means the tracker is not set up.
-3. Tell the user in one line where you are resuming, then continue.
-
 Do not dump every step at once. Move one step at a time. If the user said they're new to the command line, add one reassuring line that you'll explain each command as you go.
 
 ---
@@ -110,15 +110,24 @@ Do not dump every step at once. Move one step at a time. If the user said they'r
 
 Goal: the toolchain and Claude Code are installed, and `applywright doctor` passes. Once it does, move into Milestone 2. Its first action is a real choice you must put to the user: do the content work here in chat, or switch to Claude Code (Step 2.0). Don't skip past it.
 
+## Who runs the commands (read first)
+
+Default: **if you can run a command on the user's machine, you run it — the user only approves.** Don't hand someone a list of installs to paste when you could run them yourself.
+
+- **Running inside Claude Code** (you have shell access to the user's machine): run the installs, the bootstrap, and `applywright doctor` yourself; the user approves each call. This is the path to steer a less-technical user onto — have them open the Applywright folder in the **Claude Code desktop app** and let you do the work.
+- **Running in the web/desktop chat** (no machine access): you can't run anything locally, so the install steps are best handed to Claude Code — tell the user to open the folder in the Claude Code desktop app and say "set me up," and it installs the toolchain with their approval. Fall back to handing pasteable commands only when the user would rather stay in a terminal, and then keep them minimal and walk them one at a time at the Gate 2 comfort level.
+
+Some user-facing steps are unavoidable, and that's fine — don't pretend it's zero-touch. Installing the **Claude Code desktop app** itself (a GUI download) and having a **paid plan** are the floor no agent can do for them, and an install may pause for the user's password (Homebrew) or an approval. Just keep what the user does to a minimum, and never make them think about git, cloning, or PATH (see the DO NOT list).
+
 ## Step 1.1: Environment check
 
-Run the environment check (or have the user run it and report back):
+Run the environment check yourself if you have machine access; otherwise have the user run it and report back:
 
 ```bash
 applywright doctor
 ```
 
-- If it reports required tools missing, install them and run `applywright doctor` again. macOS: `brew install pandoc typst` (plus Claude Code and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus Claude Code and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
+- If it reports required tools missing, install them and re-run `applywright doctor`. **Run the installs yourself when you can** (the user approves); hand them over to paste only in the chat-with-no-access case. macOS: `brew install pandoc typst` (plus the Claude Code app and Python). Windows (PowerShell): `winget install JohnMacFarlane.Pandoc` and `winget install Typst.Typst` (plus the Claude Code app and Python). The exact per-OS commands are in `SETUP-WITH-AI.md`.
 - On macOS, if Homebrew is missing: it installs with a single command pasted into Terminal (the command is on https://brew.sh, under "Install Homebrew" — it is not a click-to-download app). Match the Gate 2 comfort level: for a command-line-comfortable user, just point them at brew.sh and let them run it. For a less-comfortable user, paste the exact install command for them, tell them it's safe and will ask for their Mac password (which won't show as they type), and wait for it to finish before re-running.
 - Do not continue past a failing export smoke test. A broken PDF pipeline means every application export will fail later. Show the exact error and fix it first.
 
@@ -133,6 +142,8 @@ applywright doctor
 Checkpoint Milestone 1 (environment).
 
 ## Step 1.2: Bootstrap profile/
+
+Same rule as 1.1: run these yourself when you have machine access (the user approves); hand them over to paste only in the chat-with-no-access case.
 
 - If `profile/` does not exist, create it from the template: `cp -r profile.example profile`. (`applywright bootstrap` also does this; this is the fallback if the user skipped it.)
 - Ensure the convention doc exists: if `profile/cv-rules.md` is missing, copy it with `cp profile.example/cv-rules.md profile/cv-rules.md`.
@@ -293,7 +304,7 @@ The pipeline is proven, so now invest in the content that makes applications str
 
 **The persona (`persona.md`).** Expand the light summary from 2.4 into the full version: the deeper case study for each family (the problem, what they did, the result with metrics, any public link). If `portfolio.url` is set and you can run the pipeline, run `refresh-persona` to build it from the site; otherwise write it from the interview. Keep it factual and sourced from the user.
 
-**Targeting — what they want next (`persona.md`).** This is the one part of the profile the résumé can't supply, so it is always a short interview, never derived. Ask where they're trying to go and fill the persona's `## What I'm looking for` and `## What I'm NOT looking for` sections from their answers:
+**Targeting — what they want next (`persona.md`).** This is the one part of the profile the resume can't supply, so it is always a short interview, never derived. Ask where they're trying to go and fill the persona's `## What I'm looking for` and `## What I'm NOT looking for` sections from their answers:
 - **Looking for** — target roles or titles, level (e.g. Senior / Staff / Principal / Director), stage or company type (e.g. Series B through public, infra-heavy, PLG), and the must-haves that make a role worth their time.
 - **NOT looking for** — the dealbreakers and anti-targets: the role shapes, domains, or company types they'd decline even if the skills matched.
 These are the hand-written sections `refresh-persona` deliberately preserves and never scrapes, so what you write here is their lasting source. Keep it concrete and in the user's words; if they're unsure, capture what they know and leave the rest as a `TODO:` rather than inventing a preference.
@@ -320,7 +331,7 @@ Where a real check exists, run it rather than eyeballing: `applywright doctor` f
 
 **Read back what Applywright knows.** Then give the user a short, plain-English summary in two parts, so they can sanity-check that the tool understood them:
 - **Background** — who they are and the shape of their experience: their roles, the project families and the headline result of each, the strongest metrics. This is what the fit step weighs as "what they bring."
-- **Job search** — what they're targeting and what they're ruling out: target roles, level, stage, must-haves, dealbreakers, drawn from the persona targeting sections. This is the forward-looking half, and it's the part most likely to be thin if the setup leaned on a résumé.
+- **Job search** — what they're targeting and what they're ruling out: target roles, level, stage, must-haves, dealbreakers, drawn from the persona targeting sections. This is the forward-looking half, and it's the part most likely to be thin if the setup leaned on a resume.
 
 Keep each to a paragraph or short list, not a recitation of every file. The point is for the user to catch anything that reads wrong ("that's not the level I'm after," "you missed my growth work") while it's still trivial to fix. End by confirming the profile is complete and ready, then move to the handoff.
 
