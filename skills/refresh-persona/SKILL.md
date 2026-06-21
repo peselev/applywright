@@ -103,27 +103,43 @@ If a case study has no dedicated page, do not list it here.
 {Optional. Anything else distinctive — e.g., a stance on AI-native PM, a framework, etc. Helpful for the fit-assessment step's "would the user actually be excited?" question.}
 ```
 
-Fill each section from the fetched content. Be faithful to what's on the site — don't invent. If a section has no source material (e.g., "What I'm NOT looking for" isn't on the site), note that and leave the section empty.
+Fill each section from the fetched content. Be faithful to what's on the site — don't invent. If a section has no source material on the site (e.g., "What I'm looking for" / "What I'm NOT looking for" are often hand-written and not published anywhere on the portfolio), **do not blank it** — leave it as a gap for now and let Step 4 carry over whatever the existing file holds. Some sections are user-maintained by design; a fresh scrape is not authoritative over them.
 
-## Step 4: Diff against existing summary (if any)
+## Step 4: Merge with the existing summary, and confirm meaningful changes (if any)
 
-If `profile/persona.md` already exists, read it before overwriting. Compare to the new content section by section.
+This is the safety step. A refresh is **not** a blind overwrite. Treat the existing `profile/persona.md` as containing real, possibly hand-curated content that the site cannot reproduce.
 
-Summarize the diff in chat in 3-6 lines:
+If there is no existing file, skip to "First run" below.
+
+If `profile/persona.md` already exists, read it in full, then build the merged content section by section using these rules:
+
+- **Section is empty/missing in the new distill but present in the old file** → carry the old content over verbatim, **and always say so explicitly** (don't bury it). This is the common case for hand-written sections like "What I'm looking for" and "What I'm NOT looking for", which the site doesn't publish. Never let an empty scrape erase existing text. But carry-over is a default, not a decision made for the user: state which sections you carried over and add one line making it reversible — e.g. "Kept your existing 'What I'm looking for' / 'What I'm NOT looking for' (not on the site). Say the word if you wanted those cleared for a fresh start." The point is the user might have deliberately emptied a section and be refreshing to start anew; they need to see the carry-over happened so they can override it.
+- **Section is unchanged or only refreshed with clearly-additive detail** → take the new content.
+- **Section meaningfully changes** → do not write it yet. Flag it for confirmation (see below). "Meaningfully changes" includes, but is not limited to:
+  - content that was present is now **missing or substantially shorter** (the strongest signal — treat shrinkage and disappearance as a red flag, not progress),
+  - positioning / targeting that has shifted in substance (not just wording),
+  - a case study that existed in the old file but is absent from the new fetch,
+  - any edit you suspect the user made by hand that the new content would override.
+
+**If anything is flagged for confirmation:** stop before writing. Show the user a concise side-by-side of each flagged section (old vs. proposed new, or "old had X / new has nothing"), and ask which to keep. Default the recommendation toward **preserving the existing content** when the change is a loss. Wait for the user's call, apply it, then continue to Step 5.
+
+**If nothing is flagged** (only additive/no-change updates and clean carry-overs), no confirmation is needed — summarize the diff in chat in 3-6 lines and continue:
 
 ```
-Persona updated.
+Persona refreshed.
 
 What changed:
 - Positioning: {short note on change, or "no change"}
 - Case studies: {added X, updated Y, removed Z — or "no change"}
-- Targeting: {short note, or "no change"}
+- Targeting: {short note, "carried over (not on site)", or "no change"}
 - Other: {short note, or "no change"}
+
+Carried over (not on the site): {list sections, or "none"}. Say the word if you wanted any of those cleared for a fresh start.
 
 Saved to profile/persona.md
 ```
 
-If this is the first run (no existing file), skip the diff and just say:
+First run — if this is the first run (no existing file), skip the merge and just say:
 
 ```
 Persona created from {site_url}.
@@ -135,7 +151,7 @@ Saved to profile/persona.md
 
 ## Step 5: Write and open
 
-Write the new content to `profile/persona.md`, overwriting the old file.
+Write the **merged** content from Step 4 to `profile/persona.md` (the result of carry-overs plus any confirmation choices the user made) — not the raw distill from Step 3. On a first run, write the new content directly.
 
 Open it for the user's review:
 
@@ -160,4 +176,4 @@ The skill ends here. The user reviews the file, edits if anything is off, and is
 - Fetched content is garbage (login page, captcha, anti-bot block) → bail, don't overwrite
 - File write fails → tell the user what failed exactly, don't continue
 
-Never overwrite a known-good `persona.md` with degraded content. Better to keep the old summary than corrupt the source of truth for fit assessment.
+Never overwrite a known-good `persona.md` with degraded content. Better to keep the old summary than corrupt the source of truth for fit assessment. The same caution applies section-by-section: hand-maintained sections (commonly "What I'm looking for" / "What I'm NOT looking for") and any content that the refresh would drop or shrink are carried over by default, and meaningful losses are confirmed with the user before writing (Step 4) — never silently.
