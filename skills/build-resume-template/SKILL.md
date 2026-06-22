@@ -1,11 +1,11 @@
 ---
 name: build-resume-template
-description: Milestone 3 of Applywright setup — Design. Use when a user wants to give their resume (and optionally cover letter) its own visual look, replacing the shipped default template. Triggers include "design my resume", "build my resume template", "change how my resume looks", "make my resume match this style/screenshot", "I want my own template", "restyle my CV", or arriving in a fresh session with an Applywright handoff document and the uploaded Applywright folder after finishing orientation. This skill is built to run in a regular Claude chat (web/desktop), where it can search the web for design ideas and render previews in a sandbox that never touches the user's machine. It reads the uploaded folder for ground truth, takes the user's target look (an existing resume + screenshot, a template they found, or just a described vibe) and their font choice (Content leaves it at the default), and iterates on profile/cv-template.typ until it matches — validating each version with `applywright check-template` so font selection and one-page auto-fit keep working. The user re-runs the export locally to confirm fidelity (especially fonts). Produces profile/cv-template.typ, optionally profile/cover-letter-template.typ, then teases the Personalize milestone (customize). Single-column only.
+description: Milestone 4 of Applywright setup — Design. Use when a user wants to give their resume (and optionally cover letter) its own visual look, replacing the shipped default template. Triggers include "design my resume", "build my resume template", "change how my resume looks", "make my resume match this style/screenshot", "I want my own template", "restyle my CV", or arriving in a fresh session with an Applywright handoff document and the uploaded Applywright folder after finishing the Story bank milestone (Milestone 3). This skill is built to run in a regular Claude chat (web/desktop), where it can search the web for design ideas and render previews in a sandbox that never touches the user's machine. It reads the uploaded folder for ground truth, takes the user's target look (an existing resume + screenshot, a template they found, or just a described vibe) and their font choice (earlier milestones leave it at the default), and iterates on profile/cv-template.typ until it matches — validating each version with `applywright check-template` so font selection and one-page auto-fit keep working. The user re-runs the export locally to confirm fidelity (especially fonts). Produces profile/cv-template.typ, optionally profile/cover-letter-template.typ, then teases the Personalize milestone (customize-pipeline). Single-column only.
 ---
 
-# build-resume-template — Milestone 3, Design
+# build-resume-template — Milestone 4, Design
 
-This is the Design milestone. The user has finished Content (Milestones 1–2): their profile is written and they've done a practice run with the **default** look. Now they get their own look — including their **font**, which Content deliberately left at the default (Arial) for this milestone to set in context.
+This is the Design milestone. The user has finished Foundations and the Story bank (Milestones 1–3): their profile and real bullets are written and they've done a practice run with the **default** look. Now they get their own look — including their **font**, which earlier milestones deliberately left at the default (Arial) for this milestone to set in context.
 
 This skill is built to run in a **regular Claude chat** (web or desktop), not Claude Code. Two reasons that matter here: you can **search the web** when the user isn't sure what they want ("something clean for a finance resume, navy accents — what would suit that?"), and you **render previews in your own sandbox**, which never touches the user's machine, so a layout experiment that goes wrong costs nothing. The user keeps a working pipeline the whole time; nothing you do here can break it until they choose to use the new template.
 
@@ -15,10 +15,10 @@ A `profile/cv-template.typ` — the user's own resume design — and, optionally
 
 ## Step 1: Read the ground truth first
 
-The user should have uploaded two things: the **handoff document** from orientation and their **entire Applywright folder** (zipped). Before designing anything, read both:
+The user should have uploaded two things: the **handoff document** from the Story bank milestone and their **entire Applywright folder** (zipped). Before designing anything, read both:
 
 - Unzip/inspect the folder. Read `profile/config.yaml` (especially `style.font` and identity), `profile/cv.md` (their **real resume content** — you'll preview against this, never lorem ipsum), the shipped `templates/cv.typ` (the starting point and the contract reference), any existing `profile/cv-template.typ`, and the one filed job under `output/` (a real tailored CV, useful to preview a fully-filled resume).
-- Read the handoff document for who the user is, the conventions agreed, and anything **pinned/deferred** — you'll surface those when you tease Milestone 4.
+- Read the handoff document for who the user is, the conventions agreed, and anything **pinned/deferred** — you'll surface those when you tease Milestone 5.
 
 If the folder wasn't uploaded, ask for it before proceeding. You cannot design well against a profile you can't see, and guessing the structure risks producing a template that doesn't match their real `cv.md`.
 
@@ -34,7 +34,7 @@ The user can come at this three ways. All converge on the same output. Ask which
 
 Keep it conversational. Show, don't describe — a preview the user can react to beats a paragraph about what you'd do.
 
-**Settle the font here too.** Content left `style.font` at the default (Arial); choosing it belongs with the look, not the setup interview. Ask what they want now that they can see it in context — Arial / Calibri / Helvetica / Georgia / Times New Roman / their own — and fold it into the design. Since you can't write their disk from the chat, hand them the one-line change to `profile/config.yaml` (`style.font: "..."`) along with the template file, and record the choice in the Milestone 4 handoff. Previews reflect the font subject to the fallback caveat in Step 3 (your sandbox may lack it; their machine is authoritative).
+**Settle the font here too.** Earlier milestones left `style.font` at the default (Arial); choosing it belongs with the look, not the setup interview. Ask what they want now that they can see it in context — Arial / Calibri / Helvetica / Georgia / Times New Roman / their own — and fold it into the design. Since you can't write their disk from the chat, hand them the one-line change to `profile/config.yaml` (`style.font: "..."`) along with the template file, and record the choice in the Milestone 5 handoff. Previews reflect the font subject to the fallback caveat in Step 3 (your sandbox may lack it; their machine is authoritative).
 
 ## Step 3: The iteration loop
 
@@ -55,13 +55,13 @@ Once the resume look is locked, offer — don't assume — a matching cover-lett
 
 If they decline, that's fine — the cover letter keeps using the shipped default, which works on its own.
 
-## Step 5: Tease Personalize, then write the handoff to Milestone 4
+## Step 5: Tease Personalize, then write the handoff to Milestone 5
 
-The look is done. Now show the user the *next* surface area: Applywright is a set of skills, which makes it bendable far beyond visuals. Give two or three concrete illustrations so the idea lands — for example, calibrating the fit assessment for their field (what reads as a strong match differs for a PM, a musician, or a loan officer), adding a section like an executive summary, or tailoring bullets across more than just the last role. Frame it as optional and on-demand, run via the `customize` skill in a fresh session whenever they want it — not something to do now.
+The look is done. Now show the user the *next* surface area: Applywright is a set of skills, which makes it bendable far beyond visuals. Give two or three concrete illustrations so the idea lands — for example, calibrating the fit assessment for their field (what reads as a strong match differs for a PM, a musician, or a loan officer), adding a section like an executive summary, or tailoring bullets across more than just the last role. Frame it as optional and on-demand, run via the `customize-pipeline` skill in a fresh session whenever they want it — not something to do now.
 
-**Surface anything pinned/deferred from the handoff here.** If orientation flagged "wants an exec-summary section," this is where it resurfaces, tied to the customize skill. That carry-forward is the whole point of the pinned list.
+**Surface anything pinned/deferred from the handoff here.** If orientation flagged "wants an exec-summary section," this is where it resurfaces, tied to the customize-pipeline skill. That carry-forward is the whole point of the pinned list.
 
-Then write a **light handoff document** into Milestone 4, the same shape as the one that brought the user here but shorter: the project and local path, that Design is done (name the template files produced), the design decisions made (font, colors, structure), and the updated pinned/deferred list. Tell the user to keep it for whenever they start a `customize` session.
+Then write a **light handoff document** into Milestone 5, the same shape as the one that brought the user here but shorter: the project and local path, that Design is done (name the template files produced), the design decisions made (font, colors, structure), and the updated pinned/deferred list. Tell the user to keep it for whenever they start a `customize-pipeline` session.
 
 ## The contract every custom template must keep
 
@@ -83,4 +83,4 @@ Templates are single-column, optionally with a header photo. Two-column resumes 
 - **Do not preview against placeholder text.** Use the user's real `cv.md`, so they judge their actual resume.
 - **Do not write to the user's disk.** You produce the template; they save it into `profile/`. You can't edit their files from the chat.
 - **Do not present a sandbox preview's font as final.** The user's local render is authoritative for the font.
-- **Do not start Milestone 4 inline.** Tease it, write the handoff, stop.
+- **Do not start Milestone 5 inline.** Tease it, write the handoff, stop.

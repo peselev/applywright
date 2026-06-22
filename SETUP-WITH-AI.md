@@ -2,8 +2,11 @@
 
 Applywright runs on macOS, Linux, and Windows. It needs four things on your
 machine: Claude Code (the agent that drives it), Python 3, pandoc, and typst.
-Setup installs those and bootstraps your
-`profile/`. None of it is automatic magic; it is a short list of commands.
+Installing them also means a **package manager** (Homebrew on macOS, which setup
+installs if you don't already have it; winget already ships with Windows) and
+**pipx**, which puts the `applywright` command on your PATH. Setup installs all of
+that and bootstraps your `profile/`. None of it is automatic magic; it is a short
+list of commands.
 
 There are two ways to do it. Pick one.
 
@@ -11,24 +14,41 @@ There are two ways to do it. Pick one.
 
 1. Open claude.ai and paste this:
 
-   > Read https://github.com/peselev/applywright and help me set it up. Explain
-   > what it does, then interview me to build my `profile/`, and set me up to run
-   > it on my machine with as little command-line work as possible.
+   > Clone https://github.com/peselev/applywright and help me set it up. Explain
+   > what it does and answer my questions first, then walk me through setting it
+   > up on my machine with as little command-line work as possible.
 
-2. Claude reads the repo, explains the pipeline, and interviews you to fill in
-   `profile/` (identity, CV, master-bullets, persona). It writes nothing it
-   cannot source from your answers, an existing resume, or your portfolio.
-3. Claude checks whether you already have Applywright on your machine, and hands you the right download:
-   - **If you already have the `applywright` folder on disk** (you downloaded or cloned it earlier), Claude gives you a zipped `profile/` to drop into that folder.
-   - **If you don't have it yet**, Claude gives you the whole thing as a single download — the tool with your `profile/` already inside — so you just unzip it once. No GitHub, no git, nothing to clone.
-4. You point the **Claude Code desktop app** at that folder and tell it "set me up." Orientation takes over from there and walks you through the rest — the one-time installs included — keeping terminal use to a minimum. (You only run commands yourself if you choose Option B.)
+2. **Claude clones the repo into its own sandbox.** This does double duty: it makes
+   Claude familiar with the real tool rather than just the README, and it gives
+   Claude the files to package for you. Claude explains the pipeline, answers your
+   questions, takes a quick read of your setup (which OS, how comfortable you are in
+   a terminal), and lays out the five-milestone plan before anything is installed.
 
-A web Claude session can guide setup but cannot run the pipeline — that happens in
-Claude Code on your machine. If you're new to this or prefer not to live in a
-terminal, install the **Claude Code desktop app** rather than the CLI; it's the
-friendlier way to run Applywright day to day. The CLI is equally fine if you like
-a terminal. Either way, once Claude Code is installed and open in the repo folder,
-tell it "set me up" and the orientation flow takes over where it can actually run.
+3. **Claude hands you the files, ready to drop in.**
+   - **Default: the whole thing as one download** the tool with a starter
+     `profile/` already inside so you unzip it once and everything lands in the
+     right place. No GitHub, no git, nothing to clone yourself.
+   - **If you already have the `applywright` folder on disk** (you downloaded or
+     cloned it earlier), Claude can instead hand you just a zipped `profile/` to
+     drop into that folder.
+
+   (If you are using an AI assistant that cannot clone a repo or produce a
+   download, it should adjust: point you to GitHub's "Download ZIP" button, or to
+   Option B below, and continue from there.)
+
+4. **The same session walks you through setup.** Milestone 1 (Environment) installs
+   the toolchain and Claude Code right from the chat: Claude hands you each command,
+   you run it and report back. Milestone 2 (Foundations) writes your real identity
+   and CV and proves the pipeline on one job. At Milestone 2 you choose your seat:
+   keep going here in the chat, or switch to **Claude Code** (the desktop app is the
+   friendly default; the CLI is fine too), which runs commands directly with your
+   approval. The orientation skill drives it either way.
+
+A web Claude session guides setup but cannot run the finished pipeline day to day;
+that happens in Claude Code on your machine, which is why Milestone 1 installs it.
+If you are new to this or would rather not live in a terminal, the **Claude Code
+desktop app** is the friendlier way to run Applywright. Milestones 3 through 5 each
+pick up later, in a fresh session.
 
 ## Option B: do it yourself
 
@@ -69,7 +89,7 @@ applywright bootstrap     # profile/ from the example, tracker init, output/ inb
 `pipx install .` builds Applywright into its own isolated environment and drops a
 single `applywright` launcher into pipx's bin directory (`~/.local/bin` on
 macOS/Linux). Because that launcher has its interpreter baked in, the agent never
-has to resolve `python` versus `python3` — the command just works in any shell on
+has to resolve `python` versus `python3`; the command just works in any shell on
 any OS, which is the whole reason for the CLI.
 
 If `applywright` is reported as not found right after install, run
@@ -78,9 +98,11 @@ PATH for the agent to call it; `pipx ensurepath` adds pipx's bin directory to
 your shell profile. (Run setup from a normal shell, not an activated virtual
 environment.)
 
-When you change the Applywright source yourself, re-install with
-`pipx install . --force` to pick up the edits. Templates and skills are read from
-the repo folder live, so editing those needs no re-install.
+When you change the Applywright source yourself, re-install to pick up the edits
+with a two-step `pipx uninstall applywright` then `pipx install .`. Avoid
+`pipx install . --force`: it can fail to tear down an environment it did not
+create, and a bare `pipx install .` errors on an existing install. Templates and
+skills are read from the repo folder live, so editing those needs no re-install.
 
 The commands find the repo automatically. Each one that reads or writes project
 files (`export-pdf`, `tracker`, `inbox`, `bootstrap`, `doctor`) walks up from the
@@ -110,11 +132,11 @@ Edit `profile/config.yaml`, `profile/cv.md`, `profile/master-bullets.md`, and
 claude
 ```
 
-## Claude Code allowlist (already shipped)
+### Reference: Claude Code allowlist (already shipped)
 
 Applywright keeps file mutations inside audited commands rather than freehand
 shell. Every step runs through the one `applywright` command, so a single allow
-pattern covers the whole pipeline — and this repo already ships it, in
+pattern covers the whole pipeline, and this repo already ships it, in
 `.claude/settings.json`:
 
 ```
@@ -128,7 +150,7 @@ directly. If you'd rather approve each call yourself, delete that line (or the
 file). Any personal allow rules you add live in `.claude/settings.local.json`,
 which Claude Code keeps out of version control.
 
-## Windows: three things that trip people up
+### Reference: Windows, three things that trip people up
 
 Setup on Windows almost always works; these are the snags worth knowing in advance:
 
@@ -136,7 +158,7 @@ Setup on Windows almost always works; these are the snags worth knowing in advan
   pipx, Claude Code, pandoc, or typst, the command can be installed correctly yet
   still show "not recognized" in the open window. Open a *fresh* terminal (the
   installer usually also prints a one-time PATH command). Installed-but-not-visible
-  is not missing — don't reinstall to fix it.
+  is not missing; don't reinstall to fix it.
 - **Pasting into Claude Code can silently fail in the legacy PowerShell console.**
   `Ctrl+V` is swallowed by PSReadLine. Use right-click or `Shift+Insert`, or run
   Claude Code inside **Windows Terminal**, where `Ctrl+V` works.
@@ -144,9 +166,9 @@ Setup on Windows almost always works; these are the snags worth knowing in advan
   `inbox/jd.md`, or point the agent at a file with `@path\to\file.txt`.
 
 The `unknown font family: carlito` / `helvetica` warnings during the smoke test are
-harmless — typst falls back to the next font (Arial by default).
+harmless; typst falls back to the next font (Arial by default).
 
-## Tracking
+### Reference: Tracking
 
 CSV is the default and needs no setup: rows go to `output/applications.csv`. To
 use Notion instead, set `tracker.mode: notion` in `profile/config.yaml`, add the

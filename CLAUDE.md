@@ -34,11 +34,12 @@ applywright/
 │   └── jobs.txt                ← bulk queue: one job URL per line (see bulk-process skill)
 ├── temp/                     ← scratch directory used by fetch-jd for auto-fetched content
 ├── skills/
-│   ├── orientation/SKILL.md     ← setup Milestones 1-2: environment + content; ends by writing a Design handoff (run once)
-│   ├── build-resume-template/   ← setup Milestone 3: design the user's own resume/cover-letter template
+│   ├── orientation/SKILL.md     ← setup Milestones 1-2: environment + foundations (identity, CV, family skeleton, practice run); ends by writing a Story-bank handoff (run once)
+│   ├── build-story-bank/SKILL.md ← setup Milestone 3: the real master-bullets, full persona, targeting (run once; required, makes output useful)
+│   ├── build-resume-template/   ← setup Milestone 4: design the user's own resume/cover-letter template
 │   │   ├── SKILL.md
 │   │   └── typst-cookbook.md    ← Typst design patterns + the template contract scaffold
-│   ├── customize/SKILL.md       ← setup Milestone 4: optional, on-demand pipeline personalization (teaser)
+│   ├── customize-pipeline/SKILL.md ← setup Milestone 5: optional, on-demand pipeline personalization (teaser)
 │   ├── process-job/SKILL.md     ← the main filing pipeline (runs auto or manual)
 │   ├── bulk-process/SKILL.md    ← loop over inbox/jobs.txt, each job via process-job in auto mode
 │   ├── fetch-jd/SKILL.md        ← JD fetching with fallbacks
@@ -76,7 +77,7 @@ applywright/
 
 ## First-time setup
 
-If the user is new (no populated `profile/`, or they say "set me up", "get started", "onboard me", "first run"), run `skills/orientation/SKILL.md`. Setup runs as four milestones: **(1) Environment** and **(2) Content** are orientation itself — it checks the environment, bootstraps `profile/`, interviews the user into config/CV/master-bullets/persona, and files one real job to prove the pipeline; it then writes a handoff document and points to the next milestone. **(3) Design** is the `build-resume-template` skill (the user's own resume/cover-letter look), run later in a fresh session. **(4) Personalize** is the optional `customize` skill, teased at the end of Design. Setup is built to be orchestrated from a regular Claude chat (web/desktop), with the local pipeline running on the user's machine; it is resumable and runs once. None of it is part of the application pipeline.
+If the user is new (no populated `profile/`, or they say "set me up", "get started", "onboard me", "first run"), run `skills/orientation/SKILL.md`. Setup runs as five milestones, each later one in its own fresh session. **(1) Environment** and **(2) Foundations** are orientation itself: it checks the environment, bootstraps `profile/`, interviews the user into config/CV plus a project-family skeleton and a light persona, and files one real job to prove the pipeline on the default look; it then writes a handoff and points to the next milestone. **(3) Story bank** is the `build-story-bank` skill: the real master-bullets, full persona, and targeting. It is required, not optional, since Foundations leaves placeholder bullets and the output is not useful until the real bank is built. **(4) Design** is the `build-resume-template` skill (the user's own resume/cover-letter look). **(5) Personalize** is the optional `customize-pipeline` skill, teased at the end of Design. Setup is built to be orchestrated from a regular Claude chat (web/desktop), with the local pipeline running on the user's machine; it runs once. None of it is part of the application pipeline.
 
 ## Pipeline
 

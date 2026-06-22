@@ -3,7 +3,7 @@
 How to handle text and input the user gives you — their edits to a draft, a sketch
 of where they want it to go, a bullet they want swapped, an idea they float. Used by
 `cover-letter`, `application-answers`, the bullet propose/swap path in `process-job`
-and `assess-fit`, the `customize` skill, and any custom section a user adds (e.g. a
+and `assess-fit`, the `customize-pipeline` skill, and any custom section a user adds (e.g. a
 Summary). The job: catch the *idea* behind what the user did, so they don't have to
 re-steer you by force. A user who has to fight the text to get their meaning across is
 a user you misread. Reading the intent is how you stop making them fight.
