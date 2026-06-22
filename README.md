@@ -56,7 +56,7 @@ close the terminal, and open a new one so the session picks up the updated PATH.
 Then run `applywright doctor` from inside the repo folder to confirm the command
 resolves and the toolchain is complete.
 
-The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through config, CV, bullets, and persona, and saves progress so you can stop and resume. Or edit the files by hand:
+The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through your config, CV, project families, and persona, then proves the pipeline on one real job; building your full bullet library follows as a next step. Or edit the files by hand:
 
 1. `profile/config.yaml`: name, email, phone, portfolio URL, tracker mode
 2. `profile/cv.md`: your resume, with `{bullet_2}` / `{bullet_3}` placeholders the agent fills
