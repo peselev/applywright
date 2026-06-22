@@ -119,7 +119,7 @@ JD-fit signal: ...
 
 - Present each bullet for the user to read, edit, and approve. When you present it, **show where each number came from** (the document, the figure they gave you), so they can verify the claim rather than rubber-stamp it. This is also your own anti-fabrication check: if you cannot point to a source for a number, it should not be in the bullet.
 - A drafted bank, however good it looks, is not an approved bank. Do not move on to completing the persona and targeting, and do not write the Design handoff, until every family's bullets are approved.
-- Record the approval in the handoff and the orientation progress note so a resumed session does not treat a drafted-but-unapproved bank as done.
+- Note the approval in the handoff so a resumed session does not treat a drafted-but-unapproved bank as done. If a session is interrupted before approval, re-confirm with the user rather than assuming the drafted bullets are finished.
 
 ## Persona and targeting
 
