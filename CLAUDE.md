@@ -207,6 +207,8 @@ When this happens, stop and tell the user plainly:
 - this is almost certainly a stale-PATH issue, not a missing install,
 - the durable fix is to **restart Claude Code** so it inherits the current PATH; to keep going in this session without restarting, prepend the install dir to PATH for this session only (a non-persistent `$env:Path` / `PATH` edit — no registry change, no install).
 
+This can happen in either environment (a terminal-launched `claude` or the desktop app) and the fix is identical, so it is **never** a reason to steer the user toward the terminal or away from the desktop app. The desktop app stays the friendly default; a one-time restart is a normal hiccup, not a downside of the app.
+
 Only if the user explicitly confirms this is a genuinely fresh machine where applywright was never installed should setup happen at all, and then via `skills/orientation/SKILL.md` and `SETUP-WITH-AI.md`, not an ad-hoc install mid-pipeline.
 
 ## Instruction scan rules
