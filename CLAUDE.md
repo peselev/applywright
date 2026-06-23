@@ -270,12 +270,18 @@ If the script fails, log the error and tell the user — don't try to work aroun
 
 ## Dedup
 
-Before filing, check whether this URL has already been filed, so the same job is never recorded twice:
+Before recording a filed application, check whether this URL has already been filed, so the same job is never recorded twice. The check differs by tracker mode, because the two trackers expose different records:
 
-- **csv mode:** `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`.
-- **notion mode:** query the Applications DB for a row whose URL property equals this URL.
+- **csv mode:** `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`. This is URL-based and runs pre-fetch (process-job Step 0).
+- **notion mode:** the Notion MCP can't be queried for dedup, so use the local `output/` folders as the record of what's been filed. This can only run **after the short ID is computed** (process-job Step 2 — the company slug usually needs the fetched JD), since the short ID names the folder. Once you have it, inspect `output/{short-id}/`:
+  - **No folder** → not filed; proceed.
+  - **Folder exists, its log header `URL:` matches this URL, and `log-{short-id}.md` contains a `tracker-row` line** (`step=09` proceed or `step=07-skip` skip) → already filed. That log line is the completion marker; it's written whatever the tracker mode, so it's the local analog of "a row exists." A folder *without* it is leftover from a crashed run, not a filed job.
+  - **Folder exists, URL matches, but no `tracker-row` line** → a stale partial from an incomplete run, not a duplicate. Reuse the folder and reprocess (don't append a `-N` suffix).
+  - **Folder exists but its log header `URL:` is a different job** → a short-ID collision, not a duplicate. Apply the `-N` suffix rule (see Short ID rules) and proceed.
 
-If already filed, do not refile: tell the user it's a duplicate (with the existing short ID and stage). In bulk, treat it like a completed job (remove the URL from the queue, count it as already-filed) and move on. process-job runs this as its Step 0.
+  Read the existing folder's `log-{short-id}.md` (its `URL:` header and any `tracker-row` line) **before** running `log-start`, which overwrites that file.
+
+If already filed, do not refile: tell the user it's a duplicate (with the existing short ID, and the stage read from the folder's `tracker-row` log line — `to-apply` or `decided-against`). In bulk, treat it like a completed job (remove the URL from the queue, count it as already-filed) and move on.
 
 ## Tracking (CSV default, Notion optional)
 

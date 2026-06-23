@@ -67,7 +67,7 @@ Repeat until `claim` returns empty:
      ```
      `skipped += 1`. Record `✓ {company} — {role} — skipped ({verdict} {score}/10)`.
 
-   - **already-filed** → process-job's Step 0 dedup found this URL already in the tracker. Nothing new was filed. Remove it from the queue and tally:
+   - **already-filed** → process-job's dedup found this URL already filed (csv: Step 0 tracker check; notion: Step 2 folder check). Nothing new was filed. Remove it from the queue and tally:
      ```bash
      applywright inbox done "<url>"
      ```

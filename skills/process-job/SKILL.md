@@ -40,18 +40,18 @@ These rules are about managing your own context across an interactive session wh
 
 ## Step 0: Dedup check
 
-Before fetching, check whether this URL has already been filed, so the same job is never recorded twice. You have the URL from chat (or from the bulk-process caller).
+Check whether this URL has already been filed, so the same job is never recorded twice. You have the URL from chat (or from the bulk-process caller). **How** you check depends on `tracker.mode` in `profile/config.yaml` (see CLAUDE.md → Dedup):
 
-- **csv mode** (default): `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`.
-- **notion mode**: query the Applications DB for a row whose URL equals this URL.
+- **csv mode** (default): check now, before fetching. `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`.
+- **notion mode**: the Notion MCP can't be queried, so dedup is **folder-based and deferred to Step 2** — it needs the computed short ID (which usually needs the fetched JD for the company slug). Do nothing here; continue to Step 1. The check happens at the top of Step 2.
 
-If it's **already filed**:
+For **csv mode**, if it's **already filed**:
 - Standalone run: tell the user it's a duplicate (existing short ID + stage) and stop. Don't fetch, don't create a folder.
 - Bulk run: report `already-filed` to bulk-process (it removes the URL from the queue and counts it as already-filed). Don't fetch.
 
-If `not-found`, continue to Step 1.
+If `not-found` (csv) or notion mode, continue to Step 1.
 
-Log (once the folder exists, in Step 2): `[TS] step=00 dedup result={not-found|already-filed}`.
+The `step=00 dedup` log line is written **once**, in Step 2b (the folder doesn't exist yet here). For csv, the result is whatever Step 0 found (an `already-filed` csv hit stops before any folder is created, so nothing is logged); for notion and for collision handling, Step 2a determines it.
 
 ## Step 1: Get the URL and fetch the JD
 
@@ -77,7 +77,27 @@ Once fetch-jd has fully completed (including opening the file), proceed to step 
 
 ## Step 2: Compute short ID and create folder
 
-See `CLAUDE.md` for the short-ID rules. After computing, create the folder and the log file header in one command. `log-start` creates the parent folder and writes the header (plain literal text, no timestamp) — no `mkdir` and no heredoc:
+See `CLAUDE.md` for the short-ID rules. Compute the short ID first.
+
+### Step 2a: Notion folder-based dedup + collision check
+
+This runs in **both** tracker modes, because it also resolves short-ID collisions — but it carries the deferred dedup for **notion mode** (csv already deduped in Step 0). Do this **before** `log-start`, which overwrites the log file you need to read.
+
+Check whether `output/{short-id}/` already exists (`ls output/{short-id}/` — auto-allowed; a missing folder just prints an error).
+
+- **No folder** → no collision, not a duplicate. Use `{short-id}` as-is and continue to Step 2b.
+- **Folder exists** → read its `log-{short-id}.md` header (`URL:` line) and scan it for a `tracker-row` line (`step=09` or `step=07-skip`):
+  - **`URL:` matches this URL AND a `tracker-row` line is present** → already filed.
+    - **notion mode:** this is the deferred dedup hit. Standalone → tell the user it's a duplicate (short ID + the stage from the `tracker-row` line) and stop; don't overwrite the folder. Bulk → report `already-filed`. Do **not** continue.
+    - **csv mode:** this shouldn't happen (Step 0 would have caught it), but if it does, treat it the same — it's a duplicate.
+  - **`URL:` matches this URL but NO `tracker-row` line** → a stale partial from a crashed earlier run, not a duplicate. **Reuse this same folder** (don't append a suffix); continue to Step 2b. `log-start` will overwrite the header and the run rebuilds the rest.
+  - **`URL:` is a *different* job** → a genuine short-ID collision. Append `-2` (`-3`, …) per the CLAUDE.md short-ID rules until the folder name is free, and use that as `{short-id}` from here on.
+
+Log the dedup outcome (after the folder is created in Step 2b — the `already-filed` branch stops here and never reaches the log): `[TS] step=00 dedup mode={csv|notion} result={not-found|reused-partial|collision-suffixed}`.
+
+### Step 2b: Create the folder and log header
+
+Create the folder and the log file header in one command. `log-start` creates the parent folder and writes the header (plain literal text, no timestamp) — no `mkdir` and no heredoc:
 
 ```bash
 applywright log-start "output/{short-id}/log-{short-id}.md" --id {short-id} --url {url}
