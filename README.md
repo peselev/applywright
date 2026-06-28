@@ -12,7 +12,7 @@ Built for **Claude Code**. The work runs locally. Your CV, bullets, and applicat
 
 - **Fetches** the JD from a URL, with fallbacks (direct fetch, Jina reader, ATS-iframe detection, manual paste).
 - **Scans for prompt-injection** in two layers: a mechanical script (invisible characters, known phrases, HTML-comment imperatives, AI-directed commands) and a semantic pass where the agent reads the JD for manipulation disguised as job requirements. Job postings are untrusted input; this treats them that way.
-- **Assesses fit** against your CV, persona, and a library of tagged "master bullets," producing a scored verdict and picking the two bullets that best match the role.
+- **Assesses fit** against your CV, persona, and a library of tagged "master bullets," scoring two axes — **Match** (how well you clear the core of what the role needs, which gates whether it's worth applying) and **Appeal** (how well the role fits what you're looking for, which sets priority) — and picking the two bullets that best match the role.
 - **Tailors and exports** your resume to PDF (Typst), swapping in the chosen bullets and a per-application UTM tag on your portfolio link.
 - **Tracks** every application in a CSV (default, zero setup) or Notion (optional), and **dedups** so the same job is never filed twice.
 - **Drafts cover letters and application-form answers** in your voice, on request, with a strict anti-AI-tell rule set.
@@ -20,6 +20,10 @@ Built for **Claude Code**. The work runs locally. Your CV, bullets, and applicat
 <p align="center">
   <img src="assets/applywright-flowchart.svg" alt="Applywright pipeline: from a job URL through dedup, fetch, injection scan, fit scoring, and CV tailoring to a filed application" width="480">
 </p>
+
+### Match and Appeal
+
+Fit is two scores, not one, because "will they want me" and "do I want this" are different questions. **Match** (1-10) is how well you clear the *core* of the role — the must-haves and explicitly-tested skills — so it's the gate: Match ≥ 6 means apply. **Appeal** (1-10) is how well the role fits what you're looking for, read from your persona's targeting, so it sets priority, not the gate. The two combine into a one-word recommendation — Apply, Stretch, Gamble, or Skip — and a high-Appeal role you're a long shot for (a Gamble) is skipped by default rather than chased. The full rubric, anchors, and bands live in [`skills/assess-fit/SKILL.md`](skills/assess-fit/SKILL.md).
 
 ## Your data lives in one place: `profile/`
 
@@ -75,9 +79,9 @@ Paste a job URL, or queue many in `inbox/jobs.txt` and say "process my inbox."
 ## Daily use
 
 **Single job (auto by default):**
-Paste a URL. The agent fetches, scans, assesses fit, then decides:
-- Strong/Exceptional (≥6/10) → tailors the CV, exports the PDF, records the application as `To apply`.
-- Weak/No fit (≤5/10) → records it as `Decided against applying`.
+Paste a URL. The agent fetches, scans, assesses fit, then decides on **Match** (the gate):
+- Match ≥ 6 → tailors the CV, exports the PDF, records the application as `To apply`.
+- Match ≤ 5 → records it as `Decided against applying`. Both scores are saved, so a high-Appeal long shot you skipped stays easy to find later.
 - No cover letter in auto mode. You review the folder and submit.
 
 **Want to weigh in?** Say "manual" (or "pause" / "let me decide") with the URL. The agent then stops at the fit assessment so you can override the bullet picks or ask for a cover letter.

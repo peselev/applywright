@@ -99,7 +99,7 @@ or score. It is ad hoc and separate from the pipeline.
 
 process-job runs in one of two modes (full rules in its Decision-mode section):
 
-- **auto** (default) — no pause. After fit assessment: Strong/Exceptional (score ≥ 6) → PROCEED; Weak/No fit (score ≤ 5) → SKIP. **No cover letter, ever.**
+- **auto** (default) — no pause. After fit assessment: Match ≥ 6 → PROCEED; Match ≤ 5 → SKIP (Appeal sets priority, never the gate). **No cover letter, ever.**
 - **manual** — pause after fit assessment for the user's call. Opt in with "manual", "pause", "stop after fit", "let me decide", "ask me first".
 
 Bulk always runs auto. A single pasted URL is auto unless the user asks for manual.
@@ -112,7 +112,7 @@ Bulk always runs auto. A single pasted URL is auto unless the user asks for manu
 4. Scan JD for instructions (hidden or visible); report findings or note "clean"
 5. **Assess fit** using `assess-fit` (reads JD + CV + persona + master-bullets + the two field-notes files when present; produces `fit-{short-id}.md` including two bullet picks with reasoning)
 6. **Decide:**
-   - **auto:** score ≥ 6 → PROCEED with the agent's picks; score ≤ 5 → SKIP. No pause.
+   - **auto:** Match ≥ 6 → PROCEED with the agent's picks; Match ≤ 5 → SKIP. No pause.
    - **manual:** pause; show fit summary + bullet picks; wait for SKIP / PROCEED-as-picked / PROCEED-with-overrides.
 
 If PROCEED (steps 7-11):
@@ -312,7 +312,7 @@ applywright tracker seen "<url>"               # dedup check
 applywright tracker add \
   --short-id {short-id} --company "{Company}" --role "{Role}" \
   --url "{url}" --source "{Source}" --stage "{Stage}" \
-  --fit "{Verdict} · {Score}/10" --comments "{one-line summary}"
+  --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
 applywright tracker status                     # counts by stage
 ```
 
@@ -324,7 +324,7 @@ Field mapping:
 - `url` = job posting URL
 - `source` = one of `Built In` | `LinkedIn` | `Career page` | `Incoming` (see inference)
 - `stage` = `To apply` (proceed) or `Decided against applying` (skip)
-- `fit` = `{Verdict} · {Score}/10` (e.g. `Strong · 7/10`)
+- `fit` = `Match {M}/10 · Appeal {A}/10` (e.g. `Match 6/10 · Appeal 8/10`)
 - `comments` = the **One-line summary** from `fit-{short-id}.md`, verbatim (single line)
 
 ### Notion tracker (optional)
@@ -342,7 +342,7 @@ Only used when `tracker.mode = "notion"`. Requires the Notion MCP and two databa
 | Source | select (single) | Exactly one of: `Built In`, `Career page`, `LinkedIn`, `Incoming`. Case-sensitive. Infer from URL (see below). |
 | Stage | status | `To apply` (proceed) or `Decided against applying` (skip). |
 | Internal ID | text | The short ID, e.g., `acme-12345`. |
-| Fit | text | `{Verdict} · {Score}/10`. |
+| Fit | text | `Match {M}/10 · Appeal {A}/10`. |
 | Comments | text | The **One-line summary** from `fit-{short-id}.md`, verbatim (single line). |
 | Submission Date | date | Leave blank — the user sets it after submitting. |
 

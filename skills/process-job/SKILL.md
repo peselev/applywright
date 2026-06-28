@@ -1,6 +1,6 @@
 ---
 name: process-job
-description: File a new job application — create the folder structure, save the JD, scan it for prompt injections, assess fit against the user's CV and portfolio, then either (proceed path) fill the CV template with two bullets and export to PDF, or (skip path) log as "Decided against applying." Runs in one of two decision modes — auto (default: proceed/skip automatically from the fit verdict, no cover letter) or manual (pause after the fit assessment for the user's call). Either path ends with a tracker row and cleanup. Triggered when the user provides a job posting URL in chat with intent to apply or evaluate, and used by bulk-process for queued URLs. Uses fetch-jd to retrieve the JD and assess-fit to evaluate. This skill does NOT write cover letters.
+description: File a new job application — create the folder structure, save the JD, scan it for prompt injections, assess fit against the user's CV and portfolio, then either (proceed path) fill the CV template with two bullets and export to PDF, or (skip path) log as "Decided against applying." Runs in one of two decision modes — auto (default: proceed/skip automatically from the fit Match score, no cover letter) or manual (pause after the fit assessment for the user's call). Either path ends with a tracker row and cleanup. Triggered when the user provides a job posting URL in chat with intent to apply or evaluate, and used by bulk-process for queued URLs. Uses fetch-jd to retrieve the JD and assess-fit to evaluate. This skill does NOT write cover letters.
 ---
 
 # Process Job — v2 Pipeline
@@ -11,9 +11,9 @@ Read this whole file before starting. Execute steps in order. Log every step.
 
 This pipeline runs in one of two modes. Resolve the mode **before** Step 1 and carry it through the whole run.
 
-- **auto** (default) — no pause. After the fit assessment, the verdict decides:
-  - **Strong or Exceptional** (score ≥ 6) → PROCEED PATH, using the bullets assess-fit picked.
-  - **Weak or No fit** (score ≤ 5) → SKIP PATH.
+- **auto** (default) — no pause. After the fit assessment, the **Match** score decides. Match is the gate; Appeal sets priority, never the gate:
+  - **Match ≥ 6** (Apply band) → PROCEED PATH, using the bullets assess-fit picked.
+  - **Match ≤ 5** (Stretch / Gamble / Skip band) → SKIP PATH. The fit file records the band and both scores, so an auto-skipped Stretch or Gamble stays reviewable in the tracker.
   - **No cover letter** is ever written or offered in auto mode. Filing ends at the tracker row + cleanup.
 - **manual** — pause after the fit assessment and wait for the user's call (proceed / skip / override bullets / discuss). This is the original behavior.
 
@@ -34,7 +34,7 @@ These rules are about managing your own context across an interactive session wh
 
 - **Once the session gets heavy, offer a reset.** Retaining every job's JD, CV, and fit text adds up, and a heavy context can dull your judgment on later jobs. The same retention threshold bulk-process uses applies here — about 6 filed jobs, a tunable heuristic for current context budgets, not a hard limit (if the user's model has a large context window or they ask to keep more, that overrides it). Once you're past it, surface the tradeoff and let the user choose between two options:
   - **Keep comparing here** — stay in this session with everything retained, accepting that quality may drift as context grows.
-  - **Start a fresh session** — the only true reset (you can't purge what's already loaded mid-session, so this is the real fix). Before they switch, write a short plain summary so nothing is lost: one line per job processed this session — company, role, verdict/score, and the single most notable thing about it. No special format, no hand-off document; just a quick list they can carry into the new session.
+  - **Start a fresh session** — the only true reset (you can't purge what's already loaded mid-session, so this is the real fix). Before they switch, write a short plain summary so nothing is lost: one line per job processed this session — company, role, Match/Appeal, and the single most notable thing about it. No special format, no hand-off document; just a quick list they can carry into the new session.
 
   Phrase it plainly, for example: *"We've filed a fair few roles this session and the context is getting heavy, which can dull my read on later ones. Want to keep comparing here, or start a fresh session? If you start fresh, I'll jot a one-line summary of each role first so nothing's lost."* Offer this once around the threshold; don't nag every job after.
 
@@ -241,7 +241,7 @@ Invoke the **assess-fit** skill. It reads the saved JD, the user's CV, and the p
 
 If `profile/persona.md` doesn't exist, assess-fit will tell the user to run refresh-persona first. In that case, pause process-job and wait for the user to refresh.
 
-Log: `[TS] step=05 fit-assessed verdict={verdict} score={N}`
+Log: `[TS] step=05 fit-assessed match={M} appeal={A} band={band}`
 
 ## Step 6: Decision (auto or manual)
 
@@ -249,16 +249,16 @@ After assess-fit shows the summary (including the two bullet keys it picked) and
 
 ### Auto mode (default)
 
-No pause. The verdict decides:
+No pause. The Match score decides:
 
-- **Strong or Exceptional** (score ≥ 6) → PROCEED PATH, using the two bullets assess-fit picked. No overrides, no cover letter.
-  - Log: `[TS] step=06 mode=auto decision=auto-proceed verdict={verdict} score={N} bullets={KEY-1,KEY-2}`
+- **Match ≥ 6** (Apply band) → PROCEED PATH, using the two bullets assess-fit picked. No overrides, no cover letter.
+  - Log: `[TS] step=06 mode=auto decision=auto-proceed match={M} appeal={A} band={band} bullets={KEY-1,KEY-2}`
   - Step 6 done — go to Step 7.
-- **Weak or No fit** (score ≤ 5) → SKIP PATH.
-  - Log: `[TS] step=06 mode=auto decision=auto-skip verdict={verdict} score={N}`
+- **Match ≤ 5** (Stretch / Gamble / Skip band) → SKIP PATH.
+  - Log: `[TS] step=06 mode=auto decision=auto-skip match={M} appeal={A} band={band}`
   - Step 6 done — go to the SKIP PATH.
 
-The cutoff is the assess-fit rubric: Strong = 6-8, Exceptional = 9-10 (proceed); Weak = 4-5, No fit = 1-3 (skip). Do not second-guess the score — it was assigned in Step 5.
+The gate is **Match only**: ≥ 6 proceeds, ≤ 5 skips. Appeal never moves the gate — a high-Appeal / low-Match role (a Gamble) still auto-skips, recorded with both scores so the user can override it by hand later. Don't second-guess the scores — they were assigned in Step 5.
 
 ### Manual mode
 
@@ -280,7 +280,7 @@ The cutoff is the assess-fit rubric: Strong = 6-8, Exceptional = 9-10 (proceed);
 - For each bullet position (1 and 2), determine: did the user specify it? If yes, use their choice (resolve KEYs by looking them up in `profile/master-bullets.md`). If no, fall back to the assess-fit pick for that position.
 
 **Override / discussion** → stay paused, respond, then re-prompt:
-- "I think you missed X" / "I do have Y experience" — accept the override (update fit file if needed), re-show the verdict + bullets, ask again
+- "I think you missed X" / "I do have Y experience" — accept the override (update fit file if needed), re-show the scores + bullets, ask again
 - "Why did you pick AI over REPORT-1?" — answer the question, then re-prompt for decision
 - Anything ambiguous — ask one clarifying question
 - When the user proposes or reshapes bullets, read the intent behind it (`skills/shared/editing-intent.md`): a firm swap to act on, a direction to explore, or an example floated to make a point. A user musing "maybe something more growth-flavored here" is not the same as "swap in PLG-3b." When it's not obvious, confirm in one line before rebuilding the CV around it.
@@ -291,7 +291,7 @@ Log the user's decision: `[TS] step=06 mode=manual decision={proceed-as-picked|p
 
 # PROCEED PATH (Step 7 onward)
 
-If the Step 6 decision was **proceed** — auto-proceed (Strong/Exceptional in auto mode), or the user's "proceed" in manual mode (with the agent's picks or with overrides):
+If the Step 6 decision was **proceed** — auto-proceed (Match ≥ 6 in auto mode), or the user's "proceed" in manual mode (with the agent's picks or with overrides):
 
 ## Step 7: Fill the CV template
 
@@ -351,7 +351,7 @@ Field values (same for both trackers):
 - url = job posting URL
 - source = one of `Built In` | `LinkedIn` | `Career page` | `Incoming` (infer from URL)
 - stage = `To apply`
-- fit = `{Verdict} · {Score}/10` (e.g., `Strong · 7/10`)
+- fit = `Match {M}/10 · Appeal {A}/10` (e.g., `Match 6/10 · Appeal 8/10`)
 - comments = the **One-line summary** from `fit-{short-id}.md`, verbatim (single line)
 
 **csv mode (default):**
@@ -360,12 +360,12 @@ Field values (same for both trackers):
 applywright tracker add \
   --short-id {short-id} --company "{Company}" --role "{Role}" \
   --url "{url}" --source "{Source}" --stage "To apply" \
-  --fit "{Verdict} · {Score}/10" --comments "{one-line summary}"
+  --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
 ```
 
 **notion mode:** insert a row into the Applications DB via the Notion MCP, mapping the fields per the CLAUDE.md schema (Internal ID = `{short-id}`, match/auto-create the Company relation, Submission Date blank). If the MCP is unavailable, log it and add a TODO to the final summary — don't stop the pipeline.
 
-Log: `[TS] step=09 tracker-row mode={csv|notion} stage=to-apply internal-id={short-id} fit="{Verdict} · {Score}/10"`
+Log: `[TS] step=09 tracker-row mode={csv|notion} stage=to-apply internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"`
 
 ## Step 10: Empty the inbox (proceed path)
 
@@ -398,13 +398,13 @@ Tell the user in chat, four lines max.
 **Auto mode** — no cover letter is offered; drop that line:
 
 ```
-✓ {Company} — {Role} filed ({Verdict} {Score}/10)
+✓ {Company} — {Role} filed (Match {M}/10 · Appeal {A}/10)
   Folder: output/{short-id}/
   PDF: {surname} - Resume.pdf
   Tracked · Stage: To apply
 ```
 
-When invoked by bulk-process, this per-job summary is optional — bulk-process keeps its own running tally and prints one roll-up at the end. A single line per job (`✓ {Company} — {Role} — proceed ({Verdict} {Score}/10)`) is enough.
+When invoked by bulk-process, this per-job summary is optional — bulk-process keeps its own running tally and prints one roll-up at the end. A single line per job (`✓ {Company} — {Role} — proceed (Match {M}/10 · Appeal {A}/10)`) is enough.
 
 ## Step 12: Feedback note (proceed path, once ever)
 
@@ -435,14 +435,14 @@ Stop. Don't ask follow-ups.
 
 # SKIP PATH (alternative Step 7-onward)
 
-If the Step 6 decision was **skip** — auto-skip (Weak/No fit in auto mode) or the user's "skip" in manual mode:
+If the Step 6 decision was **skip** — auto-skip (Match ≤ 5 in auto mode) or the user's "skip" in manual mode:
 
 ## Step 7-SKIP: Tracker row (skip path)
 
 Record the application in the tracker (`tracker.mode` in config), same as the proceed path with two differences:
 
 - **stage = `Decided against applying`** (not "To apply")
-- **fit** will show a low verdict (e.g., `Weak · 4/10`), which is expected for skips.
+- **fit** will show a low Match (e.g., `Match 3/10 · Appeal 8/10` for a Gamble, or `Match 4/10 · Appeal 3/10` for a plain Skip), which is expected.
 
 **csv mode (default):**
 
@@ -450,14 +450,14 @@ Record the application in the tracker (`tracker.mode` in config), same as the pr
 applywright tracker add \
   --short-id {short-id} --company "{Company}" --role "{Role}" \
   --url "{url}" --source "{Source}" --stage "Decided against applying" \
-  --fit "{Verdict} · {Score}/10" --comments "{one-line summary}"
+  --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
 ```
 
 **notion mode:** insert the row with Stage = `Decided against applying` per the CLAUDE.md schema.
 
 The point: skipped applications are still tracked so the user has a record of jobs they considered. The CV was never built, so there are no bullets to record.
 
-Log: `[TS] step=07-skip tracker-row mode={csv|notion} stage=decided-against internal-id={short-id} fit="{Verdict} · {Score}/10"`
+Log: `[TS] step=07-skip tracker-row mode={csv|notion} stage=decided-against internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"`
 
 ## Step 8-SKIP: Empty the inbox (skip path)
 
@@ -474,13 +474,13 @@ Log: `[TS] step=08-skip inbox-cleared`
 Tell the user in chat, four lines max:
 
 ```
-✓ {Company} — {Role} — skipped ({Verdict} {Score}/10)
+✓ {Company} — {Role} — skipped (Match {M}/10 · Appeal {A}/10)
   Folder: output/{short-id}/ (preserved with fit assessment)
   Tracked · Stage: Decided against applying
   No CV/PDF generated.
 ```
 
-When invoked by bulk-process, one line is enough: `✓ {Company} — {Role} — skipped ({Verdict} {Score}/10)`.
+When invoked by bulk-process, one line is enough: `✓ {Company} — {Role} — skipped (Match {M}/10 · Appeal {A}/10)`.
 
 Stop. Don't ask follow-ups.
 
