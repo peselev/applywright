@@ -300,11 +300,17 @@ The "Cover letter angle" line is a thesis seed, not a draft sentence. It should 
 
 Use the same verdict emoji as in the H1 (see the table in Step 6).
 
-Open the fit file for the user to review:
+Export the fit report to PDF, then open the PDF for the user to review:
 
 ```bash
-applywright open output/{short-id}/fit-{short-id}.md
+applywright export-pdf "output/{short-id}/fit-{short-id}.md" "output/{short-id}/fit-{short-id}.pdf" document
 ```
+
+```bash
+applywright open output/{short-id}/fit-{short-id}.pdf
+```
+
+Keep the `.md` — it is the source of truth and is read downstream by the cover-letter and application-answers skills; the PDF is just a readable view. If `export-pdf` fails, log the error and fall back to opening the markdown (`applywright open output/{short-id}/fit-{short-id}.md`) so the user still gets the report.
 
 ## Step 8: Done
 

@@ -22,7 +22,7 @@ These are hard constraints, not style preferences.
 
 ## Banned words — Tier 1 (never use)
 
-delve, tapestry, multifaceted, pivotal, realm, synergy, paradigm, holistic, nuanced, foster, embark, leverage (as verb), utilize, harness, spearhead, cornerstone, landscape (metaphorical), journey (metaphorical), cutting-edge, innovative (unless quoting the JD verbatim), groundbreaking, robust, comprehensive, seamlessly, transformative
+delve, tapestry, multifaceted, pivotal, realm, synergy, paradigm, holistic, nuanced, foster, embark, leverage (as verb), utilize, harness, spearhead, cornerstone, landscape (metaphorical), journey (metaphorical), cutting-edge, innovative (unless quoting the JD verbatim), groundbreaking, robust, comprehensive, seamlessly, transformative, kill/killed (for shelving or cutting a feature)
 
 **Replacements:**
 | Banned | Use instead |
@@ -36,6 +36,7 @@ delve, tapestry, multifaceted, pivotal, realm, synergy, paradigm, holistic, nuan
 | facilitate | run, lead, coordinate |
 | showcase | show, demonstrate |
 | bolster | strengthen, support |
+| kill / killed (a feature) | shelved, cut, dropped, passed on |
 
 ---
 

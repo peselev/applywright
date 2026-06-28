@@ -22,6 +22,7 @@ applywright/
 │       ├── job-description-{short-id}.md
 │       ├── injection-report-{short-id}.md   (only if scan flagged anything)
 │       ├── fit-{short-id}.md                (always created by assess-fit; includes sourced Company context block)
+│       ├── fit-{short-id}.pdf               (exported readable view of the fit report)
 │       ├── cv-{short-id}.md                 (proceed path only)
 │       ├── {surname} - Resume.pdf             (proceed path only)
 │       ├── cover-letter-{short-id}.md       (if a cover letter was written)
@@ -146,6 +147,7 @@ Every file inside an application folder includes the short ID in its name, **exc
 | Job description | `job-description-{short-id}.md` |
 | Injection report (if any) | `injection-report-{short-id}.md` |
 | Fit assessment | `fit-{short-id}.md` |
+| Fit assessment (export) | `fit-{short-id}.pdf` |
 | Tailored CV (source) | `cv-{short-id}.md` |
 | Tailored CV (submission) | `{surname} - Resume.pdf` |
 | Cover letter (source) | `cover-letter-{short-id}.md` |
