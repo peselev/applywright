@@ -48,7 +48,7 @@ Commands:
   export-pdf <in.md> <out.pdf> <kind>   render a PDF (kind: cv | document | cover-letter)
   check-template [path] [--kind ..]     validate a profile/ template against the contract
   tracker <init|seen|add|status> ...    CSV application tracker
-  inbox <claim|done|fail|status> ...    bulk job queue (inbox/jobs.txt)
+  inbox <claim|done|fail|status|add> ...  bulk job queue (inbox/jobs.txt)
   log-append <logfile> <message>        append a timestamped log line
   log-start <logfile> --id .. --url ..  create the log file + header
   reset-intake                          clear the JD-intake files (no args)

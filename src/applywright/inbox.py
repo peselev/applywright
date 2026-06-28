@@ -36,8 +36,22 @@ Usage:
     applywright inbox status
         Print a one-line count summary to stdout: pending/in-progress/failed.
 
-All commands operate on inbox/jobs.txt relative to the current working
-directory (run from the job-hunt root, same as the other scripts).
+    applywright inbox add
+        Validate-and-append the canonical job URLs in inbox/.candidates.txt
+        (written by the collect-jobs skill) to inbox/jobs.txt. For each
+        candidate URL, the trailing path segment is taken as the job ID and
+        must appear verbatim somewhere in inbox/raw_list.md (the pasted email
+        the skill extracted from). A candidate whose ID is not found in the
+        source is rejected — this is the anti-hallucination guard: the agent
+        cannot invent a posting that wasn't in the blob. Survivors are deduped
+        against what's already in jobs.txt (exact canonical-URL match) and
+        against each other, then appended atomically. Prints a one-line count
+        to stdout (added / skipped_dup / rejected_not_in_source) and the
+        rejected/skipped URLs to stderr. Consumes (removes) .candidates.txt on
+        success. Does NOT touch raw_list.md — the skill clears that afterward.
+
+All commands operate on files under inbox/ relative to the project root
+(resolved by walking up to pyproject.toml, same as the other scripts).
 """
 
 import os
@@ -46,18 +60,24 @@ import tempfile
 
 from .paths import find_root
 
-# Anchored to the project root in main(); this default is only a placeholder.
+# Anchored to the project root in main(); these defaults are only placeholders.
 JOBS_PATH = os.path.join("inbox", "jobs.txt")
+# The pasted job-board email the collect-jobs skill extracts from (read-only
+# here; used to validate that each candidate's job ID was really in the source).
+RAW_LIST_PATH = os.path.join("inbox", "raw_list.md")
+# The skill's handoff file: canonical job URLs it extracted, one per line.
+CANDIDATES_PATH = os.path.join("inbox", ".candidates.txt")
 
 IN_PROGRESS = "⏳"
 FAILED = "❌"
 MARKERS = (IN_PROGRESS, FAILED)
 
 
-def read_lines():
-    if not os.path.exists(JOBS_PATH):
+def read_lines(path=None):
+    target = JOBS_PATH if path is None else path
+    if not os.path.exists(target):
         return []
-    with open(JOBS_PATH, "r", encoding="utf-8") as f:
+    with open(target, "r", encoding="utf-8") as f:
         # keepends=False; we re-add "\n" on write. Trailing newline normalised.
         return f.read().splitlines()
 
@@ -100,6 +120,23 @@ def is_content(line):
 
 def urls_match(a, b):
     return a.strip() == b.strip()
+
+
+def job_id_from_url(url):
+    """Return the trailing path segment of a canonical job URL as its ID.
+
+    Both supported shapes put the job ID last:
+        linkedin.com/jobs/view/4363054010        -> 4363054010
+        builtin.com/job/<slug>/9839678           -> 9839678
+    Any query string or trailing slash is stripped first. Returns '' if the
+    URL has no path segment (which the caller treats as a rejection).
+    """
+    from urllib.parse import urlparse
+
+    path = urlparse(url.strip()).path.rstrip("/")
+    if not path:
+        return ""
+    return path.rsplit("/", 1)[-1]
 
 
 def cmd_claim():
@@ -176,18 +213,92 @@ def cmd_status():
     return 0
 
 
+def cmd_add():
+    """Validate candidate URLs against the source blob, dedup, append.
+
+    The collect-jobs skill does the messy extraction (reading heterogeneous
+    job-board markdown and pulling the canonical posting URLs); this command is
+    the deterministic half it can't be trusted to do itself: prove each URL's
+    job ID was actually in the source, drop duplicates, and write the queue
+    atomically.
+    """
+    candidates = [
+        split_marker(line)[1]
+        for line in read_lines(CANDIDATES_PATH)
+        if is_content(line)
+    ]
+
+    if not os.path.exists(RAW_LIST_PATH):
+        sys.stderr.write(
+            "add: inbox/raw_list.md not found — cannot validate candidates\n"
+        )
+        return 1
+    with open(RAW_LIST_PATH, "r", encoding="utf-8") as f:
+        source = f.read()
+
+    # Exact canonical-URL match against what's already queued.
+    existing = set()
+    for line in read_lines():
+        if is_content(line):
+            _, url = split_marker(line)
+            existing.add(url)
+
+    added, skipped_dup, rejected = [], [], []
+    seen_batch = set()
+    for url in candidates:
+        url = url.strip()
+        if not url:
+            continue
+        job_id = job_id_from_url(url)
+        # Anti-hallucination guard: the ID must appear in the pasted source.
+        if not job_id or job_id not in source:
+            rejected.append(url)
+            continue
+        if url in existing or url in seen_batch:
+            skipped_dup.append(url)
+            continue
+        seen_batch.add(url)
+        added.append(url)
+
+    if added:
+        lines = read_lines()
+        lines.extend(added)
+        write_lines(lines)
+
+    for url in rejected:
+        sys.stderr.write(f"rejected (id not in source): {url}\n")
+    for url in skipped_dup:
+        sys.stderr.write(f"skipped (already queued): {url}\n")
+    sys.stdout.write(
+        f"added={len(added)} skipped_dup={len(skipped_dup)} "
+        f"rejected_not_in_source={len(rejected)}\n"
+    )
+
+    # Consume the handoff so a later run can't reprocess a stale candidate set.
+    try:
+        os.remove(CANDIDATES_PATH)
+    except OSError:
+        pass
+    return 0
+
+
 def main(argv):
     if len(argv) < 1:
         sys.stderr.write(__doc__)
         return 1
     cmd = argv[0]
 
-    global JOBS_PATH
-    JOBS_PATH = str(find_root() / "inbox" / "jobs.txt")
+    global JOBS_PATH, RAW_LIST_PATH, CANDIDATES_PATH
+    root = find_root()
+    JOBS_PATH = str(root / "inbox" / "jobs.txt")
+    RAW_LIST_PATH = str(root / "inbox" / "raw_list.md")
+    CANDIDATES_PATH = str(root / "inbox" / ".candidates.txt")
     if cmd == "claim":
         return cmd_claim()
     if cmd == "status":
         return cmd_status()
+    if cmd == "add":
+        return cmd_add()
     if cmd in ("done", "fail"):
         if len(argv) < 2:
             sys.stderr.write(f"{cmd}: needs a URL argument\n")

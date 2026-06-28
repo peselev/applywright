@@ -43,6 +43,7 @@ applywright/
 │   ├── customize-pipeline/SKILL.md ← setup Milestone 5: optional, on-demand pipeline personalization (teaser)
 │   ├── process-job/SKILL.md     ← the main filing pipeline (runs auto or manual)
 │   ├── bulk-process/SKILL.md    ← loop over inbox/jobs.txt, each job via process-job in auto mode
+│   ├── collect-jobs/SKILL.md    ← ad hoc: extract job URLs from a pasted job-board email (inbox/raw_list.md) into inbox/jobs.txt
 │   ├── fetch-jd/SKILL.md        ← JD fetching with fallbacks
 │   ├── refresh-persona/SKILL.md ← refresh persona.md from the user's portfolio URL
 │   ├── assess-fit/SKILL.md      ← evaluate JD vs the user's CV + portfolio
@@ -88,6 +89,11 @@ The user's intake convention: they paste the URL to the job, or queue many URLs 
 
 - **One URL in chat** → run `skills/process-job/SKILL.md` for that URL.
 - **"process my inbox" / "run the queue" / many URLs** → run `skills/bulk-process/SKILL.md`, which loops over `inbox/jobs.txt` and runs process-job (in auto mode) on each.
+
+To turn a job-board email (LinkedIn, Built In, etc.) into queued URLs, the user
+pastes it into `inbox/raw_list.md` and asks to collect the jobs → run
+`skills/collect-jobs/SKILL.md`. It only fills `inbox/jobs.txt`; it does not fetch
+or score. It is ad hoc and separate from the pipeline.
 
 ### Decision mode
 
