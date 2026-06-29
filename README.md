@@ -150,7 +150,11 @@ applywright/
 
 ## Editing the pipeline
 
-Behavior lives in `CLAUDE.md` and `skills/*/SKILL.md`. Edit those to change how it works; most tweaks need no code. The voice rules for written application materials are in `skills/shared/writing-rules.md`; tune them to your taste.
+Behavior lives in `CLAUDE.md` and `skills/*/SKILL.md`. Edit those to change how it works; most tweaks need no code.
+
+**Add your own skills in `profile/skills/`.** Drop a `profile/skills/{name}/SKILL.md` and the agent treats it as a skill, the same as the shipped ones. Because `profile/` is gitignored, your skills survive `git pull` — adding behavior never conflicts on upgrade. Your private skills can read the shared files in `skills/shared/`, so they inherit the voice rules, the drafting protocol, and the voice bank for free. This is the upgrade-safe way to extend Applywright: new behavior goes in `profile/skills/`, the public pipeline upgrades clean underneath it.
+
+**Changing existing behavior is fine too, with one caveat.** Some changes have a profile-side override that stays upgrade-safe: the resume look (`profile/cv-template.typ`), and your personal voice direction (the "Standing style direction" block in `profile/cover-letter-field-notes.md`, which the cover-letter skill reads on top of the shared rules). Others mean editing a tracked file directly — recalibrating the fit logic in `skills/assess-fit/SKILL.md`, or changing the voice rules in `skills/shared/writing-rules.md`. That's allowed and sometimes the right call, but once you edit a tracked file your copy diverges from the public repo, so a later `git pull` won't merge cleanly. To upgrade after that, clone the new version somewhere fresh, read the released changes, and port them by hand. If you're treating Applywright as a starting kit to build on rather than something you'll keep upgrading, that's a perfectly good trade.
 
 ## Look and feel: font and templates
 
