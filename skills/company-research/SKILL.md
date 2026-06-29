@@ -1,6 +1,6 @@
 ---
 name: company-research
-description: Build or refresh a reusable company dossier for a single company, used by the cover-letter and interview skills (and runnable directly with "research {company}"). Produces one dossier per company — a reusable company core plus per-area department sections that accrete as the user applies to different areas — stored at output/companies/{slug}.md and, in notion mode, on the company's page in the Notion Companies DB. The agent researches via its own web search/fetch by default; when key fields can't be fetched, it generates a PDF handoff brief the user runs in a web assistant (Claude, ChatGPT, Gemini) and pastes back. Every fact carries a source URL or is marked not found — never guessed. Freshness window is 45 days. This is a rare, on-demand step: it is NOT part of process-job and does NOT run per job. The per-job light company-context block in assess-fit is unchanged and separate.
+description: Build or refresh a reusable company dossier for a single company, used by the cover-letter and interview skills (and runnable directly with "research {company}"). Produces one dossier per company — a reusable company core plus per-area department sections that accrete as the user applies to different areas — stored at output/companies/{slug}.md and, in notion mode, on the company's page in the Notion Companies DB. The agent researches via its own web search/fetch by default; after the pass it reviews the gaps and, when a material field is missing for a reason a web assistant could fix, offers (never auto-runs) a PDF handoff brief the user runs in a web assistant (Claude, ChatGPT, Gemini) and pastes back. Every fact carries a source URL or is marked not found — never guessed. Freshness window is 45 days. This is a rare, on-demand step: it is NOT part of process-job and does NOT run per job. The per-job light company-context block in assess-fit is unchanged and separate.
 ---
 
 # Company Research
@@ -109,13 +109,45 @@ the highest-fabrication-risk material in the whole pipeline.
     isn't fetchable. Name the leader only with a real source.
   - **Area-lead narrative** — same constraint; include only with a sourced quote or talk.
 
-Fill the dossier template (Step 4) with what you ground. If, after an honest pass, key
-fields are still `*not found*` and they matter for the use at hand, go to Step 3.
+Draft the fields you ground, and for every gap record *why* it's missing — a paywall, an auth
+wall, a JS-rendered page, or simply nothing found. That recorded reason is what the next step
+keys on. Then always run Step 3 before writing.
 
-## Step 3: Handoff fallback (when native research leaves real gaps)
+## Step 3: Gap review, then handoff if it will help
 
-Use this when the native pass couldn't fetch fields that matter (most of the financials, the
-leadership, the recent news — the unfetchable kind). It is an escalation, not the default.
+Run this after every native pass, before writing. It is a required checkpoint, not an optional
+escalation. Its job is to look at what came back `*not found*` and decide whether a
+web-assistant handoff would actually close any of it.
+
+**3a — Classify every `*not found*` field by the reason you recorded.**
+- **Escalatable** — the data exists but your fetch couldn't reach it: a paywall (Crunchbase,
+  PitchBook), an auth wall (LinkedIn), a JS-rendered or ATS page that returned nothing, a
+  source that blocked the fetch. A person working in a web assistant can plausibly open these.
+- **Absent** — you searched and the data isn't there or isn't public: no news in the window,
+  no disclosed figure, no public department lead. A handoff cannot manufacture it.
+
+**3b — Decide whether to offer the handoff.** Offer it when **at least one gap is both
+escalatable and material.** Material fields: company news, challenges/headwinds, leadership
+narrative, financials, product/area releases, area news, department/org leadership, open roles
+in the department (and any core identity field, if one is somehow missing). Do not offer for
+absent gaps, and do not offer for escalatable gaps in low-value fields (a minor competitor
+detail). If nothing clears the bar, skip to Step 4 and write — silently, no handoff.
+
+**3c — Make the offer (the user decides; offer, never auto-fire).** Tell the user, in the
+plain editorial voice (no em-dash rhythm, no "not X but Y", no tricolons by default, no
+aphoristic closers), exactly which material fields are missing and why each is the kind a web
+assistant could fix. Name the absent gaps too, so the user knows those won't be helped. Then
+ask whether they want the handoff brief. Example:
+
+> Two material fields came back empty for a reason a web assistant could fix. The exact
+> valuation is paywalled on Crunchbase and PitchBook. The live AI-team roles are on a
+> JS-rendered careers page that returned nothing. Recent company news also came back empty,
+> but that looks like there is no press in the last 30 days, so a handoff won't help there. Do
+> you want me to generate a handoff brief for the two fixable fields?
+
+- **User declines, or nothing cleared 3b** → go to Step 4 and write, with the gaps left
+  `*not found*`.
+- **User accepts** → generate the handoff brief below.
 
 **Generate the handoff brief.** Request the **entire dossier**, and show what you already
 have. Full context lets the web assistant see exactly which fields are already grounded (so
@@ -126,7 +158,7 @@ Write `output/companies/{slug}-handoff.md` with:
 - A short, plain instruction header (see voice note below).
 - The full field contract for the tier(s) being researched.
 - For each field already filled by the native pass: the value, tagged `[have — source: {URL}]`.
-- For each gap: `[needed]`.
+- For each gap: `[needed]`, tagged with its Step 3a class — `[needed — blocked source, please open]` for an escalatable gap, `[needed — prior search found nothing recent; confirm none or dig deeper]` for an absent one the user still wants tried.
 - A required output format: every returned fact must come back **with a source URL**, in
   markdown, under the same field headings.
 
