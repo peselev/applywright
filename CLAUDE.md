@@ -48,6 +48,7 @@ applywright/
 │   ├── fetch-jd/SKILL.md        ← JD fetching with fallbacks
 │   ├── refresh-persona/SKILL.md ← refresh persona.md from the user's portfolio URL
 │   ├── assess-fit/SKILL.md      ← evaluate JD vs the user's CV + portfolio
+│   ├── company-research/SKILL.md ← build/refresh a reusable company dossier (output/companies/{slug}.md + Notion company page); used by cover-letter + interview; on-demand, NOT per job
 │   ├── cover-letter/SKILL.md    ← cover letter drafting + editing loop + PDF export
 │   ├── application-answers/SKILL.md ← free-form application-form question answers
 │   └── shared/
@@ -141,6 +142,18 @@ If SKIP (steps 7-skip through 9-skip):
 Any skill that drafts a document a real reader outside this workflow will see — a cover letter, an application-form answer, an outreach message, an interview-facing artifact, anything that goes out under the user's name — must run `skills/shared/drafting-protocol.md` before producing a draft. The protocol is one fork: if there's rich user-approved content to ground the piece (an approved prior, a relevant field-note, banked voice, or a detailed persona), state the goal, draft, and explain the reasoning; if there isn't, do not invent generic copy — say so and offer to outline the goal and approach, interview the user, or learn from a past document. This is what makes the writing skills "activate" on a fresh system instead of producing filler. It governs the two writing skills today and every outside-audience writing skill added later.
 
 The user's own prose, when they share or write a substantial passage, is banked verbatim to `profile/voice-bank.md` on their confirmation (`skills/shared/voice-bank.md`). The agent never analyzes or rewrites banked text; it's the corpus the protocol's grounding check mines for the user's real voice.
+
+## Company research (on-demand)
+
+Deep company research is a rare, on-demand step — `skills/company-research/SKILL.md`. It builds one reusable dossier per company: a company core (researched once, reused across every role there) plus department/product sections that accrete as the user applies to different areas. It is **not** part of process-job and never runs per job; assess-fit's light, always-on company-context block in the fit file is the per-job touch and is unrelated.
+
+**It fires when the user writes a cover letter or prepares for an interview**, and it runs directly on request ("research Hearth"). The cover-letter skill checks for a fresh dossier in its grounding pre-flight; the interview skill (when built) requires one.
+
+**Storage.** Local `output/companies/{slug}.md` — one flat file per company (gitignored), core written once with department sections appended. In **notion mode** the dossier also lives on the company's page in the Notion Companies DB, and the Notion page is the **authority**: the user works across machines, so the local `output/` file is a per-machine cache while the Notion page is the durable, cross-machine record. The `{slug}` is the short-ID company-slug rule without the id-tail.
+
+**Freshness: 45 days.** A tier (core, or one department) is fresh if researched within 45 days; news is captured "last 30 days as of the research date," so a reused item can be up to 75 days old. The agent reuses a fresh dossier, refreshes a stale tier, and researches a missing one — researching only what's needed.
+
+**Grounding.** Every fact carries a source URL or is marked `*not found*` — never guessed; company facts (funding, exec names, product versions, logos) are the highest-fabrication-risk material in the pipeline. The default mechanism is the agent's own web search/fetch. When key fields aren't fetchable, the agent generates a PDF handoff brief (via `export-pdf`) that the user runs in a web assistant and pastes back; that returned content is user-supplied, so it's trusted without re-verification (the voice-bank trust line), with the format still requiring a source URL per fact.
 
 ## Short ID rules
 

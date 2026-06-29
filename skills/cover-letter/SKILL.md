@@ -45,6 +45,8 @@ you are not grounded.
 
 Do not invent a generic letter to avoid an empty bank.
 
+**Company dossier (pre-flight).** Once grounded, ensure a fresh company dossier exists before drafting, because the bridge and the "why-company" hook draw on it. Run `skills/company-research/SKILL.md`'s pre-flight for this company: if the dossier is fresh, reuse it; if it's missing or stale (older than 45 days), company-research builds or refreshes it first. The dossier lives at `output/companies/{slug}.md` (and on the Notion company page in notion mode). This is not a second grounding gate — grounding is about the user's voice and angle; the dossier is the sourced company facts the bridge needs. Steps 1-3 then derive the thesis, proof, and bridge with the dossier in hand.
+
 ## Step 1: Derive the thesis
 
 Read `fit-{short-id}.md`. Do not read the raw JD for this step — the fit assessment has already done the filtering.
@@ -78,9 +80,9 @@ The portfolio link belongs here if a case study with a verified URL directly sub
 
 ## Step 3: Select the bridge
 
-Read the raw JD for this step — specifically the company's stated mission or the most specific thing they said about what they're building or betting on.
+Read the company dossier (`output/companies/{slug}.md`, ensured fresh in the Step 0 pre-flight) for this step — specifically the company's mission, the leadership "why now" narrative, and the challenges/headwinds, which are sourced and sharper than the raw JD. Fall back to the raw JD's stated mission if a dossier field is `*not found*`. Whatever you use, run it through the Fluff Test: the bridge must name something specific and defensible, not a mission-statement platitude.
 
-The bridge is one sentence that connects to their specific bet, not generic enthusiasm. It should name something from the JD, not from the user's background. It is not "I'm excited to bring my skills to your team." It is closer to "I want to help prove the bet behind this role: that work management becomes the organizational memory the agentic enterprise runs on."
+The bridge is one sentence that connects to their specific bet, not generic enthusiasm. It should name something from the dossier or JD, not from the user's background. It is not "I'm excited to bring my skills to your team." It is closer to "I want to help prove the bet behind this role: that work management becomes the organizational memory the agentic enterprise runs on."
 
 ## Step 4: Write the cover letter
 
