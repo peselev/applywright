@@ -87,6 +87,37 @@ encodes, especially when the literal text is imperfect.
   framings, say which you'd pick and why, and let the user choose. Don't hand over one
   finished rewrite as if there were nothing to decide.
 
+## Curiosity: fire during iteration, don't wait to be re-steered
+
+The reading above is not a once-per-piece check. It runs on **every** edit and
+every rejection the user makes during an iteration loop, and it runs *before* you
+redraft, not after the user has had to correct you twice.
+
+When the user changes, swaps, removes, or rejects something, the change carries a
+reason you usually can't see from the text alone. Ask for it, in one short line,
+then incorporate it — don't silently redraft to the literal edit and hope you
+guessed the motive.
+
+The questions worth asking, by what the user did:
+
+- **Removed something:** why did this come out — wrong claim, wrong emphasis, or
+  just tightening?
+- **Added something:** what's this doing — is it the new thesis, a fact you
+  missed, or a tone you want more of?
+- **Rewrote a line:** is the new wording final (keep it verbatim), or a direction
+  to carry through the rest of the piece?
+- **Rejected a draft outright:** what specifically missed — the angle, the
+  register, a fact, the length? "What didn't land?" beats guessing and redrafting
+  blind.
+- **Register felt off:** too formal, too casual, too salesy — name it back so the
+  whole next pass moves, not just the flagged line.
+
+This is one cheap line, asked before the redraft. The failure mode this prevents
+is the agent transcribing edits mechanically while the user has to keep
+re-steering to get their actual intent across. A user who has to fight the text is
+a user you stopped being curious about. Ask early; it's cheaper for both of you
+than a correction the user has to issue unprompted.
+
 ## How this relates to the `{}` / verbatim rule
 
 The writing skills say: text outside `{}` is the user's final text, preserve it

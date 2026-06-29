@@ -5,7 +5,7 @@ description: Draft answers to application-form questions for a specific job. Tri
 
 # Application Answers Skill
 
-Read this whole file before starting. Also read `skills/shared/writing-rules.md` (voice) before writing any answer.
+Read this whole file before starting. Also read `skills/shared/writing-rules.md` (voice) and `skills/shared/drafting-protocol.md` (the ground-first / refuse-to-invent protocol) before writing any answer. Application answers are outside-audience writing, so the protocol governs every one.
 
 ## What this skill is for
 
@@ -20,6 +20,7 @@ Unlike the cover letter (fixed structure, fixed length, template-driven), answer
 - `profile/master-bullets.md` — the story bank (COMM-1, REPORT-1, AI, PLG, DATA-ACCESS, etc.)
 - `output/{short-id}/job-description-{short-id}.md` — the JD, for company/role specifics
 - `profile/answers-field-notes.md` — accumulated learnings about what kinds of answers land (read it before drafting; it may already have guidance for the question types in front of you)
+- `profile/voice-bank.md` — the user's own banked drafts, verbatim; a grounding source and a source of real phrasing (see `skills/shared/voice-bank.md`)
 
 If the fit file or portfolio summary is missing, tell the user which one and stop.
 
@@ -39,6 +40,13 @@ Before drafting, read `profile/answers-field-notes.md`. If it has guidance relev
 
 For each question, in order:
 
+**First, ground the question (drafting protocol).** Read the question (sub-step 1 below), then run `drafting-protocol.md` Step 1 against it. You are grounded if a relevant `answers-field-notes.md` entry for this question type, a finalized prior answer to a comparable question in `output/*/answers-notes-*.md`, banked prose in `profile/voice-bank.md`, or a detailed persona gives you a real, specific angle. Apply the Fluff Test: if the only answer you could write is one that would fit any candidate, you are not grounded.
+
+- **Grounded** → draft it (sub-steps 1-6 below) and deliver goal-first (protocol Step 2a): state the goal of the answer, show the draft, then the reasoning.
+- **Not grounded** → do not draft this answer. Follow protocol Step 2b: say so plainly and offer the three options (outline the goal and approach, interview the user on this question, or ask for a past answer to learn from). On a fresh system this is expected for most questions — use it to pull a real angle out of the user, then re-check. If they share or write something substantial of their own, bank it (`skills/shared/voice-bank.md`). Don't invent a generic answer to avoid an empty bank.
+
+Once grounded, draft using these sub-steps:
+
 1. **Read the question literally.** Answer the question actually asked, not the question you expected. "Why this role?" and "Why this company?" are different; "describe a failure" is not "describe a challenge." If the question is ambiguous, draft for the most likely reading and note the assumption.
 2. **Research the company only if the question needs it.** Some questions ("why this company," "what excites you about our product," anything that asks you to react to something specific about them) need company specifics to answer well. When a question needs them:
    - First read the **Company context** block in `fit-{short-id}.md` — assess-fit already captured sourced facts there. If it covers the question, use it; no new search needed.
@@ -50,7 +58,7 @@ For each question, in order:
 5. **Respect the limit.** If there's a word/character cap, stay under it. If there isn't, match the length to the question — most answers are 2-6 sentences; a "why this company" is tighter than a "walk me through a hard decision."
 6. **Run the core checklist** from `skills/shared/writing-rules.md`, plus the answer-specific checks below, before showing the draft.
 
-Show the draft for one question, then stop and let the user react. Do not draft all questions at once — go one at a time so each gets real iteration.
+When you show a draft, frame it per the protocol: lead with the goal (one line — what this answer has to do, given the question and what they're screening for), then the draft, then a short reasoning line (the angle you took and why it fits, traceable to the grounding source). Show the draft for one question, then stop and let the user react. Do not draft all questions at once — go one at a time so each gets real iteration.
 
 ### Answer-specific structural checks (on top of the shared core checklist)
 
@@ -64,6 +72,10 @@ Show the draft for one question, then stop and let the user react. Do not draft 
 ## Step 4: Iterate
 
 The user edits the same way they do for cover letters: they may reply in chat, or edit text you've shown. The `{curly-brace}` convention applies if they're editing a file — anything in `{}` is an instruction to act on and then remove; anything outside `{}` is their final text, preserved verbatim. Rewrite the full answer each pass and note what changed in one line. Re-run the checklist after every rewrite. As with cover letters, read `skills/shared/editing-intent.md` and apply it: catch the idea behind each edit (final wording, a direction, an example, or a line that fights the point), keep the idea even when the wording is rough, and check proactively when a reading is ambiguous or costly to get wrong.
+
+**Fire the curiosity beat before redrafting.** When an edit removes, adds, rewrites, or rejects something substantive, ask the one-line "why" first (the "Curiosity: fire during iteration" section of `editing-intent.md`) — then redraft to the reason, not just the literal change.
+
+**Bank the user's own prose.** If the user writes or pastes a substantial passage of their own during the loop — a rewritten answer, an alternative framing in their words, a past answer they're sharing — offer to save it to the voice bank (`skills/shared/voice-bank.md`): confirm it's theirs in one line, then append it verbatim to `profile/voice-bank.md`. A complete short answer is worth banking even at two or three sentences; small chat edits are not.
 
 ## Step 5: Finalize and rate each answer
 

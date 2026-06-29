@@ -12,6 +12,7 @@ applywright/
 ├── profile/config.yaml        ← identity + tracker choice (gitignored; read for any personal value)
 ├── profile/cover-letter-field-notes.md  ← cross-application cover-letter learnings (yours; agent proposes, you approve)
 ├── profile/answers-field-notes.md       ← cross-application answer learnings (yours; agent proposes, you approve)
+├── profile/voice-bank.md                ← your own drafts, banked verbatim (yours; agent appends on your confirmation, never analyzes)
 ├── profile/
 │   ├── cv.md                  ← CV template with {bullet_2} and {bullet_3} placeholders
 │   ├── cv-rules.md            ← what's locked vs dynamic in cv.md (convention doc, read-only)
@@ -51,7 +52,9 @@ applywright/
 │   ├── application-answers/SKILL.md ← free-form application-form question answers
 │   └── shared/
 │       ├── writing-rules.md     ← the user's voice: anti-fabrication, banned words, AI-tells, Fluff Test, core checklist (used by cover-letter + application-answers)
-│       ├── editing-intent.md    ← read the intent behind a user's edit/input (final vs direction vs example vs spec); check before acting
+│       ├── drafting-protocol.md ← ground-first / refuse-to-invent protocol for any outside-audience draft: goal → draft → reasoning, or three options when ungrounded (used by every writing skill)
+│       ├── voice-bank.md        ← how to bank the user's own prose verbatim into profile/voice-bank.md for later voice/style grounding
+│       ├── editing-intent.md    ← read the intent behind a user's edit/input (final vs direction vs example vs spec); fire curiosity during iteration; check before acting
 │       └── rating-and-learning.md ← ok/star rating + propose-then-write learning loop (used by both writing skills)
 ├── pyproject.toml             ← installable package metadata; `applywright` console command
 ├── src/applywright/           ← the CLI (installed via `pipx install .`); run `applywright <command>`
@@ -130,6 +133,12 @@ If SKIP (steps 7-skip through 9-skip):
 9-skip. Show the final summary (no CV/PDF generated; folder preserved with fit assessment)
 
 **Cover letters are never auto-chained.** In manual mode, the user invokes `cover-letter` explicitly when ready. In auto mode (including all bulk jobs) no cover letter is written or offered.
+
+## Outside-audience writing (the drafting protocol)
+
+Any skill that drafts a document a real reader outside this workflow will see — a cover letter, an application-form answer, an outreach message, an interview-facing artifact, anything that goes out under the user's name — must run `skills/shared/drafting-protocol.md` before producing a draft. The protocol is one fork: if there's rich user-approved content to ground the piece (an approved prior, a relevant field-note, banked voice, or a detailed persona), state the goal, draft, and explain the reasoning; if there isn't, do not invent generic copy — say so and offer to outline the goal and approach, interview the user, or learn from a past document. This is what makes the writing skills "activate" on a fresh system instead of producing filler. It governs the two writing skills today and every outside-audience writing skill added later.
+
+The user's own prose, when they share or write a substantial passage, is banked verbatim to `profile/voice-bank.md` on their confirmation (`skills/shared/voice-bank.md`). The agent never analyzes or rewrites banked text; it's the corpus the protocol's grounding check mines for the user's real voice.
 
 ## Short ID rules
 

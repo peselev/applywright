@@ -13,10 +13,37 @@ Read this whole file before starting. Steps run in order.
 - `profile/persona.md` — for portfolio anchors and persona voice
 - `profile/master-bullets.md` — for proof selection (if not already clear from fit file)
 - `profile/cover-letter-field-notes.md` — accumulated learnings about what makes your cover letters land (read it before drafting; it may already have guidance that applies to this role)
+- `profile/voice-bank.md` — the user's own banked drafts, verbatim; a grounding source and a source of real phrasing (see `skills/shared/voice-bank.md`)
 - `output/{short-id}/job-description-{short-id}.md` — for bridge (company's stated bet)
 - `short-id` — passed in by the user or inferred from context
 
 If any required file is missing, stop and tell the user which file is absent.
+
+## Step 0: Ground and frame (drafting protocol)
+
+Read `skills/shared/drafting-protocol.md` and run it before anything else. A cover
+letter is outside-audience writing, so the protocol governs it.
+
+Run the grounding check (protocol Step 1) for *this* letter. The fit file, CV, and
+master bullets give you the facts; grounding is about whether you have enough of
+the user's approved voice and framing to write something only they could write,
+not a generic letter. You are grounded if a relevant `cover-letter-field-notes.md`
+entry, a banked draft in `profile/voice-bank.md`, a finalized prior letter in
+`output/`, or a genuinely detailed persona gives you a real angle. Apply the Fluff
+Test: if the only letter you could write here is one that would fit any candidate,
+you are not grounded.
+
+- **Grounded** → continue to Step 1, and deliver the result goal-first (protocol
+  Step 2a): the goal of the letter is stated before the draft, and the reasoning
+  after it. Steps 1-3 below derive the thesis, proof, and bridge; the thesis is
+  the "message we're sending" the reasoning will name.
+- **Not grounded** → do not draft. Follow protocol Step 2b: say so plainly and
+  offer the three options (outline the goal and approach, interview the user, or
+  ask for a past letter to learn from). On a fresh system this is expected — use
+  it to get the user to seed a real angle or share a past letter, then re-check.
+  If they share a past letter, bank it (`skills/shared/voice-bank.md`).
+
+Do not invent a generic letter to avoid an empty bank.
 
 ## Step 1: Derive the thesis
 
@@ -136,13 +163,24 @@ Open it:
 applywright open output/{short-id}/cover-letter-{short-id}.md
 ```
 
-Show in chat — four lines:
+Show in chat, framed by the protocol (goal first, then the draft pointer, then the
+reasoning):
+
 ```
 ✓ Cover letter drafted — {Company} / {Role}
-  Thesis: {one-sentence thesis}
+  Goal:   {one line — what this letter has to do for this reader}
   Letter: output/{short-id}/cover-letter-{short-id}.md
   Notes:  output/{short-id}/cover-letter-notes-{short-id}.md
+
+  Reasoning:
+  - Thesis: {the one-sentence thesis, and in a few words why it over the alternative}
+  - Proof:  {what you led with and why it fits the thesis}
+  - Bridge: {the JD bet you anchored to}
 ```
+
+The goal line states the target before the user opens the draft; the reasoning
+block names the message you sent and the choices behind it. Keep the reasoning to
+those few lines — it's the user's window into the choices, not an essay.
 
 Then stop. Do not ask follow-up questions.
 
@@ -159,6 +197,10 @@ Rules for the editing loop:
 - If a `{}` comment is ambiguous, make your best interpretation, state it in the change note, and ask at the end if it was right — do not stop mid-pass to clarify
 
 **Read the intent behind every edit, not just the words.** The verbatim/`{}` rules above protect the user's text mechanically; `skills/shared/editing-intent.md` is how you apply them with judgment. A change the user made carries an idea — sometimes it's final wording to keep, sometimes a direction to develop, sometimes an example of what they're after, sometimes a line whose literal text undercuts the point they were making. Catch which it is, keep the idea even when the expression is rough, and check proactively when a reading is ambiguous or expensive to get wrong. Read that file before working an edit pass.
+
+**Fire the curiosity beat before you redraft.** When an edit removes, adds, rewrites, or rejects something substantive, ask the one-line "why" first (see the "Curiosity: fire during iteration" section of `editing-intent.md`) — why a paragraph came out, why a line went in, whether the register was off — then redraft to the reason, not just the literal change. Don't transcribe the edit blind and make the user re-steer.
+
+**Bank the user's own prose.** If, during the loop, the user writes or pastes a substantial passage of their own — a rewritten paragraph, an alternative opener in their words, a past letter they're sharing — offer to save it to the voice bank (`skills/shared/voice-bank.md`): confirm it's theirs in one line, then append it verbatim to `profile/voice-bank.md`. Don't bank small chat edits or phrase tweaks.
 
 Re-run the core checklist (shared) and the cover-letter-specific checklist after every rewrite. Do not show the checklist in chat — only surface failures.
 
