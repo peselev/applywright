@@ -324,6 +324,8 @@ Every filed application is recorded in a tracker. Which one is set by `tracker.m
 - **csv** (default, zero setup) — rows are written to `output/applications.csv` by `applywright tracker`.
 - **notion** (optional) — rows are written to a Notion database via the Notion MCP. Requires the MCP configured in Claude Code and the DB IDs filled in under `tracker.notion` in config.
 
+**The local CSV is always written, in every mode.** `output/applications.csv` is a complete local record regardless of `tracker.mode`. In **csv** mode it's the only tracker. In **notion** mode the pipeline **dual-writes**: it inserts the Notion row *and* mirrors the same row to the CSV via `applywright tracker add` (see process-job Steps 9 and 7-SKIP). So Notion is the durable cross-machine authority while the CSV is the always-on local log, and neither goes stale when the other is the primary. `applywright tracker add` dedups by URL, so the mirror write is idempotent. (Dedup itself is unchanged: csv mode dedups via `applywright tracker seen` pre-fetch; notion mode dedups on the local `output/` folders — see Dedup.)
+
 The **stage vocabulary** and **source inference** below are the same for both trackers.
 
 ### CSV tracker — `applywright tracker`

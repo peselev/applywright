@@ -363,9 +363,11 @@ applywright tracker add \
   --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
 ```
 
-**notion mode:** insert a row into the Applications DB via the Notion MCP, mapping the fields per the CLAUDE.md schema (Internal ID = `{short-id}`, match/auto-create the Company relation, Submission Date blank). If the MCP is unavailable, log it and add a TODO to the final summary — don't stop the pipeline.
+**notion mode:** do **both**, in this order:
+1. Insert a row into the Applications DB via the Notion MCP, mapping the fields per the CLAUDE.md schema (Internal ID = `{short-id}`, match/auto-create the Company relation, Submission Date blank). If the MCP is unavailable, log it and add a TODO to the final summary — don't stop the pipeline.
+2. **Also** write the same row to the local CSV mirror by running the exact `applywright tracker add` command shown under csv mode above (same field values). `output/applications.csv` is kept as a complete local record in **every** tracker mode, not just csv mode — Notion is the cross-machine authority, the CSV is the always-on local log. `applywright tracker add` dedups by URL, so this is safe and idempotent; if the CSV row already exists it's a no-op. Run `applywright tracker init` first only if the CSV doesn't exist yet.
 
-Log: `[TS] step=09 tracker-row mode={csv|notion} stage=to-apply internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"`
+Log: `[TS] step=09 tracker-row mode={csv|notion} csv-mirror={ok|skipped-dup} stage=to-apply internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"` (in csv mode there's no separate mirror, so omit `csv-mirror`).
 
 ## Step 10: Empty the inbox (proceed path)
 
@@ -453,11 +455,11 @@ applywright tracker add \
   --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
 ```
 
-**notion mode:** insert the row with Stage = `Decided against applying` per the CLAUDE.md schema.
+**notion mode:** do **both** (same dual-write as the proceed path): insert the row into the Applications DB via the Notion MCP with Stage = `Decided against applying` per the CLAUDE.md schema, **and also** write the same row to the local CSV mirror with the `applywright tracker add` command shown under csv mode above (`--stage "Decided against applying"`). The CSV is the always-on local record in every tracker mode; `tracker add` dedups by URL, so it's safe.
 
 The point: skipped applications are still tracked so the user has a record of jobs they considered. The CV was never built, so there are no bullets to record.
 
-Log: `[TS] step=07-skip tracker-row mode={csv|notion} stage=decided-against internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"`
+Log: `[TS] step=07-skip tracker-row mode={csv|notion} csv-mirror={ok|skipped-dup} stage=decided-against internal-id={short-id} fit="Match {M}/10 · Appeal {A}/10"` (omit `csv-mirror` in csv mode).
 
 ## Step 8-SKIP: Empty the inbox (skip path)
 
