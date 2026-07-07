@@ -352,7 +352,7 @@ Field values (same for both trackers):
 - source = one of `Built In` | `LinkedIn` | `Career page` | `Incoming` (infer from URL)
 - stage = `To apply`
 - fit = `Match {M}/10 · Appeal {A}/10` (e.g., `Match 6/10 · Appeal 8/10`)
-- comments = the **One-line summary** from `fit-{short-id}.md`, verbatim (single line)
+- comments = the **One-line summary** from `fit-{short-id}.md`, verbatim, then the cover-letter tag ` · CL: yes` or ` · CL: no` — derived from that file's **Cover letter** field (`Recommended` → `yes`, `Not needed` → `no`). One line. The tag is the scannable signal for which auto-filed roles are worth circling back to with a cover letter (auto mode writes none).
 
 **csv mode (default):**
 
@@ -360,7 +360,7 @@ Field values (same for both trackers):
 applywright tracker add \
   --short-id {short-id} --company "{Company}" --role "{Role}" \
   --url "{url}" --source "{Source}" --stage "To apply" \
-  --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary}"
+  --fit "Match {M}/10 · Appeal {A}/10" --comments "{one-line summary} · CL: {yes|no}"
 ```
 
 **notion mode:** do **both**, in this order:
@@ -441,10 +441,11 @@ If the Step 6 decision was **skip** — auto-skip (Match ≤ 5 in auto mode) or 
 
 ## Step 7-SKIP: Tracker row (skip path)
 
-Record the application in the tracker (`tracker.mode` in config), same as the proceed path with two differences:
+Record the application in the tracker (`tracker.mode` in config), same as the proceed path with three differences:
 
 - **stage = `Decided against applying`** (not "To apply")
 - **fit** will show a low Match (e.g., `Match 3/10 · Appeal 8/10` for a Gamble, or `Match 4/10 · Appeal 3/10` for a plain Skip), which is expected.
+- **comments = the One-line summary only — no `· CL:` tag.** A skipped job wasn't filed, so there's no cover-letter follow-up to flag.
 
 **csv mode (default):**
 

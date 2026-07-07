@@ -153,7 +153,7 @@ Add a one-line **how to play it** to the recommendation, folding in the Step 2 l
 
 ## Step 5: Pick two bullets from the master file
 
-Selection runs in four moves: pick two **families**, pick the best **variant** inside each, run a **theme cross-check** across the two, then raise any **selection flags**. Work through them in order — don't pick from the flat list of all bullets directly, or you'll miss the cross-check.
+Selection runs in four moves: pick two **families**, pick the best **variant** inside each, run a **theme cross-check** across the two, then raise any **selection flags**. Work through them in order — don't pick from the flat list of all bullets directly, or you'll miss the cross-check. A fifth move (5f) then derives the **cover-letter recommendation**; it lives here because it reads the flags from 5d together with the Step 2–3 signals.
 
 ### 5a: Pick the two strongest families
 
@@ -198,6 +198,23 @@ You now have: two final picks (each a KEY + its prose paragraph), the dominant t
 
 **Log internally** the two keys and any flag types raised (Step 6 and 7 reference them).
 
+### 5f: Derive the cover-letter recommendation
+
+Auto mode files with **no cover letter**, so this verdict is the signal the user scans later to decide which filed roles are worth circling back to with one. It measures **leverage**: does a cover letter materially change how this application reads, or does the résumé already carry the fit? It is **binary**.
+
+- **Recommended** — the fit is real (Apply band) but the résumé **understates** it, so prose closes the gap between the reasoning-fit and what the page actually shows. Fires when **any** of these hold:
+  - a **KEYWORD** flag fired (5d) — the JD's core term isn't on the page;
+  - the role's primary domain match is a **coachable/adjacent** gap (Step 3), not a literal match — the fit is by analogy and the bullets don't name it;
+  - leveling reads **above** the posted title (Step 2) — the bullets don't carry the altitude;
+  - a differentiating strength (Step 3) makes a specific argument the two bullets don't spell out.
+
+  This is the SeatGeek case: Match 8, but an adjacent domain and a KEYWORD gap the résumé never named, filed in auto mode with no letter to bridge it.
+- **Not needed** — the résumé already carries the fit head-on: the core domain is a direct match, no KEYWORD or leveling gap, and no unspelled differentiator. A letter won't change the read.
+
+For any **Apply-band** role, default to **Recommended** unless the résumé plainly lands the core on its own — the whole point of this verdict is catching the understated-fit roles auto mode drops. Below the gate (Stretch / Gamble / Skip), still write the verdict for completeness, but the role isn't filed in auto mode so it carries no follow-up.
+
+Pair the verdict with the **angle**: one sentence naming the differentiating strength or bridge that makes the most specific, defensible argument for this role (the thesis seed the cover-letter skill builds on). For **Not needed**, replace the angle with a short "résumé carries it" note.
+
 ## Step 6: Write the fit file
 
 Write to `output/{short-id}/fit-{short-id}.md`.
@@ -222,6 +239,8 @@ File template:
 **Appeal:** {N}/10 ({low | middling | solid | high})
 
 **Recommendation:** {Apply | Stretch | Gamble | Skip} — {≤1 line: why + how to play it}
+
+**Cover letter:** {Recommended | Not needed} — {if Recommended: the one-line angle — the differentiating strength or bridge that makes the most specific argument for this role. If Not needed: "résumé carries the fit head-on".}
 
 **One-line summary:** {one sentence — what's the headline?}
 
@@ -311,7 +330,7 @@ Bullets I'd use: {KEY-1} + {KEY-2}  ({theme-1} + {theme-2})
 Flags: {GAP / KEYWORD: <term> / CLOSE-CALL / OVERLAP — only if any fired; omit this line otherwise}
 Leveling: {scope vs title + one line on how to play it}   ← include this line ONLY when scope reads above/below the title, or there's a leveling unknown worth flagging; omit it when scope and title align (the Recommendation line already conveys a clean fit)
 Location: {primary location} (+{N} more — confirm before ruling out)   ← include this line ONLY when the JD is multi-location / shows "+N locations"; omit it otherwise
-Cover letter angle: {one sentence — which differentiating strength makes the most specific, defensible argument for this role}
+Cover letter: {Recommended | Not needed} — {if Recommended: the one-line angle; if Not needed: "résumé carries it"}
 
 Full analysis: output/{short-id}/fit-{short-id}.md
 ```
@@ -322,7 +341,7 @@ The **Location** line appears only when the role is multi-location or the JD tru
 
 The **Leveling** line appears only when the role's scope reads above or below its posted title, or there's a leveling unknown worth flagging (the Step 2 leveling check). It's what stops a high Match from being read as an easy get. When scope and title align cleanly, omit the line — the Recommendation line already says the level fits. Keep it to scope-vs-title plus one line on how to play it; the fuller read lives in the fit file's Leveling section.
 
-The "Cover letter angle" line is a thesis seed, not a draft sentence. It should name a specific pattern from the differentiating strengths section and connect it to the role's most important hire signal. Example: "Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." This line feeds the cover-letter skill's thesis derivation step.
+The **Cover letter** line carries the Step 5f verdict plus, when Recommended, the angle. The angle is a thesis seed, not a draft sentence: it names a specific pattern from the differentiating strengths section and connects it to the role's most important hire signal. Example: "Recommended — Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." The verdict is the same one written to the fit file's **Cover letter** field and (on the proceed path) tagged into the tracker comment as `· CL: yes|no`; the angle feeds the cover-letter skill's thesis derivation step.
 
 Use the same emoji as in the H1 (keyed to Match — see the table in Step 6).
 

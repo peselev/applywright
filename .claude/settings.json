@@ -1,7 +1,21 @@
 {
   "permissions": {
-    "allow": [   
-      "Bash(applywright:*)"    
+    "allow": [
+      "Bash(applywright:*)"
+    ]
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "d=profile/skills; ls \"$d\"/*/SKILL.md >/dev/null 2>&1 || exit 0; printf \"Private skills exist in profile/skills/. When a request matches one, READ its SKILL.md and follow it fully (produce every record/learn artifact it specifies); do NOT hand-roll the task:\\n\"; for f in \"$d\"/*/SKILL.md; do n=$(grep -m1 \"^name:\" \"$f\" | sed \"s/^name:[[:space:]]*//\"); ds=$(grep -m1 \"^description:\" \"$f\" | sed \"s/^description:[[:space:]]*//\"); printf -- \"- %s: %s\\n\" \"$n\" \"$ds\"; done",
+            "timeout": 10,
+            "statusMessage": "Surfacing private skills"
+          }
+        ]
+      }
     ]
   }
 }

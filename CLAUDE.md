@@ -351,7 +351,7 @@ Field mapping:
 - `source` = one of `Built In` | `LinkedIn` | `Career page` | `Incoming` (see inference)
 - `stage` = `To apply` (proceed) or `Decided against applying` (skip)
 - `fit` = `Match {M}/10 · Appeal {A}/10` (e.g. `Match 6/10 · Appeal 8/10`)
-- `comments` = the **One-line summary** from `fit-{short-id}.md`, verbatim (single line)
+- `comments` = the **One-line summary** from `fit-{short-id}.md`, verbatim, plus a cover-letter tag ` · CL: yes` / ` · CL: no` on the **proceed path** (from that file's **Cover letter** field: `Recommended` → `yes`, `Not needed` → `no`). Skip path: summary only, no tag. Single line.
 
 ### Notion tracker (optional)
 
@@ -369,7 +369,7 @@ Only used when `tracker.mode = "notion"`. Requires the Notion MCP and two databa
 | Stage | status | `To apply` (proceed) or `Decided against applying` (skip). |
 | Internal ID | text | The short ID, e.g., `acme-12345`. |
 | Fit | text | `Match {M}/10 · Appeal {A}/10`. |
-| Comments | text | The **One-line summary** from `fit-{short-id}.md`, verbatim (single line). |
+| Comments | text | The **One-line summary** from `fit-{short-id}.md`, verbatim, plus ` · CL: yes`/` · CL: no` on the proceed path (skip path: summary only). Single line. |
 | Submission Date | date | Leave blank — the user sets it after submitting. |
 
 > **Schema setup (one-time):** `Internal ID` and `Fit` are text properties that must exist on the Applications DB with those exact names. If a write fails because a property is missing, log it and tell the user to add it (type: text) — don't create DB properties automatically.
