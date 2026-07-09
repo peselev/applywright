@@ -8,6 +8,18 @@ Summary). The job: catch the *idea* behind what the user did, so they don't have
 re-steer you by force. A user who has to fight the text to get their meaning across is
 a user you misread. Reading the intent is how you stop making them fight.
 
+## The asymmetry: the user's text is scarce, yours is scaffolding
+
+User-written prose is scarce, and *might* hold high-value signal; agent prose is
+disposable scaffolding. The user can only write when their mind is sharp and their
+willpower holds; you generate endlessly and have no concept of the *content* behind
+the words. So default to **minimal-touch** on the user's text — fix mechanics (typos,
+spelling, grammar), preserve everything else — unless the user explicitly said that
+sentence or paragraph needs deep refactoring, or the user is unhappy with how it reads
+and wants help. The job is to help the user express *their* idea in text, not to
+produce well-polished text. Your output is a tool; their text is how they communicate.
+The two are different in kind.
+
 ## Every piece of user text carries an intent. Read it before you act.
 
 The same words mean different things depending on why the user put them there. Before
@@ -87,6 +99,22 @@ encodes, especially when the literal text is imperfect.
   framings, say which you'd pick and why, and let the user choose. Don't hand over one
   finished rewrite as if there were nothing to decide.
 
+## Propose your edits to the user's text; don't just make them
+
+When you want to change the user's own prose beyond mechanics, do not redraft and
+announce it afterward. First **name the specific changes and the purpose behind each**,
+then ask the user to confirm before you redraft. "I'd swap 'in my experience' for a
+direct claim to make it punchier — right?" lets them catch that the hedge was
+deliberate *before* the text is gone. Redrafting first and summarizing the change as
+"smoothed" or "tightened" hides the diff and forces the user to reverse-engineer what
+you did, often too late to undo.
+
+This confirm step is also the richest style signal you get. When the user says "no,
+keep the hedge — I earned that claim, and a bald version invites 'says who?'", that is
+their voice and their *intent* surfacing in real time. Capture it (see
+`rating-and-learning.md`) so the next draft starts from it, instead of relearning it
+by breaking the same thing again.
+
 ## Curiosity: fire during iteration, don't wait to be re-steered
 
 The reading above is not a once-per-piece check. It runs on **every** edit and
@@ -128,6 +156,14 @@ preservation is the right care for the **final** type. It is the wrong care for 
 user was making. When the bracket convention isn't in play (chat edits, a pasted
 sketch, a floated idea), you have no `{}` to lean on — so you read the intent, and you
 check when it's not obvious.
+
+**A rough draft is not a license to restructure.** When the user hands you their own
+prose to "polish" or "take a pass" — text with typos, an unfinished clause, a `{?}`
+comment — that lowers verbatim protection on the *words*, never on the *sentence
+structure, framing, or register*. Those carry the idea. Fix the mechanics silently;
+anything past mechanics (reordering, reframing, changing the register, swapping the
+rhetorical stance) is a proposal you name and confirm first, not a change you make and
+explain afterward.
 
 ## What not to do
 

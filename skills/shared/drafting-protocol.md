@@ -20,6 +20,21 @@ It sits on top of, and does not replace, the other shared files: voice rules
 
 ---
 
+## The asymmetry that governs all of this
+
+User-written prose is scarce, and *might* hold high-value signal; agent prose is
+disposable scaffolding. The user can only write when their mind is sharp and their
+willpower holds; you generate endlessly and have no concept of the *content* behind
+the words. The goal is to help the user **express their idea in text — not to produce
+well-polished text.** Your output is a tool; their text is how they communicate. So
+when the user's own words are in play, default to minimal-touch: fix mechanics,
+preserve structure and framing, and propose-then-confirm anything more (the full rule
+is in `editing-intent.md` — "The asymmetry" and "Propose your edits to the user's
+text"). Polished copy the user didn't mean is worth less than rough text that carries
+what they actually wanted to say.
+
+---
+
 ## The fork: ground first, then draft — or refuse and offer to help
 
 Before drafting any outside-audience piece, run one check, then take one of two

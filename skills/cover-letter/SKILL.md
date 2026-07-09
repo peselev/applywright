@@ -114,11 +114,13 @@ Sincerely,\
 
 Substitute the `full_name` from `profile/config.yaml` on the second line.
 
+**The trailing `\` after `Sincerely,` is mandatory, not optional.** It is a markdown hard line break. Without it, markdown collapses the newline into a space and the PDF renders `Sincerely, {full_name}` on one line. Always write `Sincerely,` with a trailing backslash, then the name on the next line. This is the one `\` the body is allowed (and required) to carry — see the whitespace note below.
+
 **These two phrases are load-bearing.** The PDF template adds the extra space after the greeting and before the sign-off by detecting the exact strings `Hiring Team` (in the greeting) and `Sincerely` (in the sign-off). Always open with `Dear {Company} Hiring Team,` and always sign off with `Sincerely,`. If either phrase changes, the spacing silently stops working — keep them fixed unless you also update `templates/cover-letter.typ`.
 
 **Do not put a footer line in the markdown body.** The contact footer (email · name · phone · site) is rendered automatically as a page footer by the `cover-letter` template at export time (Step 8). The body markdown contains only: greeting, body paragraphs, and the sign-off. Nothing after the signed name.
 
-The markdown body should be clean — no `\` whitespace hacks, no manual blank-line padding. The template owns all spacing (generous top margin, gap after the greeting, one line between paragraphs, gap before the sign-off).
+The markdown body should be clean — no `\` whitespace hacks, no manual blank-line padding, with **one exception**: the trailing `\` after `Sincerely,` in the sign-off (see above). That single hard line break is required to drop the name onto its own line; it is not a spacing hack. Everything else — the top margin, the gap after the greeting, one line between paragraphs, the gap before the sign-off — is owned by the template, so the body needs no other `\` or blank-line padding.
 
 Length: 3 to 5 sentences in the body (not counting greeting and sign-off). Aim for a tight, dense letter — that length is the target, not a floor to pad toward.
 
@@ -128,8 +130,8 @@ Cover-letter-specific checklist:
 1. [ ] Does paragraph 1 go beyond a one-line identity anchor into a credentials paragraph? (It must not.)
 2. [ ] Does the body exceed 5 sentences, or use more than 4 paragraphs?
 3. [ ] If a verified case-study URL matches the thesis, is it linked with UTM params and descriptive anchor text? (Defaulting to the footer when a real match exists is a miss.)
-4. [ ] Does the markdown body contain a footer line, raw URL, or `\` whitespace hack? (It must not — footer is a template page footer; links use descriptive anchor text; the template owns spacing.)
-5. [ ] Greeting contains "Hiring Team" and sign-off begins "Sincerely," (load-bearing for template spacing)?
+4. [ ] Does the markdown body contain a footer line, raw URL, or stray `\` whitespace hack? (It must not — footer is a template page footer; links use descriptive anchor text; the template owns spacing. The one allowed `\` is the sign-off break in item 5.)
+5. [ ] Greeting contains "Hiring Team" and sign-off begins "Sincerely,"? And does the `Sincerely,` line end with a trailing `\` so the name breaks onto its own line? (All load-bearing for template spacing; a missing `\` renders `Sincerely, {name}` on one line.)
 
 ## Step 5: Write the notes file
 
@@ -196,11 +198,14 @@ Rules for the editing loop:
 - Any text **in** `{}` is a comment/instruction — act on it, then remove the brackets and the comment from the output
 - Rewrite the **full letter** every pass, not just the changed paragraph
 - In chat, show one line per change: what you changed and what you did. Example: `thesis paragraph — made the chunking tradeoff more specific per your note`
+- **When a change touches the user's own words, quote it: `original → revised`, both verbatim, one line each.** A summary verb ("smoothed," "tightened") hides the diff and lets a critical loss slip through unnoticed — which is how an edit that stripped a deliberate framing reached an employer before the user caught it. The user must be able to veto each change to their own prose at a glance. Changes to text *you* wrote need only the one-line note above.
 - If a `{}` comment is ambiguous, make your best interpretation, state it in the change note, and ask at the end if it was right — do not stop mid-pass to clarify
 
 **Read the intent behind every edit, not just the words.** The verbatim/`{}` rules above protect the user's text mechanically; `skills/shared/editing-intent.md` is how you apply them with judgment. A change the user made carries an idea — sometimes it's final wording to keep, sometimes a direction to develop, sometimes an example of what they're after, sometimes a line whose literal text undercuts the point they were making. Catch which it is, keep the idea even when the expression is rough, and check proactively when a reading is ambiguous or expensive to get wrong. Read that file before working an edit pass.
 
 **Fire the curiosity beat before you redraft.** When an edit removes, adds, rewrites, or rejects something substantive, ask the one-line "why" first (see the "Curiosity: fire during iteration" section of `editing-intent.md`) — why a paragraph came out, why a line went in, whether the register was off — then redraft to the reason, not just the literal change. Don't transcribe the edit blind and make the user re-steer.
+
+**Minimal-touch on the user's own prose, and propose before you restructure.** The user's words are scarce, high-value signal; your text is disposable scaffolding (`editing-intent.md`, "The asymmetry"). When the user hands you their own paragraph to "take a pass" or "polish," fix only mechanics (typos, spelling, grammar) silently — sentence structure, framing, and register are part of their idea. Anything past mechanics is a **proposal you name and confirm before redrafting**, never a change you make and summarize afterward (`editing-intent.md`, "Propose your edits to the user's text"). A rough draft lowers verbatim protection on the words, never on the structure. The only exceptions to minimal-touch: the user explicitly asked to deeply rework that passage, or said they're unhappy with how it reads and want help. When you confirm, capture what the user keeps or restores — it is prime `cover-letter-field-notes.md` material (Step 9).
 
 **Bank the user's own prose.** If, during the loop, the user writes or pastes a substantial passage of their own — a rewritten paragraph, an alternative opener in their words, a past letter they're sharing — offer to save it to the voice bank (`skills/shared/voice-bank.md`): confirm it's theirs in one line, then append it verbatim to `profile/voice-bank.md`. Don't bank small chat edits or phrase tweaks.
 
