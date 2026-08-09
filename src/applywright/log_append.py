@@ -10,9 +10,9 @@ Usage:
     applywright log-append <logfile> "<message>"
 
 Example:
-    applywright log-append applications/bitwarden-90287/log-bitwarden-90287.md "step=03 jd-saved bytes=54787"
+    applywright log-append applications/bitwarden-90287/log-bitwarden-90287.md "step=04 jd-saved bytes=54787"
 
-Writes:  [2026-06-04T16:22:10Z] step=03 jd-saved bytes=54787
+Writes:  [2026-06-04T16:22:10Z] step=04 jd-saved bytes=54787
 """
 
 import sys

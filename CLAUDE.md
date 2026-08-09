@@ -65,6 +65,7 @@ applywright/
 │   ├── scan.py                 ← `applywright scan`: Layer 1 mechanical injection scan
 │   ├── export_pdf.py           ← `applywright export-pdf`: markdown → PDF via Typst
 │   ├── check_template.py       ← `applywright check-template`: validate a profile/ template against the contract
+│   ├── check_verbs.py          ← `applywright check-verbs`: flag repeated opening verbs within a CV role
 │   ├── tracker.py              ← `applywright tracker`: CSV application tracker
 │   ├── inbox.py                ← `applywright inbox`: atomic claim/done/fail for the bulk queue
 │   ├── log_append.py           ← `applywright log-append`: timestamped log line
@@ -123,7 +124,7 @@ Bulk always runs auto. A single pasted URL is auto unless the user asks for manu
 
 If PROCEED (steps 7-11):
 
-7. Fill `profile/cv.md` placeholders with the two bullets; update UTM; save as `cv-{short-id}.md`
+7. Fill `profile/cv.md` placeholders with the two bullets; update UTM; save as `cv-{short-id}.md`; run `check-verbs` and surgically fix any repeated opening verb before export
 8. Export to `{surname} - Resume.pdf` in the application folder
 9. Add a tracker row with Stage = `To apply` (CSV or Notion per `tracker.mode` — see Tracking)
 10. Empty `inbox/jd.md` and `temp/fetched-jd.md`
@@ -147,7 +148,7 @@ The user's own prose, when they share or write a substantial passage, is banked 
 
 Deep company research is a rare, on-demand step — `skills/company-research/SKILL.md`. It builds one reusable dossier per company: a company core (researched once, reused across every role there) plus department/product sections that accrete as the user applies to different areas. It is **not** part of process-job and never runs per job; assess-fit's light, always-on company-context block in the fit file is the per-job touch and is unrelated.
 
-**It fires when the user writes a cover letter or prepares for an interview**, and it runs directly on request ("research Hearth"). The cover-letter skill checks for a fresh dossier in its grounding pre-flight; the interview skill (when built) requires one.
+**It fires when the user writes a cover letter or prepares for an interview**, and it runs directly on request ("research Hearth"). The cover-letter skill checks for a fresh dossier during grounding (its Step 1); the interview skill (when built) requires one.
 
 **Storage.** Local `output/companies/{slug}.md` — one flat file per company (gitignored), core written once with department sections appended. In **notion mode** the dossier also lives on the company's page in the Notion Companies DB, and the Notion page is the **authority**: the user works across machines, so the local `output/` file is a per-machine cache while the Notion page is the durable, cross-machine record. The `{slug}` is the short-ID company-slug rule without the id-tail.
 
@@ -193,26 +194,26 @@ The PDF stays neutrally named so recruiters don't see internal IDs.
 Every step writes one line to `log-{short-id}.md`:
 
 ```
-[2026-05-19T14:32:01Z] step=02 short-id=anthropic-91056 strategy=url-tail
-[2026-05-19T14:32:03Z] step=04 scan flags=0
-[2026-05-19T14:32:30Z] step=06 cv-built bullets=2 utm-campaign=anthropic-91056
-[2026-05-19T14:32:34Z] step=07 pdf-export engine=typst result=ok
-[2026-05-19T14:32:36Z] step=08 tracker-row stage=to-apply
+[2026-05-19T14:32:01Z] step=03 short-id=anthropic-91056 strategy=url-tail
+[2026-05-19T14:32:03Z] step=05 scan flags=0
+[2026-05-19T14:32:30Z] step=08 cv-built bullets=2 utm-campaign=anthropic-91056
+[2026-05-19T14:32:34Z] step=09 pdf-export engine=typst result=ok
+[2026-05-19T14:32:36Z] step=10 tracker-row stage=to-apply
 ```
 
 Terse. One line per step. Add a second line only on errors or notable details.
 
-**How to write a log line.** Skills describe log entries with a leading `[TS]` placeholder (e.g. `Log: [TS] step=03 jd-saved bytes={n}`). The `[TS]` means "timestamp goes here." Resolve it by calling the log-append script, which generates the UTC timestamp for you:
+**How to write a log line.** Skills describe log entries with a leading `[TS]` placeholder (e.g. `Log: [TS] step=04 jd-saved bytes={n}`). The `[TS]` means "timestamp goes here." Resolve it by calling the log-append script, which generates the UTC timestamp for you:
 
 ```bash
-applywright log-append output/{short-id}/log-{short-id}.md "step=03 jd-saved bytes=54787"
+applywright log-append output/{short-id}/log-{short-id}.md "step=04 jd-saved bytes=54787"
 ```
 
 Pass only the message — everything after `[TS] ` — as the second argument. The script prepends `[<timestamp>] ` and appends the line.
 
 **Never** write the timestamp yourself with `$(date ...)`, `printf` + command substitution, or any inline shell date call. Command substitution trips Claude Code's static-analysis prompt and stops the pipeline. `applywright log-append` exists precisely to avoid that. This applies to every skill that logs (process-job, fetch-jd, assess-fit, cover-letter).
 
-The log *file header* in process-job Step 2 (the `# Application log` block) carries no timestamp — it is plain literal text written by `applywright log-start`, which also creates the application folder. The very first `applywright log-append` call (a `started` entry) records the start time. Every log line, without exception, is written by the script so no shell date call ever appears.
+The log *file header* in process-job Step 3 (the `# Application log` block) carries no timestamp — it is plain literal text written by `applywright log-start`, which also creates the application folder. The very first `applywright log-append` call (a `started` entry) records the start time. Every log line, without exception, is written by the script so no shell date call ever appears.
 
 ## Bash command conventions (avoid approval prompts)
 
@@ -245,7 +246,7 @@ Only if the user explicitly confirms this is a genuinely fresh machine where app
 
 ## Instruction scan rules
 
-The injection scan runs in two layers, both in process-job Step 4. See the skill for full implementation.
+The injection scan runs in two layers, both in process-job Step 5. See the skill for full implementation.
 
 **Layer 1 — mechanical (source: `src/applywright/scan.py`):**
 Catches deterministic patterns. The script is the source of truth for what gets flagged at this layer. Categories include:
@@ -275,12 +276,14 @@ The JD itself is never modified — only described in the report.
 
 `profile/cv.md` contains two placeholders: `{bullet_1}` and `{bullet_2}`. These appear in fixed positions (top two bullets of most recent role).
 
-Bullets come from one of two sources, decided at Step 6 of process-job:
+Bullets come from one of two sources, decided at Step 7 of process-job:
 
 - **Agent's picks** (default) — assess-fit picks two bullets from `profile/master-bullets.md` during its analysis. If the user says "proceed," these are used.
 - **the user's overrides** — the user can specify one or both bullets directly. They may give a KEY from master-bullets.md (e.g., "use PLG") or verbatim text in quotes. For each bullet position, use the override if given, otherwise fall back to the agent's pick.
 
 Whichever source: paste verbatim, no edits, no reordering.
+
+**One sanctioned edit.** The verb-dedup gate in process-job Step 8 may change the **opening word only** of a bullet *you filled this run*, and only to break a repeated opening verb within a role that `applywright check-verbs` flags (several master bullets open with the same verb, so two can collide beside a locked first bullet that shares it). This is the sole exception to paste-verbatim: it never touches a locked bullet, never reaches past the first word, picks an accurate replacement, and is recorded (log line, a section in `fit-{short-id}.md`, and a ` · verb-dedup` tag in the tracker `comments`). Everything past the first word stays verbatim, and nothing is reordered.
 
 ## UTM tracking
 
@@ -306,10 +309,10 @@ If the script fails, log the error and tell the user — don't try to work aroun
 
 Before recording a filed application, check whether this URL has already been filed, so the same job is never recorded twice. The check differs by tracker mode, because the two trackers expose different records:
 
-- **csv mode:** `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`. This is URL-based and runs pre-fetch (process-job Step 0).
-- **notion mode:** the Notion MCP can't be queried for dedup, so use the local `output/` folders as the record of what's been filed. This can only run **after the short ID is computed** (process-job Step 2 — the company slug usually needs the fetched JD), since the short ID names the folder. Once you have it, inspect `output/{short-id}/`:
+- **csv mode:** `applywright tracker seen "<url>"` → prints `found short_id=... stage=... company=...` or `not-found`. This is URL-based and runs pre-fetch (process-job Step 1).
+- **notion mode:** the Notion MCP can't be queried for dedup, so use the local `output/` folders as the record of what's been filed. This can only run **after the short ID is computed** (process-job Step 3 — the company slug usually needs the fetched JD), since the short ID names the folder. Once you have it, inspect `output/{short-id}/`:
   - **No folder** → not filed; proceed.
-  - **Folder exists, its log header `URL:` matches this URL, and `log-{short-id}.md` contains a `tracker-row` line** (`step=09` proceed or `step=07-skip` skip) → already filed. That log line is the completion marker; it's written whatever the tracker mode, so it's the local analog of "a row exists." A folder *without* it is leftover from a crashed run, not a filed job.
+  - **Folder exists, its log header `URL:` matches this URL, and `log-{short-id}.md` contains a `tracker-row` line** (`step=10` proceed or `step=08-skip` skip) → already filed. That log line is the completion marker; it's written whatever the tracker mode, so it's the local analog of "a row exists." A folder *without* it is leftover from a crashed run, not a filed job.
   - **Folder exists, URL matches, but no `tracker-row` line** → a stale partial from an incomplete run, not a duplicate. Reuse the folder and reprocess (don't append a `-N` suffix).
   - **Folder exists but its log header `URL:` is a different job** → a short-ID collision, not a duplicate. Apply the `-N` suffix rule (see Short ID rules) and proceed.
 
@@ -324,7 +327,7 @@ Every filed application is recorded in a tracker. Which one is set by `tracker.m
 - **csv** (default, zero setup) — rows are written to `output/applications.csv` by `applywright tracker`.
 - **notion** (optional) — rows are written to a Notion database via the Notion MCP. Requires the MCP configured in Claude Code and the DB IDs filled in under `tracker.notion` in config.
 
-**The local CSV is always written, in every mode.** `output/applications.csv` is a complete local record regardless of `tracker.mode`. In **csv** mode it's the only tracker. In **notion** mode the pipeline **dual-writes**: it inserts the Notion row *and* mirrors the same row to the CSV via `applywright tracker add` (see process-job Steps 9 and 7-SKIP). So Notion is the durable cross-machine authority while the CSV is the always-on local log, and neither goes stale when the other is the primary. `applywright tracker add` dedups by URL, so the mirror write is idempotent. (Dedup itself is unchanged: csv mode dedups via `applywright tracker seen` pre-fetch; notion mode dedups on the local `output/` folders — see Dedup.)
+**The local CSV is always written, in every mode.** `output/applications.csv` is a complete local record regardless of `tracker.mode`. In **csv** mode it's the only tracker. In **notion** mode the pipeline **dual-writes**: it inserts the Notion row *and* mirrors the same row to the CSV via `applywright tracker add` (see process-job Steps 10 and 8-SKIP). So Notion is the durable cross-machine authority while the CSV is the always-on local log, and neither goes stale when the other is the primary. `applywright tracker add` dedups by URL, so the mirror write is idempotent. (Dedup itself is unchanged: csv mode dedups via `applywright tracker seen` pre-fetch; notion mode dedups on the local `output/` folders — see Dedup.)
 
 The **stage vocabulary** and **source inference** below are the same for both trackers.
 
@@ -381,9 +384,9 @@ Only used when `tracker.mode = "notion"`. Requires the Notion MCP and two databa
 
 The user moves rows through these stages manually.
 
-**Company relation behavior:** search the Companies DB for a matching name (case-insensitive, ignoring trailing "Inc", "LLC", commas, periods). If found, link it; if not, auto-create a Company record with just the name and link it. Log it: `[TS] step=08 notion-company-created name="..." id=...`. Don't pause to ask.
+**Company relation behavior:** search the Companies DB for a matching name (case-insensitive, ignoring trailing "Inc", "LLC", commas, periods). If found, link it; if not, auto-create a Company record with just the name and link it. Log it: `[TS] step=10 notion-company-created name="..." id=...`. Don't pause to ask.
 
-**If the Notion MCP is unavailable:** log `step=08 tracker-row pending=mcp-unavailable` and add a TODO to the final summary so the user adds the row manually.
+**If the Notion MCP is unavailable:** log `step=10 tracker-row pending=mcp-unavailable` and add a TODO to the final summary so the user adds the row manually.
 
 ### Source inference rules (both trackers)
 
@@ -394,7 +397,7 @@ The user moves rows through these stages manually.
 
 ## Communication style
 
-The user is technical and busy. Be direct and terse. Skip "I'll help you with that" preambles. In **manual** mode, when you reach the Step 6 pause, summarize the scan + fit in one to three lines and ask for the bullets. In **auto** mode there's no pause — just file and report tersely. In **bulk**, keep per-job chatter to one line and save the detail for the roll-up.
+The user is technical and busy. Be direct and terse. Skip "I'll help you with that" preambles. In **manual** mode, when you reach the Step 7 pause, summarize the scan + fit in one to three lines and ask for the bullets. In **auto** mode there's no pause — just file and report tersely. In **bulk**, keep per-job chatter to one line and save the detail for the roll-up.
 
 ## When in doubt
 

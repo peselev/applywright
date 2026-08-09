@@ -19,7 +19,7 @@ Read this whole file before starting. Steps run in order.
 
 If any required file is missing, stop and tell the user which file is absent.
 
-## Step 0: Ground and frame (drafting protocol)
+## Step 1: Ground and frame (drafting protocol)
 
 Read `skills/shared/drafting-protocol.md` and run it before anything else. A cover
 letter is outside-audience writing, so the protocol governs it.
@@ -33,7 +33,7 @@ entry, a banked draft in `profile/voice-bank.md`, a finalized prior letter in
 Test: if the only letter you could write here is one that would fit any candidate,
 you are not grounded.
 
-- **Grounded** → continue to Step 1, and deliver the result goal-first (protocol
+- **Grounded** → continue to Step 2, and deliver the result goal-first (protocol
   Step 2a): the goal of the letter is stated before the draft, and the reasoning
   after it. Steps 1-3 below derive the thesis, proof, and bridge; the thesis is
   the "message we're sending" the reasoning will name.
@@ -45,9 +45,9 @@ you are not grounded.
 
 Do not invent a generic letter to avoid an empty bank.
 
-**Company dossier (pre-flight).** Once grounded, ensure a fresh company dossier exists before drafting, because the bridge and the "why-company" hook draw on it. Run `skills/company-research/SKILL.md`'s pre-flight for this company: if the dossier is fresh, reuse it; if it's missing or stale (older than 45 days), company-research builds or refreshes it first. The dossier lives at `output/companies/{slug}.md` (and on the Notion company page in notion mode). This is not a second grounding gate — grounding is about the user's voice and angle; the dossier is the sourced company facts the bridge needs. Steps 1-3 then derive the thesis, proof, and bridge with the dossier in hand.
+**Company dossier.** Once grounded, ensure a fresh company dossier exists before drafting, because the bridge and the "why-company" hook draw on it. Run `skills/company-research/SKILL.md`'s Step 1 for this company: if the dossier is fresh, reuse it; if it's missing or stale (older than 45 days), company-research builds or refreshes it first. The dossier lives at `output/companies/{slug}.md` (and on the Notion company page in notion mode). This is not a second grounding gate — grounding is about the user's voice and angle; the dossier is the sourced company facts the bridge needs. Steps 1-3 then derive the thesis, proof, and bridge with the dossier in hand.
 
-## Step 1: Derive the thesis
+## Step 2: Derive the thesis
 
 Read `fit-{short-id}.md`. Do not read the raw JD for this step — the fit assessment has already done the filtering.
 
@@ -70,7 +70,7 @@ Examples of thesis vs. summary:
 
 Write down your thesis candidate before drafting. If two plausible theses exist, pick the one that is more specific and more defensible. Do not average them.
 
-## Step 2: Select proof
+## Step 3: Select proof
 
 From the fit assessment's **What I bring** and **Bullets I would use** sections, identify the one or two pieces of evidence that most directly substantiate the thesis. These should be named, specific, and include at least one concrete result or tradeoff.
 
@@ -78,17 +78,17 @@ Proof is not a list. It is one to two narrative sentences with named entities an
 
 The portfolio link belongs here if a case study with a verified URL directly substantiates the thesis. Check the "Verified case study URLs" index in `profile/persona.md` — if a listed case study matches, embed its URL naturally ("full write-up here: {URL}"). If none of the verified URLs match the thesis, do not invent one; the footer already carries the portfolio site. A directly relevant case study that exists on the site should be linked — defaulting to the footer when a real matching URL is available is a miss.
 
-## Step 3: Select the bridge
+## Step 4: Select the bridge
 
-Read the company dossier (`output/companies/{slug}.md`, ensured fresh in the Step 0 pre-flight) for this step — specifically the company's mission, the leadership "why now" narrative, and the challenges/headwinds, which are sourced and sharper than the raw JD. Fall back to the raw JD's stated mission if a dossier field is `*not found*`. Whatever you use, run it through the Fluff Test: the bridge must name something specific and defensible, not a mission-statement platitude.
+Read the company dossier (`output/companies/{slug}.md`, ensured fresh back in Step 1) for this step — specifically the company's mission, the leadership "why now" narrative, and the challenges/headwinds, which are sourced and sharper than the raw JD. Fall back to the raw JD's stated mission if a dossier field is `*not found*`. Whatever you use, run it through the Fluff Test: the bridge must name something specific and defensible, not a mission-statement platitude.
 
 The bridge is one sentence that connects to their specific bet, not generic enthusiasm. It should name something from the dossier or JD, not from the user's background. It is not "I'm excited to bring my skills to your team." It is closer to "I want to help prove the bet behind this role: that work management becomes the organizational memory the agentic enterprise runs on."
 
-## Step 4: Write the cover letter
+## Step 5: Write the cover letter
 
-Read `skills/shared/writing-rules.md` before writing a single word — it holds the voice (anti-fabrication, banned words/phrases, AI-tell rules, the Fluff Test, and the core checklist). The cover-letter-specific structure and checklist items are below and in Step 6.
+Read `skills/shared/writing-rules.md` before writing a single word — it holds the voice (anti-fabrication, banned words/phrases, AI-tell rules, the Fluff Test, and the core checklist). The cover-letter-specific structure and checklist items are below and in Step 7.
 
-Then read `profile/cover-letter-field-notes.md` and apply any guidance that fits this letter. It accrues learnings across applications — go-to framings, openers that have landed, phrasings to avoid — proposed and approved at the end of past sessions (Step 9, Part 2). If it has something relevant to this role or thesis, use it; if it's empty or nothing applies, move on. This is the read half of the same loop the learning step writes to, and it mirrors how `application-answers` consults `profile/answers-field-notes.md` before drafting.
+Then read `profile/cover-letter-field-notes.md` and apply any guidance that fits this letter. It accrues learnings across applications — go-to framings, openers that have landed, phrasings to avoid — proposed and approved at the end of past sessions (Step 10, Part 2). If it has something relevant to this role or thesis, use it; if it's empty or nothing applies, move on. This is the read half of the same loop the learning step writes to, and it mirrors how `application-answers` consults `profile/answers-field-notes.md` before drafting.
 
 Letter structure — four short paragraphs:
 
@@ -118,7 +118,7 @@ Substitute the `full_name` from `profile/config.yaml` on the second line.
 
 **These two phrases are load-bearing.** The PDF template adds the extra space after the greeting and before the sign-off by detecting the exact strings `Hiring Team` (in the greeting) and `Sincerely` (in the sign-off). Always open with `Dear {Company} Hiring Team,` and always sign off with `Sincerely,`. If either phrase changes, the spacing silently stops working — keep them fixed unless you also update `templates/cover-letter.typ`.
 
-**Do not put a footer line in the markdown body.** The contact footer (email · name · phone · site) is rendered automatically as a page footer by the `cover-letter` template at export time (Step 8). The body markdown contains only: greeting, body paragraphs, and the sign-off. Nothing after the signed name.
+**Do not put a footer line in the markdown body.** The contact footer (email · name · phone · site) is rendered automatically as a page footer by the `cover-letter` template at export time (Step 9). The body markdown contains only: greeting, body paragraphs, and the sign-off. Nothing after the signed name.
 
 The markdown body should be clean — no `\` whitespace hacks, no manual blank-line padding, with **one exception**: the trailing `\` after `Sincerely,` in the sign-off (see above). That single hard line break is required to drop the name onto its own line; it is not a spacing hack. Everything else — the top margin, the gap after the greeting, one line between paragraphs, the gap before the sign-off — is owned by the template, so the body needs no other `\` or blank-line padding.
 
@@ -133,7 +133,7 @@ Cover-letter-specific checklist:
 4. [ ] Does the markdown body contain a footer line, raw URL, or stray `\` whitespace hack? (It must not — footer is a template page footer; links use descriptive anchor text; the template owns spacing. The one allowed `\` is the sign-off break in item 5.)
 5. [ ] Greeting contains "Hiring Team" and sign-off begins "Sincerely,"? And does the `Sincerely,` line end with a trailing `\` so the name breaks onto its own line? (All load-bearing for template spacing; a missing `\` renders `Sincerely, {name}` on one line.)
 
-## Step 5: Write the notes file
+## Step 6: Write the notes file
 
 Write `output/{short-id}/cover-letter-notes-{short-id}.md`:
 
@@ -158,7 +158,7 @@ Write `output/{short-id}/cover-letter-notes-{short-id}.md`:
 
 This file is for the user's use when editing the letter and for future calibration of the fit assessment. The agent does not update it after the initial write — the user owns it from here.
 
-## Step 6: Save and open
+## Step 7: Save and open
 
 Save the letter as `output/{short-id}/cover-letter-{short-id}.md`.
 
@@ -188,7 +188,7 @@ those few lines — it's the user's window into the choices, not an essay.
 
 Then stop. Do not ask follow-up questions.
 
-## Step 7: Editing loop
+## Step 8: Editing loop
 
 The user will edit `cover-letter-{short-id}.md` directly and may leave comments in `{curly braces}`. When they signal they're done editing (e.g., "done", "revised", "take a look"), re-read the file.
 
@@ -205,7 +205,7 @@ Rules for the editing loop:
 
 **Fire the curiosity beat before you redraft.** When an edit removes, adds, rewrites, or rejects something substantive, ask the one-line "why" first (see the "Curiosity: fire during iteration" section of `editing-intent.md`) — why a paragraph came out, why a line went in, whether the register was off — then redraft to the reason, not just the literal change. Don't transcribe the edit blind and make the user re-steer.
 
-**Minimal-touch on the user's own prose, and propose before you restructure.** The user's words are scarce, high-value signal; your text is disposable scaffolding (`editing-intent.md`, "The asymmetry"). When the user hands you their own paragraph to "take a pass" or "polish," fix only mechanics (typos, spelling, grammar) silently — sentence structure, framing, and register are part of their idea. Anything past mechanics is a **proposal you name and confirm before redrafting**, never a change you make and summarize afterward (`editing-intent.md`, "Propose your edits to the user's text"). A rough draft lowers verbatim protection on the words, never on the structure. The only exceptions to minimal-touch: the user explicitly asked to deeply rework that passage, or said they're unhappy with how it reads and want help. When you confirm, capture what the user keeps or restores — it is prime `cover-letter-field-notes.md` material (Step 9).
+**Minimal-touch on the user's own prose, and propose before you restructure.** The user's words are scarce, high-value signal; your text is disposable scaffolding (`editing-intent.md`, "The asymmetry"). When the user hands you their own paragraph to "take a pass" or "polish," fix only mechanics (typos, spelling, grammar) silently — sentence structure, framing, and register are part of their idea. Anything past mechanics is a **proposal you name and confirm before redrafting**, never a change you make and summarize afterward (`editing-intent.md`, "Propose your edits to the user's text"). A rough draft lowers verbatim protection on the words, never on the structure. The only exceptions to minimal-touch: the user explicitly asked to deeply rework that passage, or said they're unhappy with how it reads and want help. When you confirm, capture what the user keeps or restores — it is prime `cover-letter-field-notes.md` material (Step 10).
 
 **Bank the user's own prose.** If, during the loop, the user writes or pastes a substantial passage of their own — a rewritten paragraph, an alternative opener in their words, a past letter they're sharing — offer to save it to the voice bank (`skills/shared/voice-bank.md`): confirm it's theirs in one line, then append it verbatim to `profile/voice-bank.md`. Don't bank small chat edits or phrase tweaks.
 
@@ -216,7 +216,7 @@ Re-open the file after every rewrite:
 applywright open output/{short-id}/cover-letter-{short-id}.md
 ```
 
-## Step 8: Export to PDF
+## Step 9: Export to PDF
 
 When the user says the letter is final (e.g., "done", "export it", "looks good"):
 
@@ -246,7 +246,7 @@ If export fails: log the error the same way (`cover-letter-export result=fail er
 
 Do not open the PDF — the user reads the final version in the PDF viewer on their own.
 
-## Step 9: Rate and learn
+## Step 10: Rate and learn
 
 After the letter is finalized and exported, run `skills/shared/rating-and-learning.md`:
 

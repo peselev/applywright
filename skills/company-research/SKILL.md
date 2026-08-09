@@ -43,7 +43,7 @@ This skill writes the dossier with the file editor, not bash, and uses the exist
 a gitignored markdown file like the other agent-written state files, and there is no raw
 bash in any per-job loop because this skill is not in one.
 
-## Step 1: Pre-flight check
+## Step 1: Decide whether to research
 
 Do not research anything until this check says you need to. It runs in sub-steps.
 

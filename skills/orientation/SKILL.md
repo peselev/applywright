@@ -1,6 +1,6 @@
 ---
 name: orientation
-description: First-time setup for a new Applywright user. Use when someone has just cloned or downloaded the repo and needs to get going. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". Applywright setup is five milestones; this skill runs the first two. (1) Environment: install the toolchain and Claude Code, confirm the pipeline runs. (2) Foundations: write profile/config.yaml and cv.md from the user's real information, set up their project families as a skeleton, light persona and tracker, then do a practice run on one job to prove the pipeline end to end on the default look. Setup originates in a regular Claude chat (web/desktop). Milestone 1 always runs there, because Claude Code is one of the things being installed. At Milestone 2 the user reaches the first fork and can either stay in the chat (you hand over commands, they run them and report back) or switch to Claude Code. Setup opens with a mandatory pre-flight gate: announce the five-milestone plan and take a short user profile (OS, terminal comfort, tool familiarity) before any profile file is written, even when the user supplies their own steps. At the end of Foundations it writes a handoff document and points the user to Milestone 3, "build-story-bank", which a fresh session picks up. Never invents the user's work history, metrics, or bullets; all professional content comes from the user. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
+description: First-time setup for a new Applywright user. Use when someone has just cloned or downloaded the repo and needs to get going. Triggers include "set me up", "get started", "onboard me", "first run", "I just cloned this", "help me configure Applywright", "new user setup", "where do I start". Applywright setup is five milestones; this skill runs the first two. (1) Environment: install the toolchain and Claude Code, confirm the pipeline runs. (2) Foundations: write profile/config.yaml and cv.md from the user's real information, set up their project families as a skeleton, light persona and tracker, then do a practice run on one job to prove the pipeline end to end on the default look. Setup originates in a regular Claude chat (web/desktop). Milestone 1 always runs there, because Claude Code is one of the things being installed. At Milestone 2 the user reaches the first fork and can either stay in the chat (you hand over commands, they run them and report back) or switch to Claude Code. Setup opens with a mandatory opening gate: announce the five-milestone plan and take a short user profile (OS, terminal comfort, tool familiarity) before any profile file is written, even when the user supplies their own steps. At the end of Foundations it writes a handoff document and points the user to Milestone 3, "build-story-bank", which a fresh session picks up. Never invents the user's work history, metrics, or bullets; all professional content comes from the user. NOT part of the job-application pipeline; run once at setup, or again to reconfigure.
 ---
 
 # Orientation, first-time setup (Milestones 1 and 2 of 5)
@@ -21,7 +21,7 @@ Setup is five milestones. This skill covers the first two; the rest are separate
 4. **Design** the `build-resume-template` skill. Give the resume and cover letter the user's own look. **Strongly recommended.**
 5. **Personalize** the `customize-pipeline` skill. Optional, on-demand tuning of the pipeline itself.
 
-**The one rule about order: Milestone 0 (the pre-flight gate, below) runs first, every time, even when the user hands you their own steps, pastes a task list, or asks to jump straight in.** No `profile/` file gets written, and no Milestone 1 step runs, until the gate's plan-shown and profile-taken are done. This is the single thing most likely to be skipped under instruction pressure, which is why it is the first content in the file and a hard gate below.
+**The one rule about order: the opening gate (below) runs first, every time, even when the user hands you their own steps, pastes a task list, or asks to jump straight in.** No `profile/` file gets written, and no Milestone 1 step runs, until the gate's plan-shown and profile-taken are done. This is the single thing most likely to be skipped under instruction pressure, which is why it is the first content in the file and a hard gate below.
 
 ## How this is meant to be run
 
@@ -45,7 +45,7 @@ At Step 2.0 and at the end-of-Foundations handoff, the user faces a choice of wh
 
 ---
 
-# Milestone 0, pre-flight gate (internal, mandatory)
+# The opening gate (internal, mandatory)
 
 This is setup-of-setup, not one of the five user-facing milestones. It is a **hard gate**: it runs first on every fresh start.
 
@@ -297,7 +297,7 @@ Checkpoint Milestone 2 complete.
 
 ## DO NOT do these
 
-- **Do not skip Milestone 0.** The plan announcement (Gate 1) and the user profile (Gate 2) run before any other output, even when the user supplies their own steps, pastes a task list, or asks to start mid-flow. A list of profile topics is **not** the plan announcement; that is Milestone 2 content, and treating it as the announcement is the exact failure this gate exists to prevent.
+- **Do not skip the opening gate.** The plan announcement (Gate 1) and the user profile (Gate 2) run before any other output, even when the user supplies their own steps, pastes a task list, or asks to start mid-flow. A list of profile topics is **not** the plan announcement; that is Milestone 2 content, and treating it as the announcement is the exact failure this gate exists to prevent.
 - **Do not write any profile file or bootstrap `profile/` before Gate 1 and Gate 2 are done.**
 - **Do not steer the user to a seat.** At every fork, present the tradeoff flat and let the user choose. Do not push a less-technical user into Claude Code "to spare them the terminal"; offer it as one option among the honest set.
 - **Do not present Milestones 3, 4, and 5 as optional.** They run in separate sessions, but the Story bank (M3) is required for useful output and Design (M4) is strongly recommended. Only Personalize (M5) is genuinely optional. The gradient message must land this.

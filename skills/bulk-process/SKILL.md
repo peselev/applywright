@@ -26,7 +26,7 @@ applywright inbox fail "<url>"   # mark that URL ❌ (auto-fetch gave up)
 applywright inbox status         # print "pending=N in_progress=N failed=N"
 ```
 
-## Step 0: Pre-flight
+## Step 1: Check the queue
 
 Run `applywright inbox status`. Report it in one line.
 
@@ -36,7 +36,7 @@ If `pending` is 0, tell the user the queue has nothing pending and stop.
 
 Initialize a running tally: `proceeded`, `skipped`, `already_filed`, `failed`, each 0. Keep a short list of `{company} — {role} — {outcome} (Match {M}/10 · Appeal {A}/10)` lines for the roll-up.
 
-## Step 1: The loop
+## Step 2: The loop
 
 Repeat until `claim` returns empty:
 
@@ -44,7 +44,7 @@ Repeat until `claim` returns empty:
    ```bash
    applywright inbox claim
    ```
-   Capture stdout. If it's **empty**, the queue is drained — go to Step 2 (roll-up). Otherwise you have one URL, now marked ⏳ in the file.
+   Capture stdout. If it's **empty**, the queue is drained — go to Step 3 (roll-up). Otherwise you have one URL, now marked ⏳ in the file.
 
 2. **Process it in auto mode.** Invoke the **process-job** skill with this URL and **mode = auto**. Process-job will:
    - fetch the JD (non-interactively — no manual-paste prompt),
@@ -67,7 +67,7 @@ Repeat until `claim` returns empty:
      ```
      `skipped += 1`. Record `✓ {company} — {role} — skipped (Match {M}/10 · Appeal {A}/10)`.
 
-   - **already-filed** → process-job's dedup found this URL already filed (csv: Step 0 tracker check; notion: Step 2 folder check). Nothing new was filed. Remove it from the queue and tally:
+   - **already-filed** → process-job's dedup found this URL already filed (csv: Step 1 tracker check; notion: Step 3 folder check). Nothing new was filed. Remove it from the queue and tally:
      ```bash
      applywright inbox done "<url>"
      ```
@@ -105,7 +105,7 @@ In all cases the per-job folders under `output/{short-id}/` and the tracker hold
 
 **On a hard error inside process-job** (not fetch-failed — e.g., PDF export fails, tracker write errors): process-job logs it and stops that job. In bulk, treat it like a failure: leave the ⏳ as-is or mark ❌ with a note, record `❌ {url} — {what failed}`, and continue to the next URL. Never let one broken job halt the whole queue. Surface the specific error in the roll-up so the user can retry it.
 
-## Step 2: Roll-up
+## Step 3: Roll-up
 
 When `claim` returns empty, print one summary block:
 

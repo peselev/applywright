@@ -38,12 +38,12 @@ applywright reset-intake
 ### Logging context
 You will log every fetch attempt. Where the log entries go depends on context:
 
-- **If invoked by process-job:** the application folder doesn't exist yet (process-job creates it in its Step 2). Accumulate log entries in working memory **as message strings only** (everything after the timestamp — see format below, without any `[TS]` prefix). Process-job's Step 2 writes them into `output/{short-id}/log-{short-id}.md` via `applywright log-append`, which stamps each line. Do not self-stamp the entries and do not run any date command.
+- **If invoked by process-job:** the application folder doesn't exist yet (process-job creates it in its Step 3). Accumulate log entries in working memory **as message strings only** (everything after the timestamp — see format below, without any `[TS]` prefix). Process-job's Step 3 writes them into `output/{short-id}/log-{short-id}.md` via `applywright log-append`, which stamps each line. Do not self-stamp the entries and do not run any date command.
 - **If invoked standalone:** report the same message strings in chat.
 
 Log format (the message string you accumulate — no timestamp prefix):
 ```
-step=01 fetch-attempt method={web_fetch|jina|iframe-switch|manual} url=<URL passed to script> bytes=<N> result={ok|junk|failed|error}
+step=02 fetch-attempt method={web_fetch|jina|iframe-switch|manual} url=<URL passed to script> bytes=<N> result={ok|junk|failed|error}
 ```
 
 The script's stderr line is your source of truth for the `url`, `bytes`, and `fetch_code` field. Include them verbatim in the message string.
@@ -63,7 +63,7 @@ Capture the script's stderr line and its exit code.
 
 Log:
 ```
-step=01 fetch-attempt method=web_fetch url=<URL> bytes=<N from stderr> result={ok if exit 0 else failed}
+step=02 fetch-attempt method=web_fetch url=<URL> bytes=<N from stderr> result={ok if exit 0 else failed}
 ```
 
 ### Step 2b: Check for ATS iframe pattern
@@ -93,7 +93,7 @@ applywright fetch "<ATS URL>" temp/fetched-jd.md web_fetch
 
 This overwrites the shell with the iframe content. Log:
 ```
-step=01 fetch-attempt method=iframe-switch url=<ATS URL> original-url=<provided URL> bytes=<N> result={ok|failed}
+step=02 fetch-attempt method=iframe-switch url=<ATS URL> original-url=<provided URL> bytes=<N> result={ok|failed}
 ```
 
 Then proceed to Step 2c.
@@ -118,12 +118,12 @@ Note: it's acceptable that jobd description has some HTML around it
 
 If the file is **junk**, go to Step 2d (Jina fallback). Log the failure first:
 ```
-step=01 fetch-attempt method=<previous method> bytes=<N> result=junk reason=<short reason>
+step=02 fetch-attempt method=<previous method> bytes=<N> result=junk reason=<short reason>
 ```
 
 If the file looks like a real JD, log success and proceed to Step 3:
 ```
-step=01 fetch-attempt method=<previous method> bytes=<N> result=ok
+step=02 fetch-attempt method=<previous method> bytes=<N> result=ok
 ```
 
 ### Step 2d: Jina fallback via the script
@@ -140,7 +140,7 @@ The script will hit `https://r.jina.ai/<URL-encoded original URL>` and save the 
 
 Capture the stderr line (it will have the full Jina URL) and log:
 ```
-step=01 fetch-attempt method=jina url=https://r.jina.ai/<encoded> bytes=<N> result={ok|junk|failed}
+step=02 fetch-attempt method=jina url=https://r.jina.ai/<encoded> bytes=<N> result={ok|junk|failed}
 ```
 
 Then re-run Step 2c validation. If Jina also produced junk, proceed to Step 2e.
@@ -152,7 +152,7 @@ If both web_fetch and Jina failed validation, branch on the **decision mode** pa
 **Auto mode (non-interactive):** do NOT prompt the user. There is no one watching a bulk/auto run. Log the failure and return a **fetch-failed** signal to the caller:
 
 ```
-step=01 fetch-attempt method=auto-exhausted url=<URL> web_fetch=<bytes>/<reason> jina=<bytes>/<reason> result=fetch-failed
+step=02 fetch-attempt method=auto-exhausted url=<URL> web_fetch=<bytes>/<reason> jina=<bytes>/<reason> result=fetch-failed
 ```
 
 Then stop this skill and hand `fetch-failed` back to process-job (which marks the URL ❌ in bulk, or tells the user in a standalone auto run). Do not proceed to Step 2f.
@@ -171,7 +171,7 @@ Then stop this skill and hand `fetch-failed` back to process-job (which marks th
 
 Log:
 ```
-step=01 fetch-attempt method=manual-prompt alternative-url=<new URL or "none">
+step=02 fetch-attempt method=manual-prompt alternative-url=<new URL or "none">
 ```
 
 ### Step 2f: Manual paste (manual mode only)
@@ -188,7 +188,7 @@ Wait for the user to confirm in chat that they've pasted it. Then read `inbox/jd
 
 Log:
 ```
-step=01 fetch-attempt method=manual bytes=<N> result=ok
+step=02 fetch-attempt method=manual bytes=<N> result=ok
 ```
 
 ## Step 3: Handoff

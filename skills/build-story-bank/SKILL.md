@@ -13,13 +13,13 @@ Orientation (Milestones 1 and 2) left the user with a working pipeline running o
 
 **Seat model.** This milestone is mostly thinking and writing (interviewing the user, drafting bullets, getting numbers right), which a regular Claude chat does well because it can search and discuss. Placing the finished bullets into `profile/master-bullets.md` and `profile/persona.md` happens on the user's machine. So the rhythm is: build and approve in the chat, then have Claude Code (or the user) drop the result into the files. Offer the seat choice flat, the same way orientation does; do not steer.
 
-## Step 0: Read the handoff first, then build from it
+## Step 1: Read the handoff first, then build from it
 
 Before anything else, read the **Story-bank handoff** the user brings from orientation, and the uploaded **Applywright folder** if present. The handoff is built to carry exactly what this milestone needs, so use it rather than re-asking:
 
 - **The families that exist.** Orientation already named the families and wrote a `-MAIN` placeholder for each. These are the slots you are filling. Start from them. If, while building, the user surfaces a genuinely new family or wants to merge or drop one, that is fine; but the skeleton is the starting point, not a blank page.
 - **The user's field and the shape of their career.** This decides which document types you suggest (below) and which vocabulary the bullets should use.
-- **What source material they have.** Resume, LinkedIn, case studies already written up, or building from scratch. This decides which working mode you recommend (Step 3).
+- **What source material they have.** Resume, LinkedIn, case studies already written up, or building from scratch. This decides which working mode you recommend (Step 4).
 - **Anything pinned or deferred.** Carry it forward; it resurfaces in the Design handoff.
 
 ## What you produce
@@ -31,7 +31,7 @@ Before anything else, read the **Story-bank handoff** the user brings from orien
 
 ---
 
-## Step 1: Frame the milestone for the user before building
+## Step 2: Frame the milestone for the user before building
 
 Do not open the interview cold. Spend a short message setting up why this matters and what good looks like, so the user understands the work they are about to do and why it is worth the time. Cover four things, in your own words, matched to what the handoff told you about them:
 
@@ -52,7 +52,7 @@ Do not open the interview cold. Spend a short message setting up why this matter
 
 Then ask whether they are ready, and what they have on hand.
 
-## Step 2: How good bullets get written
+## Step 3: How good bullets get written
 
 When the user is ready, share these principles as you draft, so they learn what makes a bullet strong rather than just receiving finished lines. These are the craft rules; apply every one to every bullet.
 
@@ -75,7 +75,7 @@ A quick before/after shows several rules at once:
 
 The after leads with the capability, cuts the filler and the "our," skips the mechanism, and ends on real numbers.
 
-## Step 3: Work from whatever the user has, one family at a time
+## Step 4: Work from whatever the user has, one family at a time
 
 There is no single right way in. Pick the mode that fits what the handoff and the user tell you, and switch on the fly if they prefer a different one.
 
@@ -157,5 +157,5 @@ Then point the user to Milestone 4 with the flat seat-choice framing: start a fr
 - **Do not derive the targeting sections.** They are always an interview.
 - **Do not copy the `Theme keys` / `JD-fit signal` metadata lines into the CV.** They are selection-only.
 - **Do not over-amplify altitude.** Match each bullet to the level the user is targeting (read it from the handoff). It is easier for a user to upgrade a level-appropriate bullet for a senior application than to walk back language that reads above where they are aiming.
-- **Do not skip the framing in Step 1.** The user does better, more careful work when they understand why the bank matters and that it serves their whole job search, not just this tool.
+- **Do not skip the framing in Step 2.** The user does better, more careful work when they understand why the bank matters and that it serves their whole job search, not just this tool.
 - **Do not start Design inline by default.** Write the handoff, offer the seat choice, let the user move. If they explicitly choose to continue here, that is their call.
