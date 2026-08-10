@@ -45,3 +45,38 @@ style:
   # Arial as an automatic fallback if it isn't installed. To experiment, change
   # this one value and re-export — applywright export-pdf applies it everywhere.
   font: "Arial"
+
+slots:
+  # Dynamic CV bullet slots. Each row maps one {rolekey_n} placeholder in cv.md
+  # to the master-bullets families it may draw from. This is the whole tailoring
+  # contract: lock everything in cv.md except these slots (see cv-rules.md).
+  #
+  #   name     - the slot token WITHOUT braces; cv.md holds it as {name}
+  #   role     - a substring of the role's "### **Company**, ..." header the
+  #              slot sits under (used to confirm the slot is under the right role)
+  #   families - inline list of master-bullets family prefixes this slot may use
+  #              (keep the inline [A, B] form — check-slots hand-parses it)
+  #   intent   - plain-language note on what this slot is for (guides selection)
+  #   fill     - "auto"   = the pipeline selects a bullet for it every application
+  #              "manual" = you tailor it on demand (ask Claude Code); the
+  #                         pipeline never auto-fills it, and at rest it holds
+  #                         real prose, not a {token}
+  #
+  # Global rules the selector honors across all auto slots: no family used twice
+  # (each family is one project; it appears once), and spread themes so the CV
+  # argues several points. Fewer, well-placed slots tailor harder than many.
+  - name: meridian_1
+    role: "Meridian Analytics"
+    families: [PLATFORM, DATA]
+    intent: "technical / platform depth in the current role"
+    fill: auto
+  - name: meridian_2
+    role: "Meridian Analytics"
+    families: [AI, PLATFORM]
+    intent: "the JD's secondary theme in the current role"
+    fill: auto
+  - name: tideline_1
+    role: "Tideline Software"
+    families: [GROWTH, ONBOARD]
+    intent: "growth / activation proof from the prior role"
+    fill: auto

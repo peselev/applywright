@@ -22,8 +22,8 @@ below). You can change it.
 2. **Lock the first bullet of each role.** Treat bullet 1 as the role's
    orientation line: the always-on, role-agnostic summary of what that job was
    and your main theme there. It sets context for the dynamic bullets that
-   follow.
-3. **Make the rest unique placeholders.** Any bullet you want tailored becomes a
+   follow. (`check-slots` enforces this — a slot may not be a role's first bullet.)
+3. **Make the rest unique slots.** Any bullet you want tailored becomes a
    uniquely named slot. Unique names matter: the fill step matches by name, so
    no two slots may share a name. Slots can sit in more than one role, not just
    the most recent.
@@ -34,43 +34,60 @@ below). You can change it.
 
 ## Slot naming and the slots map
 
-The current role keeps the two default slots, `{bullet_2}` and `{bullet_3}`.
-Keep those exact names: they are the only slots the engine fills automatically.
-For any extra tailored bullet, add a uniquely named slot. A clean scheme is
-`{<rolekey>_<n>}`:
+Name every slot `{rolekey_n}` — a short role key, an underscore, and a number,
+unique across the CV (e.g. `{meridian_1}`, `{meridian_2}`, `{tideline_1}`). The
+two shipped defaults, `{bullet_2}` and `{bullet_3}`, are just this scheme with
+the rolekey `bullet`; keep them if you stay on the default, or rename everything
+to your own role keys.
+
+The slots the token names live in `cv.md`; what each one means lives in a
+`slots:` block in `profile/config.yaml`. Each row maps one slot to the families
+it may draw from, the role it sits in, its intent, and its fill mode:
+
+```yaml
+slots:
+  - name: meridian_1
+    role: "Meridian Analytics"      # substring of the role's ### header
+    families: [PLATFORM, DATA]      # eligible master-bullets families (inline list)
+    intent: "technical / platform depth in the current role"
+    fill: auto
+  - name: tideline_1
+    role: "Tideline Software"
+    families: [GROWTH, ONBOARD]
+    intent: "growth / activation proof from the prior role"
+    fill: auto
+```
+
+And in `cv.md`, under each role's locked orientation bullet:
 
 ```
 ### **Meridian Analytics, Inc.**, Boston, MA ||| 2021 – 2025
 **Senior Product Manager**
 
 - Owned product strategy for a $25M ARR analytics platform...   (LOCKED: orientation bullet)
-- {bullet_2}
-- {bullet_3}
-
-### **Tideline Software, Inc.**, Providence, RI ||| 2016 – 2021
-**Senior Product Manager**
-
-- Joined a 12-person seed-stage company...                      (LOCKED: orientation bullet)
-- {tideline_1}
+- {meridian_1}
+- {meridian_2}
 ```
 
-Then declare the map. Each row says which families a slot may draw from, and the
-intent:
+`applywright check-slots` validates that the three agree: every `auto` slot has a
+token under the role it claims, every token in `cv.md` is mapped, names are
+unique and canonical, and every eligible family exists in `master-bullets.md`.
+Run it after editing either file.
 
-```
-## Slots map
-| Slot         | Role               | Eligible families | Intent                     | Fill   |
-|--------------|--------------------|-------------------|----------------------------|--------|
-| {bullet_2}   | Meridian (current) | PLATFORM, DATA    | technical / platform depth | auto   |
-| {bullet_3}   | Meridian (current) | AI, GROWTH        | the JD's secondary theme   | auto   |
-| {tideline_1} | Tideline           | GROWTH, ONBOARD   | growth / activation proof  | manual |
-```
+## auto vs manual
 
-`auto` slots are filled by the pipeline on every application. `manual` slots are
-the named extras: the agent fills them when you ask it to fill them by name,
-until the slots-map engine change lands.
+- **`auto`** slots are filled by the pipeline on every application: assess-fit
+  picks the best-fitting eligible variant, and process-job pastes it. These are
+  `{token}` placeholders in `cv.md` at rest.
+- **`manual`** slots are the named extras you tailor on demand. A manual slot
+  holds **real prose** in `cv.md` at rest, not a token — the pipeline never
+  auto-fills it. To tailor one for a specific application, ask Claude Code to
+  fill that slot by name; it makes a one-time edit and re-exports (the same
+  pattern as adding a Skills or Summary section). Keeping manual slots as prose
+  is what stops a raw `{token}` from ever rendering into a PDF — and the fill
+  step refuses to export while any token remains, as a backstop.
 
-Two global rules the agent follows when filling:
+Two global rules the agent follows when filling `auto` slots:
 
 - **No project twice.** A family used in one slot is off the table for the rest.
   Every variant of a family is the same project, and the CV should not show one
@@ -99,9 +116,9 @@ three and add a slot only when a real role needs it.
 
 ## What the engine fills today
 
-The shipped pipeline fills the two default slots (`{bullet_2}`, `{bullet_3}`) in
-the most recent role. The named multi-slot model above is the convention for
-extending that. Filling arbitrary named slots across multiple roles needs the
-selection step (`assess-fit`) and the fill step (`process-job`) to read the
-slots map, which is a separate engine change. Until that lands, keep to the two
-default slots, or ask the agent to fill extra named slots by hand.
+The pipeline fills every `auto` slot the map declares, across any number of
+roles, each from its own eligible families — the two-slot default is just the
+smallest case. If `config.yaml` has no `slots:` block at all, the engine falls
+back to the two default slots (`{bullet_2}`, `{bullet_3}`) in the most recent
+role with every family eligible, so a CV that never declares a map still works.
+Manual slots are filled on demand, by name, when you ask.

@@ -35,9 +35,9 @@ import re
 import sys
 from pathlib import Path
 
-# A bullet still holding a {bullet N} slot means the fill step didn't complete;
-# report it rather than treating "{bullet" as a verb.
-_PLACEHOLDER = re.compile(r"\{\s*bullet[^}]*\}", re.IGNORECASE)
+# A bullet still holding a {slot} token (named {rolekey_n} or legacy {bullet_n})
+# means the fill step didn't complete; report it rather than reading "{..." as a verb.
+_PLACEHOLDER = re.compile(r"\{[A-Za-z][\w ]*\}")
 _LEADING_EMPHASIS = re.compile(r"^[*_]+")
 _FIRST_WORD = re.compile(r"[A-Za-z][A-Za-z'\-]*")
 

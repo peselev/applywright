@@ -63,7 +63,7 @@ resolves and the toolchain is complete.
 The fastest way to fill `profile/` is the guided setup: run `claude` and say **"set me up."** The orientation skill walks you through your config, CV, project families, and persona, then proves the pipeline on one real job; building your full bullet library follows as a next step. Or edit the files by hand:
 
 1. `profile/config.yaml`: name, email, phone, portfolio URL, tracker mode
-2. `profile/cv.md`: your resume, with `{bullet_2}` / `{bullet_3}` placeholders the agent fills
+2. `profile/cv.md`: your resume, with named `{rolekey_n}` bullet slots the agent fills (default: `{bullet_2}` / `{bullet_3}`)
 3. `profile/master-bullets.md`: your tagged story bank
 4. `profile/persona.md`: your positioning and case studies (or run `refresh-persona` if you have a site)
 

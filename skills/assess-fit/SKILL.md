@@ -1,6 +1,6 @@
 ---
 name: assess-fit
-description: Evaluate fit between a job description and the user's background, AND pick two bullets from the master file to use in the tailored CV. Reads the saved JD, the user's CV, persona file, and master bullets; produces a structured fit assessment scored on two independent axes — Match (how well the user clears the core of the role; the proceed/skip gate) and Appeal (how well the role fits what the user is looking for; sets priority) — plus a recommendation band (Apply / Stretch / Gamble / Skip), a leveling check that flags when the role's real scope reads above or below its posted title, what-they-want vs what-the-user-brings, differentiating strengths, real gaps, a reasoned recommendation, and two bullet picks. Bullet selection is case-first: it picks two different case families, the best-fitting variant inside each (using each variant's Theme keys and JD-fit signal), then cross-checks the two so they span different themes instead of doubling one. Raises selection flags (gap / keyword / close-call / overlap) when they apply. Writes the full analysis to `output/{short-id}/fit-{short-id}.md` and shows a summary in chat. Called by process-job between the injection scan and the proceed/skip decision. Does NOT decide to proceed or skip — the user makes that call after reading the assessment, and may override the bullet picks at the same time.
+description: Evaluate fit between a job description and the user's background, AND pick a bullet for each of the CV's auto slots (declared in config.yaml's slots block; the default CV has two, in the most recent role). Reads the saved JD, the user's CV, persona file, and master bullets; produces a structured fit assessment scored on two independent axes — Match (how well the user clears the core of the role; the proceed/skip gate) and Appeal (how well the role fits what the user is looking for; sets priority) — plus a recommendation band (Apply / Stretch / Gamble / Skip), a leveling check that flags when the role's real scope reads above or below its posted title, what-they-want vs what-the-user-brings, differentiating strengths, real gaps, a reasoned recommendation, and one bullet pick per auto slot. Bullet selection is case-first: for each auto slot it picks the best-fitting variant from that slot's eligible families (using each variant's Theme keys and JD-fit signal), with no family used twice and themes spread across the picks. Raises selection flags (gap / keyword / close-call / overlap) when they apply. Writes the full analysis to `output/{short-id}/fit-{short-id}.md` and shows a summary in chat. Called by process-job between the injection scan and the proceed/skip decision. Does NOT decide to proceed or skip — the user makes that call after reading the assessment, and may override the bullet picks at the same time.
 ---
 
 # Assess Fit
@@ -30,7 +30,7 @@ If `master-bullets.md` doesn't exist, tell the user it's missing and stop. The s
 
 The **bullet is only the prose paragraph** after the blank line. The `Theme keys` and `JD-fit signal` lines are metadata for *selection* — they are never copied into the CV, the fit file, or anywhere a bullet is pasted. When this skill (or process-job) pastes a bullet "verbatim," that means the prose paragraph only.
 
-All variants of one family describe the **same underlying project**. That has a consequence used in Step 5: two bullets from the same family would put the same project on the CV twice, so the two picks must come from **two different families**.
+All variants of one family describe the **same underlying project**. That has a consequence used in Step 5: two bullets from the same family would put the same project on the CV twice, so **no family is used more than once** across the filled slots.
 
 ## Step 1: Read the inputs
 
@@ -151,62 +151,70 @@ Combine the two into one recommendation — the read the user acts on (and, in a
 
 Add a one-line **how to play it** to the recommendation, folding in the Step 2 leveling read where it matters (e.g. "Apply — high-ceiling: scope reads above the Senior title, lead with ownership," or "Stretch — the fixed-ops gap is central and hard-tested; lean skip unless the user can speak to it"). The proceed/skip gate keys off **Match**; this band is the human-readable recommendation the Match threshold implements.
 
-## Step 5: Pick two bullets from the master file
+## Step 5: Pick bullets for the CV's auto slots
 
-Selection runs in four moves: pick two **families**, pick the best **variant** inside each, run a **theme cross-check** across the two, then raise any **selection flags**. Work through them in order — don't pick from the flat list of all bullets directly, or you'll miss the cross-check. A fifth move (5f) then derives the **cover-letter recommendation**; it lives here because it reads the flags from 5d together with the Step 2–3 signals.
+The CV has one or more **auto slots** — the `{rolekey_n}` placeholders the pipeline fills every application (declared in `profile/config.yaml`'s `slots:` block; see `cv-rules.md`). Selection fills each auto slot with one bullet, under two global rules: **no family twice** (each family is one project; it appears once across the whole CV) and **spread themes** (the filled bullets should argue several points, not one repeatedly). Work the moves in order — don't pick from the flat list of all bullets directly.
 
-### 5a: Pick the two strongest families
+Move 5g then derives the **cover-letter recommendation**; it lives here because it reads the flags from 5e together with the Step 2–3 signals.
 
-Score each family (COMM, PLATFORM, AI, PLG, DG) against the role on two signals:
+### 5a: Read the auto slots to fill
+
+Read `profile/config.yaml`. For each row in the `slots:` block with `fill: auto`, note its `name`, its `role`, and its **eligible families** — the only families that slot may draw from (this is what keeps a role's slot showing that role's projects). Manual slots (`fill: manual`) are not selected here; skip them. Take the auto slots in map order.
+
+**Legacy default (no `slots:` block).** If `config.yaml` has no `slots:` block, fall back to the shipped default: two auto slots in the most recent role, `{bullet_2}` and `{bullet_3}`, each eligible for **every** family. This reproduces the original two-bullet behavior for a profile that hasn't declared a map.
+
+### 5b: Score families per slot, then assign (no family twice)
+
+For each auto slot, score its **eligible** families against the role on two signals:
 
 1. **Direct alignment** — does this case demonstrate something the role explicitly requires (from Step 2)?
 2. **Differentiating value** — does it show something other candidates likely don't have?
 
-Take the **two highest-scoring families**. They must be **different families** — never two variants of one family, because every variant of a family is the same project, and the CV would show it twice. If two angles of the same case both look strong, that's a Step 5d close-call to surface, not a reason to pick both.
+Then **assign one family to each slot so that no family is used twice.** Give a contested family to the slot whose fit for it is strongest, and give the other slot its next-best eligible family. If a slot has no eligible family left unused, note it — raise a `GAP` in 5e and fill it with the least-bad eligible option. With one auto slot this is just "pick the strongest eligible family."
 
-### 5b: Pick the best variant inside each chosen family
+### 5c: Pick the best variant inside each assigned family
 
-For each of the two families, choose one bullet:
+For each slot's assigned family, choose one bullet:
 
 - Read each variant's `JD-fit signal` line against the JD. Pick the variant whose signal matches what the role actually emphasizes. The `Theme keys` line tells you what that variant leads with.
-- **Fall back to the `-MAIN` bullet** when the JD is generic, segment-agnostic, or no variant's signal clearly beats the headline. (Note: PLG and any other family with a segment-neutral variant — e.g. `PLG-1b`, `PLG-3b` — usually beat `-MAIN` for segment-agnostic JDs; their signals say so. MAIN is the true fallback, not a frequent pick.)
+- **Fall back to the `-MAIN` bullet** when the JD is generic, segment-agnostic, or no variant's signal clearly beats the headline. (Note: a family with a segment-neutral variant — e.g. `PLG-1b`, `PLG-3b` — usually beats `-MAIN` for segment-agnostic JDs; its signal says so. MAIN is the true fallback, not a frequent pick.)
 
-Record the **dominant theme** of each chosen variant (from its `Theme keys`), and note the runner-up variant in each family — Step 5d may need it.
+Record the **dominant theme** of each chosen variant (from its `Theme keys`), and note the runner-up variant in each family — 5d and 5e may need it.
 
-### 5c: Theme cross-check (broaden the narrative)
+### 5d: Theme spread (broaden the narrative)
 
-Now look at the two chosen variants **together**. Compare their `Theme keys`.
+Look at all the chosen variants **together** and compare their `Theme keys`.
 
-- **If they share a dominant theme** (e.g. both lead with "Build-vs-Buy," or both with "Platform/Architecture"), the pair is narrow — it argues one point twice instead of covering two. **Re-pick one variant**: swap to a different variant *of the same family* whose theme broadens the coverage, as long as that variant still fits the JD acceptably. Keep the family fixed; change only the angle.
-- **If swapping would force a variant that doesn't fit the JD** (no acceptable alternative exists in that family), keep the overlapping pick but raise an `OVERLAP` note in Step 5d so the user sees the pair is narrow.
-- **If the themes are already distinct**, no change — the pair spans two clusters.
+- **If two picks share a dominant theme** (e.g. both lead with "Build-vs-Buy," or both with "Platform/Architecture"), that pair is narrow — it argues one point twice. **Re-pick one variant**: swap to a different variant *of the same family* whose theme broadens the coverage, as long as it still fits the JD acceptably. Keep the family fixed; change only the angle.
+- **If swapping would force a variant that doesn't fit the JD** (no acceptable alternative in that family), keep the overlapping pick but raise an `OVERLAP` note in 5e.
+- **If the themes are already distinct**, no change.
 
-The goal: the two bullets together should cover **two different theme clusters**, not double down on one.
+The goal: across all filled slots, the bullets should span **different theme clusters**, not double down on one. With a single auto slot there's nothing to spread — skip this move.
 
-### 5d: Raise selection flags (only when they fire)
+### 5e: Raise selection flags (only when they fire)
 
 After the picks are settled, check for these. Raise a flag **only if it actually applies** — do not emit empty "no gaps" lines.
 
-- **`GAP`** — no family fits the role well; the two picks are the best available but weak. (The role is in a domain none of the user's cases really touch.) Name the closest two and say plainly that custom writing will beat them.
+- **`GAP`** — no eligible family fits a slot well; the pick is the best available but weak, or a slot had to reuse/settle for a family. (The role is in a domain none of the user's cases really touch.) Name the closest two and say plainly that custom writing will beat them.
 - **`KEYWORD`** — the JD leans hard on a specific term or requirement (named ≥2-3 times, or stated as a hard must-have) that the chosen bullets don't surface. List the term(s). This is **advisory only**: bullets paste verbatim, so the flag doesn't edit anything. It tells the user they may want to override toward a variant that carries the term, and it tells the downstream cover-letter / application-answers skills to make sure the term lands there.
 - **`CLOSE-CALL`** — two candidates are a genuine toss-up for one slot (e.g. two families nearly tied, or two angles of the same case both strong). Name both and give the one-line tradeoff, so the user can override at the decision point.
-- **`OVERLAP`** — carried from 5c: the two picks share a theme and no acceptable swap existed.
+- **`OVERLAP`** — carried from 5d: two picks share a theme and no acceptable swap existed.
 
-### 5e: Finalize
+### 5f: Finalize
 
-You now have: two final picks (each a KEY + its prose paragraph), the dominant theme each one covers, a one-line reason per pick, a note on whether 5c swapped anything, and zero or more flags.
+You now have: one pick per auto slot (each a slot name + a KEY + its prose paragraph), the dominant theme each covers, a one-line reason per pick, a note on whether 5d swapped anything, and zero or more flags.
 
-**Log internally** the two keys and any flag types raised (Step 6 and 7 reference them).
+**Log internally** the picked keys (by slot) and any flag types raised (Step 6 and 7 reference them).
 
-### 5f: Derive the cover-letter recommendation
+### 5g: Derive the cover-letter recommendation
 
 Auto mode files with **no cover letter**, so this verdict is the signal the user scans later to decide which filed roles are worth circling back to with one. It measures **leverage**: does a cover letter materially change how this application reads, or does the résumé already carry the fit? It is **binary**.
 
 - **Recommended** — the fit is real (Apply band) but the résumé **understates** it, so prose closes the gap between the reasoning-fit and what the page actually shows. Fires when **any** of these hold:
-  - a **KEYWORD** flag fired (5d) — the JD's core term isn't on the page;
+  - a **KEYWORD** flag fired (5e) — the JD's core term isn't on the page;
   - the role's primary domain match is a **coachable/adjacent** gap (Step 3), not a literal match — the fit is by analogy and the bullets don't name it;
   - leveling reads **above** the posted title (Step 2) — the bullets don't carry the altitude;
-  - a differentiating strength (Step 3) makes a specific argument the two bullets don't spell out.
+  - a differentiating strength (Step 3) makes a specific argument the filled bullets don't spell out.
 
   This is the SeatGeek case: Match 8, but an adjacent domain and a KEYWORD gap the résumé never named, filed in auto mode with no letter to bridge it.
 - **Not needed** — the résumé already carries the fit head-on: the core domain is a direct match, no KEYWORD or leveling gap, and no unspelled differentiator. A letter won't change the read.
@@ -293,29 +301,31 @@ One or two lines from the Step 2 leveling check: the role's real scope altitude 
 
 ## Bullets I would use
 
-List the two picks. The bullet text is the **prose paragraph only** — never include the `Theme keys` or `JD-fit signal` metadata lines.
+One pick per auto slot, each **labeled with the slot it fills** — this is what the fill step (process-job Step 8) reads to place each bullet. The bullet text is the **prose paragraph only** — never include the `Theme keys` or `JD-fit signal` metadata lines.
 
-- **{KEY-1}** — covers {dominant theme} — {1-line reasoning for the pick}
-
-  {bullet prose, verbatim from master-bullets.md}
-
-- **{KEY-2}** — covers {dominant theme} — {1-line reasoning for the pick}
+- **{slot}** ← **{KEY}** — covers {dominant theme} — {1-line reasoning for the pick}
 
   {bullet prose, verbatim from master-bullets.md}
 
-**Pairing:** {one line — the two clusters this pair spans; note here if Step 5c swapped a variant to broaden, e.g. "swapped PLATFORM-3 → PLATFORM-2 so the pair isn't two build-vs-buy angles".}
+- **{slot}** ← **{KEY}** — covers {dominant theme} — {1-line reasoning for the pick}
+
+  {bullet prose, verbatim from master-bullets.md}
+
+(One entry per auto slot, in slot order — two shown here for the default two-slot CV; a CV with more auto slots gets more entries.)
+
+**Spread:** {one line — the theme clusters these picks span; note here if Step 5d swapped a variant to broaden, e.g. "swapped PLATFORM-3 → PLATFORM-2 so it isn't two build-vs-buy angles".}
 
 ## Selection notes
 
-Include this section **only if at least one flag fired in Step 5d.** If none fired, omit the section entirely — no empty placeholder.
+Include this section **only if at least one flag fired in Step 5e.** If none fired, omit the section entirely — no empty placeholder.
 
 - **GAP** — {closest two families are weak; custom writing will beat them. Name them.}
 - **KEYWORD** — {term(s) the JD leans on that the picks don't surface; advisory for override + downstream writing}
 - **CLOSE-CALL** — {the two near-tied candidates + the one-line tradeoff}
-- **OVERLAP** — {the two picks share a theme and no acceptable swap existed}
+- **OVERLAP** — {two picks share a theme and no acceptable swap existed}
 ```
 
-(Only the flag types that actually fired appear. Drop the whole `## Selection notes` heading if Step 5d raised nothing.)
+(Only the flag types that actually fired appear. Drop the whole `## Selection notes` heading if Step 5e raised nothing.)
 
 ## Step 7: Show summary in chat
 
@@ -326,7 +336,7 @@ Show 4-6 lines:
 Match: {N}/10 ({read}) · Appeal: {N}/10 ({read})
 Recommendation: {Apply | Stretch | Gamble | Skip} — {≤1 line}
 {One-line summary}
-Bullets I'd use: {KEY-1} + {KEY-2}  ({theme-1} + {theme-2})
+Bullets I'd use: {picked KEYs, one per auto slot, joined with +}  ({their themes, joined with +})
 Flags: {GAP / KEYWORD: <term> / CLOSE-CALL / OVERLAP — only if any fired; omit this line otherwise}
 Leveling: {scope vs title + one line on how to play it}   ← include this line ONLY when scope reads above/below the title, or there's a leveling unknown worth flagging; omit it when scope and title align (the Recommendation line already conveys a clean fit)
 Location: {primary location} (+{N} more — confirm before ruling out)   ← include this line ONLY when the JD is multi-location / shows "+N locations"; omit it otherwise
@@ -335,13 +345,13 @@ Cover letter: {Recommended | Not needed} — {if Recommended: the one-line angle
 Full analysis: output/{short-id}/fit-{short-id}.md
 ```
 
-The **Bullets** line names the two theme clusters in parentheses so the pairing logic is visible at a glance. The **Flags** line appears only when Step 5d raised something — drop it entirely when there's nothing to flag. Keep flags terse here (one word each, plus the term for KEYWORD); the detail lives in the fit file's Selection notes.
+The **Bullets** line names the theme clusters the picks span, so the spread is visible at a glance. The **Flags** line appears only when Step 5e raised something — drop it entirely when there's nothing to flag. Keep flags terse here (one word each, plus the term for KEYWORD); the detail lives in the fit file's Selection notes.
 
 The **Location** line appears only when the role is multi-location or the JD truncated the field with a "+N locations" indicator (the Step 2 location check). It exists so the user doesn't rule a role out on a city that may not be the only option. Omit it for ordinary single-location roles.
 
 The **Leveling** line appears only when the role's scope reads above or below its posted title, or there's a leveling unknown worth flagging (the Step 2 leveling check). It's what stops a high Match from being read as an easy get. When scope and title align cleanly, omit the line — the Recommendation line already says the level fits. Keep it to scope-vs-title plus one line on how to play it; the fuller read lives in the fit file's Leveling section.
 
-The **Cover letter** line carries the Step 5f verdict plus, when Recommended, the angle. The angle is a thesis seed, not a draft sentence: it names a specific pattern from the differentiating strengths section and connects it to the role's most important hire signal. Example: "Recommended — Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." The verdict is the same one written to the fit file's **Cover letter** field and (on the proceed path) tagged into the tracker comment as `· CL: yes|no`; the angle feeds the cover-letter skill's thesis derivation step.
+The **Cover letter** line carries the Step 5g verdict plus, when Recommended, the angle. The angle is a thesis seed, not a draft sentence: it names a specific pattern from the differentiating strengths section and connects it to the role's most important hire signal. Example: "Recommended — Account Summary governance + Page Builder platform-engine pattern → makes the argument for Agent Context better than search/RAG experience alone." The verdict is the same one written to the fit file's **Cover letter** field and (on the proceed path) tagged into the tracker comment as `· CL: yes|no`; the angle feeds the cover-letter skill's thesis derivation step.
 
 Use the same emoji as in the H1 (keyed to Match — see the table in Step 6).
 
@@ -370,7 +380,7 @@ If the user reads the assessment and pushes back — e.g., "I do have that exper
 - The JD hasn't been saved yet (process-job step 3 hasn't run) — wait
 - `profile/persona.md` doesn't exist — tell the user to run refresh-persona first
 - the user is just asking "what do you think of this role?" without intent to apply — discuss in chat, don't write a fit file
-- the user has already provided two bullets and is past this point in the pipeline — too late, don't re-assess
+- the user has already provided the bullets and is past this point in the pipeline — too late, don't re-assess
 
 ## Honesty principles
 

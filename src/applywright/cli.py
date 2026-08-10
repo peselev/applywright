@@ -9,6 +9,7 @@ import sys
 from . import __version__
 from . import (
     bootstrap,
+    check_slots,
     check_template,
     check_verbs,
     doctor,
@@ -31,6 +32,7 @@ COMMANDS = {
     "export-pdf": export_pdf.main,
     "check-template": check_template.main,
     "check-verbs": check_verbs.main,
+    "check-slots": check_slots.main,
     "tracker": tracker.main,
     "inbox": inbox.main,
     "log-append": log_append.main,
@@ -50,6 +52,7 @@ Commands:
   export-pdf <in.md> <out.pdf> <kind>   render a PDF (kind: cv | document | cover-letter)
   check-template [path] [--kind ..]     validate a profile/ template against the contract
   check-verbs <cv.md>                   flag repeated opening verbs within a role
+  check-slots [profile-dir]             validate the cv.md slots map against config + bank
   tracker <init|seen|add|status> ...    CSV application tracker
   inbox <claim|done|fail|status|add> ...  bulk job queue (inbox/jobs.txt)
   log-append <logfile> <message>        append a timestamped log line

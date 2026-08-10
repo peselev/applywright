@@ -14,7 +14,7 @@ applywright/
 ├── profile/answers-field-notes.md       ← cross-application answer learnings (yours; agent proposes, you approve)
 ├── profile/voice-bank.md                ← your own drafts, banked verbatim (yours; agent appends on your confirmation, never analyzes)
 ├── profile/
-│   ├── cv.md                  ← CV template with {bullet_2} and {bullet_3} placeholders
+│   ├── cv.md                  ← CV template with named {rolekey_n} bullet slots (default: {bullet_2}, {bullet_3})
 │   ├── cv-rules.md            ← what's locked vs dynamic in cv.md (convention doc, read-only)
 │   ├── persona.md             ← distilled snapshot of the user's portfolio (managed by refresh-persona)
 │   └── master-bullets.md      ← library of high-impact bullets (assess-fit picks from this)
@@ -66,6 +66,7 @@ applywright/
 │   ├── export_pdf.py           ← `applywright export-pdf`: markdown → PDF via Typst
 │   ├── check_template.py       ← `applywright check-template`: validate a profile/ template against the contract
 │   ├── check_verbs.py          ← `applywright check-verbs`: flag repeated opening verbs within a CV role
+│   ├── check_slots.py          ← `applywright check-slots`: validate the cv.md slots map against config + bank
 │   ├── tracker.py              ← `applywright tracker`: CSV application tracker
 │   ├── inbox.py                ← `applywright inbox`: atomic claim/done/fail for the bulk queue
 │   ├── log_append.py           ← `applywright log-append`: timestamped log line
@@ -124,7 +125,7 @@ Bulk always runs auto. A single pasted URL is auto unless the user asks for manu
 
 If PROCEED (steps 7-11):
 
-7. Fill `profile/cv.md` placeholders with the two bullets; update UTM; save as `cv-{short-id}.md`; run `check-verbs` and surgically fix any repeated opening verb before export
+7. Fill `profile/cv.md`'s auto slots with the picked bullets (one per slot); update UTM; save as `cv-{short-id}.md`; run `check-verbs` and surgically fix any repeated opening verb before export
 8. Export to `{surname} - Resume.pdf` in the application folder
 9. Add a tracker row with Stage = `To apply` (CSV or Notion per `tracker.mode` — see Tracking)
 10. Empty `inbox/jd.md` and `temp/fetched-jd.md`
@@ -274,14 +275,14 @@ The JD itself is never modified — only described in the report.
 
 ## CV template
 
-`profile/cv.md` contains two placeholders: `{bullet_1}` and `{bullet_2}`. These appear in fixed positions (top two bullets of most recent role).
+`profile/cv.md` is mostly locked. Tailoring happens in named **bullet slots** — `{rolekey_n}` placeholders that can sit in any role (the shipped default is two, `{bullet_2}` and `{bullet_3}`, in the most recent role). Each slot is declared in a `slots:` block in `profile/config.yaml`: which master-bullets families it may draw from, which role it sits in, and whether the pipeline fills it (`auto`) or you tailor it on demand (`manual`). The full contract — what's locked, the naming, the slots map, the fill rules — is `profile/cv-rules.md`; `applywright check-slots` validates that cv.md, the map, and the bank agree. A profile with no `slots:` block falls back to the two-slot default, so an un-migrated CV keeps working.
 
-Bullets come from one of two sources, decided at Step 7 of process-job:
+Bullets for the auto slots come from one of two sources, decided at Step 7 of process-job:
 
-- **Agent's picks** (default) — assess-fit picks two bullets from `profile/master-bullets.md` during its analysis. If the user says "proceed," these are used.
-- **the user's overrides** — the user can specify one or both bullets directly. They may give a KEY from master-bullets.md (e.g., "use PLG") or verbatim text in quotes. For each bullet position, use the override if given, otherwise fall back to the agent's pick.
+- **Agent's picks** (default) — assess-fit picks one bullet per auto slot from `profile/master-bullets.md`, each drawn from that slot's eligible families, with no family used twice and themes spread. If the user says "proceed," these are used.
+- **the user's overrides** — the user can override any slot's pick directly, by slot name or position. They may give a KEY from master-bullets.md (e.g., "use PLG for meridian_1") or verbatim text in quotes. For each auto slot, use the override if given, otherwise fall back to the agent's pick.
 
-Whichever source: paste verbatim, no edits, no reordering.
+Whichever source: paste verbatim, no edits, no reordering. The fill step refuses to export while any `{slot}` token remains, so nothing renders literally.
 
 **One sanctioned edit.** The verb-dedup gate in process-job Step 8 may change the **opening word only** of a bullet *you filled this run*, and only to break a repeated opening verb within a role that `applywright check-verbs` flags (several master bullets open with the same verb, so two can collide beside a locked first bullet that shares it). This is the sole exception to paste-verbatim: it never touches a locked bullet, never reaches past the first word, picks an accurate replacement, and is recorded (log line, a section in `fit-{short-id}.md`, and a ` · verb-dedup` tag in the tracker `comments`). Everything past the first word stays verbatim, and nothing is reordered.
 

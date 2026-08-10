@@ -1,6 +1,6 @@
 ---
 name: process-job
-description: File a new job application — create the folder structure, save the JD, scan it for prompt injections, assess fit against the user's CV and portfolio, then either (proceed path) fill the CV template with two bullets and export to PDF, or (skip path) log as "Decided against applying." Runs in one of two decision modes — auto (default: proceed/skip automatically from the fit Match score, no cover letter) or manual (pause after the fit assessment for the user's call). Either path ends with a tracker row and cleanup. Triggered when the user provides a job posting URL in chat with intent to apply or evaluate, and used by bulk-process for queued URLs. Uses fetch-jd to retrieve the JD and assess-fit to evaluate. This skill does NOT write cover letters.
+description: File a new job application — create the folder structure, save the JD, scan it for prompt injections, assess fit against the user's CV and portfolio, then either (proceed path) fill the CV template's auto slots with tailored bullets and export to PDF, or (skip path) log as "Decided against applying." Runs in one of two decision modes — auto (default: proceed/skip automatically from the fit Match score, no cover letter) or manual (pause after the fit assessment for the user's call). Either path ends with a tracker row and cleanup. Triggered when the user provides a job posting URL in chat with intent to apply or evaluate, and used by bulk-process for queued URLs. Uses fetch-jd to retrieve the JD and assess-fit to evaluate. This skill does NOT write cover letters.
 ---
 
 # Process Job — v2 Pipeline
@@ -245,13 +245,13 @@ Log: `[TS] step=06 fit-assessed match={M} appeal={A} band={band}`
 
 ## Step 7: Decision (auto or manual)
 
-After assess-fit shows the summary (including the two bullet keys it picked) and opens the fit file, branch on the **decision mode** you resolved at the top.
+After assess-fit shows the summary (including the bullet keys it picked, one per auto slot) and opens the fit file, branch on the **decision mode** you resolved at the top.
 
 ### Auto mode (default)
 
 No pause. The Match score decides:
 
-- **Match ≥ 6** (Apply band) → PROCEED PATH, using the two bullets assess-fit picked. No overrides, no cover letter.
+- **Match ≥ 6** (Apply band) → PROCEED PATH, using the bullets assess-fit picked. No overrides, no cover letter.
   - Log: `[TS] step=07 mode=auto decision=auto-proceed match={M} appeal={A} band={band} bullets={KEY-1,KEY-2}`
   - Step 7 done — go to Step 8.
 - **Match ≤ 5** (Stretch / Gamble / Skip band) → SKIP PATH.
@@ -273,11 +273,11 @@ The gate is **Match only**: ≥ 6 proceeds, ≤ 5 skips. Appeal never moves the 
 - Any acceptance without specifying alternative bullets
 
 **Proceed with overridden bullets** → go to Step 8, using the user's bullets instead:
-- the user provides one or two bullets explicitly. They may give:
+- the user overrides one or more slots explicitly. They may give:
   - A KEY from master-bullets.md (e.g., "use PLG instead")
   - Verbatim text in quotes (e.g., 'for bullet 1 use "Led the rebuild of..."')
-  - A mix (e.g., 'for the first use COMM-1, for the second use this: "..."')
-- For each bullet position (1 and 2), determine: did the user specify it? If yes, use their choice (resolve KEYs by looking them up in `profile/master-bullets.md`). If no, fall back to the assess-fit pick for that position.
+  - A mix (e.g., 'for meridian_1 use COMM-1, for meridian_2 use this: "..."')
+- For each auto slot, determine: did the user specify it (by slot name or position)? If yes, use their choice (resolve KEYs by looking them up in `profile/master-bullets.md`). If no, fall back to the assess-fit pick for that slot.
 
 **Override / discussion** → stay paused, respond, then re-prompt:
 - "I think you missed X" / "I do have Y experience" — accept the override (update fit file if needed), re-show the scores + bullets, ask again
@@ -285,7 +285,7 @@ The gate is **Match only**: ≥ 6 proceeds, ≤ 5 skips. Appeal never moves the 
 - Anything ambiguous — ask one clarifying question
 - When the user proposes or reshapes bullets, read the intent behind it (`skills/shared/editing-intent.md`): a firm swap to act on, a direction to explore, or an example floated to make a point. A user musing "maybe something more growth-flavored here" is not the same as "swap in PLG-3b." When it's not obvious, confirm in one line before rebuilding the CV around it.
 
-Log the user's decision: `[TS] step=07 mode=manual decision={proceed-as-picked|proceed-with-overrides|skip} bullets={KEY-1,KEY-2 or "custom"}`
+Log the user's decision: `[TS] step=07 mode=manual decision={proceed-as-picked|proceed-with-overrides|skip} bullets="{slot}={KEY or custom}; …"`
 
 ---
 
@@ -295,19 +295,17 @@ If the Step 7 decision was **proceed** — auto-proceed (Match ≥ 6 in auto mod
 
 ## Step 8: Fill the CV template
 
-You should already have the two bullets decided in Step 7 — either:
-- The agent-picked bullets from the assess-fit Step 5 (full text in `fit-{short-id}.md`)
-- the user's overrides (resolved from KEYs in master-bullets.md, or verbatim text they provided)
+You should already have, from Step 7, **one bullet per auto slot** — either the assess-fit picks (labeled by slot in `fit-{short-id}.md`'s "Bullets I would use") or the user's overrides. Each pick names the slot it fills. The auto slots are the `{rolekey_n}` placeholders declared `fill: auto` in `profile/config.yaml`'s `slots:` block; a profile with no `slots:` block uses the shipped default, the two `{bullet_2}`/`{bullet_3}` slots in the most recent role.
 
 Now fill the CV:
 
-1. Read `profile/cv.md`
-2. Replace the first `{bullet_1}` with the first bullet (verbatim, no edits)
-3. Replace `{bullet_2}` with the second
-4. Replace `utm_campaign=BASE` with `utm_campaign={short-id}` in the portfolio URL
-5. Save the result as `output/{short-id}/cv-{short-id}.md`
+1. Read `profile/cv.md`.
+2. For each auto slot, replace its `{slot}` token with the bullet picked for that slot — **verbatim, no edits, no reordering** (the one sanctioned exception is the verb-dedup gate below). Match by name: `{meridian_1}` gets the bullet chosen for `meridian_1`. Locked bullets have no token; never touch them.
+3. Replace `utm_campaign=BASE` with `utm_campaign={short-id}` in the portfolio URL.
+4. Save the result as `output/{short-id}/cv-{short-id}.md`.
+5. **No token may reach export.** Confirm no `{...}` slot token remains in the saved file (`grep -n "{" output/{short-id}/cv-{short-id}.md` should surface none in the bullet list). A leftover token — an auto slot that didn't get filled, or a manual slot still sitting as a token — would render literally into the PDF, so **stop and resolve it before Step 9** rather than exporting. Manual slots should hold real prose at rest; a manual slot still tokenized needs a by-name fill or the user's attention.
 
-Log: `[TS] step=08 cv-built bullets-1={KEY or "custom"} bullets-2={KEY or "custom"} utm-campaign={short-id}`
+Log: `[TS] step=08 cv-built slots="{slot}={KEY or custom}; …" utm-campaign={short-id}` (one `slot=KEY` pair per filled auto slot)
 
 ### Verb-dedup gate (run before export)
 

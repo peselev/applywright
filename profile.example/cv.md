@@ -17,8 +17,8 @@
 **Senior Product Manager**
 
 - Owned product strategy for a $25M ARR B2B analytics platform serving 280 customers. Led two engineering squads across the data platform and the embedded-AI roadmap, and ran the migration of the reporting layer from a legacy monolith to a service-based architecture without customer-visible downtime.
-- {bullet_2}
-- {bullet_3}
+- {meridian_1}
+- {meridian_2}
 
 ### **Tideline Software, Inc.**, Providence, RI ||| 2016 – 2021
 
@@ -27,7 +27,7 @@
 **Product Manager** ||| 2016 – 2019
 
 - Joined a 12-person seed-stage company with a single design partner; owned product for a multi-tenant workflow SaaS. Grew the customer base past 90 accounts and ARR past $4M through two funding rounds.
-- Built the self-serve onboarding flow that took activation from a sales-assisted 40% to a self-serve 78%, which let the company open a profitable SMB segment it had previously turned away.
+- {tideline_1}
 - Shipped the first reporting API and partner integrations (billing, CRM, identity), unifying fragmented data sources into the export pipeline that anchored the Series A.
 
 ### **Brightseed Labs**, Remote ||| 2014 – 2016
