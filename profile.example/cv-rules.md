@@ -7,12 +7,12 @@ or invent metrics.
 
 ## The default is arbitrary
 
-Out of the box the template marks two dynamic slots, `{bullet_2}` and
-`{bullet_3}`, both in the most recent role, and locks everything else. That
-choice (two bullets, last role only) is a conservative default, not a rule. Two
-well-chosen bullets from two different projects already cover most JDs, and
-every extra dynamic slot trades away some differentiation (see "How many slots"
-below). You can change it.
+Out of the box the example marks a few dynamic slots — two in the current role
+and one in the prior role — and locks everything else. That placement is a
+demonstration, not a rule. A conservative real setup is two well-chosen bullets
+from two different projects in the most recent role, which already covers most
+JDs; every extra dynamic slot trades away some differentiation (see "How many
+slots" below). You choose.
 
 ## The general model
 
@@ -36,9 +36,9 @@ below). You can change it.
 
 Name every slot `{rolekey_n}` — a short role key, an underscore, and a number,
 unique across the CV (e.g. `{meridian_1}`, `{meridian_2}`, `{tideline_1}`). The
-two shipped defaults, `{bullet_2}` and `{bullet_3}`, are just this scheme with
-the rolekey `bullet`; keep them if you stay on the default, or rename everything
-to your own role keys.
+names `{bullet_2}` and `{bullet_3}` that first-time setup writes are just this
+scheme with the rolekey `bullet`; keep them, or rename everything to your own
+role keys.
 
 The slots the token names live in `cv.md`; what each one means lives in a
 `slots:` block in `profile/config.yaml`. Each row maps one slot to the families
@@ -117,8 +117,7 @@ three and add a slot only when a real role needs it.
 ## What the engine fills today
 
 The pipeline fills every `auto` slot the map declares, across any number of
-roles, each from its own eligible families — the two-slot default is just the
-smallest case. If `config.yaml` has no `slots:` block at all, the engine falls
-back to the two default slots (`{bullet_2}`, `{bullet_3}`) in the most recent
-role with every family eligible, so a CV that never declares a map still works.
+roles, each from its own eligible families — two slots in one role is just the
+smallest case. The `slots:` block is the source of truth: a slot token in
+`cv.md` with no matching row is never filled, and `check-slots` flags it.
 Manual slots are filled on demand, by name, when you ask.

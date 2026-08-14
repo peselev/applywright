@@ -133,7 +133,7 @@ Before handing off, close the loop. Verify the finished profile against what the
 
 - `master-bullets.md` meets the completeness bar (at least four families, each with an approved `-MAIN` and at least two variants carrying `Theme keys` / `JD-fit signal`), no placeholders left, approval recorded.
 - `persona.md` has `Positioning`, the per-family case studies, and both targeting sections filled, not the shipped example.
-- `config.yaml` and `cv.md` still hold real content and the `{bullet_2}` / `{bullet_3}` placeholders are intact; `applywright doctor` and `applywright tracker status` both read back.
+- `config.yaml` and `cv.md` still hold real content and `applywright check-slots profile` passes (the slot tokens and the `slots:` map agree); `applywright doctor` and `applywright tracker status` both read back.
 - No stray `TODO:` markers the user meant to resolve.
 
 Run the real checks where they exist rather than eyeballing. Report any gap plainly and offer to fix it now; this is the cheapest moment to catch it. Then **read back, in plain language, what Applywright now knows about the user** (their background and their job-search targeting), so they can catch anything that reads wrong while it is trivial to fix.

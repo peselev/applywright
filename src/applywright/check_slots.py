@@ -30,7 +30,7 @@ Usage:
   applywright check-slots <profile-dir>   # check a specific profile directory
 
 Exit codes (same convention as check-template / check-verbs):
-  0  slots map is consistent (or no slots block present — nothing to check)
+  0  slots map is consistent (or no slots block and no slot tokens — a fully locked CV)
   1  at least one inconsistency
   2  usage / file error
 """
@@ -175,14 +175,22 @@ def main(argv) -> int:
 
     cfg_rows, present = _parse_slots_block(cfg.read_text(encoding="utf-8"))
     print(f"-> check-slots {profile}")
-    if not present:
-        print("  [ok]   no slots: block — legacy two-slot default, nothing to validate")
-        print("\nResult: no slots map present.")
-        return 0
 
     md = cv.read_text(encoding="utf-8")
     cv_slots, first_bullet_slots = _slot_locations(md)
     families = _families_in_bank(bank.read_text(encoding="utf-8")) if bank.is_file() else set()
+
+    if not present:
+        # No slots: block. A CV with slot tokens can't be filled without a map,
+        # so those tokens are a problem; a CV with no tokens is fully locked and fine.
+        if cv_slots:
+            for name in cv_slots:
+                print(f"  [X]    cv.md has {{{name}}} but config.yaml has no slots: block to map it (would render literally)")
+            print(f"\nResult: {len(cv_slots)} unmapped slot(s); declare them in a slots: block in config.yaml.")
+            return 1
+        print("  [ok]   no slots: block and no slot tokens — CV is fully locked, nothing to validate")
+        print("\nResult: nothing to validate.")
+        return 0
 
     problems = []
 

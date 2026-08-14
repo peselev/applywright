@@ -295,7 +295,7 @@ If the Step 7 decision was **proceed** — auto-proceed (Match ≥ 6 in auto mod
 
 ## Step 8: Fill the CV template
 
-You should already have, from Step 7, **one bullet per auto slot** — either the assess-fit picks (labeled by slot in `fit-{short-id}.md`'s "Bullets I would use") or the user's overrides. Each pick names the slot it fills. The auto slots are the `{rolekey_n}` placeholders declared `fill: auto` in `profile/config.yaml`'s `slots:` block; a profile with no `slots:` block uses the shipped default, the two `{bullet_2}`/`{bullet_3}` slots in the most recent role.
+You should already have, from Step 7, **one bullet per auto slot** — either the assess-fit picks (labeled by slot in `fit-{short-id}.md`'s "Bullets I would use") or the user's overrides. Each pick names the slot it fills. The auto slots are the `{rolekey_n}` placeholders declared `fill: auto` in `profile/config.yaml`'s `slots:` block.
 
 Now fill the CV:
 

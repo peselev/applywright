@@ -183,7 +183,7 @@ Show the user `profile/cv-rules.md`, then set expectations before building.
 
 **Start with the default; decide on more tailoring after the practice run.** The out-of-the-box setup tailors just two bullets (below). It is much easier to judge whether you need more *after* watching one job go through the pipeline (the practice run, Step 2.7), and that call gets made when the real bank is built (Milestone 3). So the recommended path is: set up the default here, do the practice run, then expand later if the first result makes you want to. If the user already knows they want more, that is fine too (below).
 
-**The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, two different families). Everything else on the CV is fixed and identical on every application. This is the only configuration the engine fills automatically today.
+**The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, two different families), following a `slots:` block you declare in `config.yaml` (Step 2.3). Everything else on the CV is fixed and identical on every application. You can tailor more later — slots can sit in any role — but two in the most recent role is the conservative start.
 
 **Recommended: lock the first bullet of every role.** Treat bullet 1 of each role as the orientation line: the always-on summary of what the job was and the key achievements there, written for a reader scanning the page. Keep it fixed. Tailored slots come after it.
 
@@ -204,11 +204,11 @@ Do not invent bullets, employers, or metrics. If the user is unsure of a number,
 
 **If the user wants more than the default.** They can tailor more bullets, across more than one role. The shape:
 1. Lock bullet 1 of each role (the recommendation above).
-2. Leave the current role's `{bullet_2}` and `{bullet_3}` exactly as named. Those two are the only slots the engine fills automatically. Renaming them turns off their auto-fill.
+2. Keep the current role's `{bullet_2}` and `{bullet_3}` (or rename them to your own rolekey — if you rename, update the slots map to match).
 3. For each additional bullet to tailor, add a uniquely named placeholder. A clean scheme is `{<rolekey>_<n>}`. For example, to also tailor the prior role: keep `{bullet_2}` / `{bullet_3}` in the current role, and add `{tideline_1}` and `{tideline_2}` in the prior role (using that role's own key).
-4. In `profile/cv-rules.md`, add a slots-map row for each new placeholder saying which `master-bullets.md` families it may draw from.
+4. In `profile/config.yaml`'s `slots:` block, add a row for each new placeholder — its role, the `master-bullets.md` families it may draw from, and `fill: auto` — then run `applywright check-slots` to confirm cv.md and the map agree.
 
-Be honest about the limit: the engine auto-fills only `{bullet_2}` and `{bullet_3}` today. Any extra named slot is filled when the user asks the agent to fill it by name; automatic multi-slot selection is a later change (the Personalize milestone touches this kind of thing). Point the user at `cv-rules.md` for the complete model.
+Every `auto` slot you declare in the map is filled automatically, across any number of roles — not just the default two; `manual` slots are the ones filled on demand, by name. Point the user at `cv-rules.md` for the complete model, and `applywright check-slots` to validate a map. (The Personalize milestone, `customize-pipeline`, covers reshaping this.)
 
 Checkpoint.
 
@@ -231,7 +231,25 @@ The story bank (`master-bullets.md`) is the library `assess-fit` picks from. The
 
 Why placeholders, not resume prose: the practice run (2.7) drops these `-MAIN` placeholders into the CV slots, so the user sees the mechanism work while it stays obvious the real content is still pending (Milestone 3).
 
-Checkpoint, noting which families exist.
+**Declare the slots map.** Now that the families exist and the CV has its two slots, tie them together in `profile/config.yaml`. Add a `slots:` block with a row per slot — the slot name (no braces), the role it sits in (a substring of that role's `###` header), the families it may draw from, and `fill: auto`:
+
+```yaml
+slots:
+  - name: bullet_2
+    role: "{most recent company}"
+    families: [{every family you just named}]
+    intent: "the JD's primary theme"
+    fill: auto
+  - name: bullet_3
+    role: "{most recent company}"
+    families: [{same families}]
+    intent: "the JD's secondary theme"
+    fill: auto
+```
+
+List all the families for both slots (no bias); the no-family-twice and theme-spread rules keep the two picks distinct. Then run `applywright check-slots profile` — it should report the two slots mapping cleanly. This map is what the pipeline reads to fill the CV; a slot token with no row, or a row with no token, is a setup error `check-slots` names.
+
+Checkpoint, noting which families exist and that `check-slots` passes.
 
 ## Step 2.4: Persona (light, for the practice run)
 
@@ -256,7 +274,7 @@ Checkpoint.
    ```bash
    applywright export-pdf profile/cv.md temp/onboard-cv-smoke.pdf cv
    ```
-   The `{bullet_2}` / `{bullet_3}` placeholders will appear literally in this test PDF. That is expected; they are filled per application, not here. If the compile fails, fix the `cv.md` formatting (usually a stray `|||` or `@@@` marker) before finishing.
+   The slot tokens (`{bullet_2}` / `{bullet_3}`) will appear literally in this test PDF. That is expected; they are filled per application, not here. If the compile fails, fix the `cv.md` formatting (usually a stray `|||` or `@@@` marker) before finishing.
 
 Checkpoint.
 
@@ -305,9 +323,9 @@ Checkpoint Milestone 2 complete.
 - **Do not invent professional facts.** No employer, date, title, metric, or bullet that the user did not give you. A missing detail becomes a `TODO:` marker, not a guess.
 - **Do not write `-MAIN` bullet prose in Step 2.3, and do not mine bullets from the resume into the skeleton.** 2.3 is family names and placeholders only. The resume seeds *which families exist*, never their bullet content. The real bank is Milestone 3's job, built with the user and approved by the user.
 - **Do not present the practice run as a submittable application.** It uses the default look and a skeleton bank; it is a dry run. Say so.
-- **Do not rewrite the locked CV parts per application.** Only `{bullet_2}` and `{bullet_3}` are dynamic. Keep them as literal text in `cv.md`.
+- **Do not rewrite the locked CV parts per application.** Only the slot tokens declared in `config.yaml`'s `slots:` block are dynamic. Keep them as literal text in `cv.md`.
 - **Do not edit `config.yaml` or `cv.md` with bash heredocs or `>` redirection.** Use the file editor. Quoted bash file-writes trip the approval prompt and corrupt easily.
 - **Do not skip the export smoke test.** A broken pipeline at setup means every later export fails.
 - **Do not commit `profile/`.** It is gitignored for a reason. If you run any git command here, confirm `profile/` is not staged.
-- **Do not change the `BASE` UTM campaign in `cv.md`** or the `{bullet_2}` / `{bullet_3}` spelling. Other skills depend on both.
+- **Do not change the `BASE` UTM campaign in `cv.md`;** other skills depend on it. Keep `cv.md`'s slot tokens and the `config.yaml` `slots:` block in sync — `applywright check-slots` verifies they agree.
 - **Do not start the Story bank milestone inline by default.** It is its own session with its own skill (`build-story-bank`). Write the handoff, offer the seat choice, and let the user move. If they explicitly choose to continue right here, that is their call.

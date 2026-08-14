@@ -275,7 +275,7 @@ The JD itself is never modified — only described in the report.
 
 ## CV template
 
-`profile/cv.md` is mostly locked. Tailoring happens in named **bullet slots** — `{rolekey_n}` placeholders that can sit in any role (the shipped default is two, `{bullet_2}` and `{bullet_3}`, in the most recent role). Each slot is declared in a `slots:` block in `profile/config.yaml`: which master-bullets families it may draw from, which role it sits in, and whether the pipeline fills it (`auto`) or you tailor it on demand (`manual`). The full contract — what's locked, the naming, the slots map, the fill rules — is `profile/cv-rules.md`; `applywright check-slots` validates that cv.md, the map, and the bank agree. A profile with no `slots:` block falls back to the two-slot default, so an un-migrated CV keeps working.
+`profile/cv.md` is mostly locked. Tailoring happens in named **bullet slots** — `{rolekey_n}` placeholders that can sit in any role (the starter setup ships two, in the most recent role). Each slot is declared in a `slots:` block in `profile/config.yaml`: which master-bullets families it may draw from, which role it sits in, and whether the pipeline fills it (`auto`) or you tailor it on demand (`manual`). The full contract — what's locked, the naming, the slots map, the fill rules — is `profile/cv-rules.md`; `applywright check-slots` validates that cv.md, the map, and the bank agree.
 
 Bullets for the auto slots come from one of two sources, decided at Step 7 of process-job:
 

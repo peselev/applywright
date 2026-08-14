@@ -161,8 +161,6 @@ Move 5g then derives the **cover-letter recommendation**; it lives here because 
 
 Read `profile/config.yaml`. For each row in the `slots:` block with `fill: auto`, note its `name`, its `role`, and its **eligible families** — the only families that slot may draw from (this is what keeps a role's slot showing that role's projects). Manual slots (`fill: manual`) are not selected here; skip them. Take the auto slots in map order.
 
-**Legacy default (no `slots:` block).** If `config.yaml` has no `slots:` block, fall back to the shipped default: two auto slots in the most recent role, `{bullet_2}` and `{bullet_3}`, each eligible for **every** family. This reproduces the original two-bullet behavior for a profile that hasn't declared a map.
-
 ### 5b: Score families per slot, then assign (no family twice)
 
 For each auto slot, score its **eligible** families against the role on two signals:
@@ -311,7 +309,7 @@ One pick per auto slot, each **labeled with the slot it fills** — this is what
 
   {bullet prose, verbatim from master-bullets.md}
 
-(One entry per auto slot, in slot order — two shown here for the default two-slot CV; a CV with more auto slots gets more entries.)
+(One entry per auto slot, in slot order — two shown here as an example; a CV with more auto slots gets more entries.)
 
 **Spread:** {one line — the theme clusters these picks span; note here if Step 5d swapped a variant to broaden, e.g. "swapped PLATFORM-3 → PLATFORM-2 so it isn't two build-vs-buy angles".}
 
