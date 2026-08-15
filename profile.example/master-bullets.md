@@ -1,8 +1,9 @@
 # Master Bullets
 
 A library of high-impact bullets from your career, each tagged with a short key
-for reference. The `assess-fit` skill picks two of these for each application;
-you can override the picks at the proceed/skip decision point.
+for reference. The `assess-fit` skill fills each of your CV's auto slots from
+these, one bullet per slot (this example has three); you can override the picks
+at the proceed/skip decision point.
 
 Structure: bullets are grouped into **families** — one per case study (here:
 PLATFORM, AI, GROWTH, DATA, ONBOARD). Each family has a `-MAIN` headline bullet
@@ -14,8 +15,8 @@ PLATFORM, AI, GROWTH, DATA, ONBOARD). Each family has a `-MAIN` headline bullet
 The **bullet is only the prose paragraph** after the metadata. The `Theme keys`
 and `JD-fit signal` lines are for selection only — never copied into the CV.
 
-Two picks must come from **two different families** (every variant of a family
-is the same project, so two from one family would put it on the CV twice).
+No family is used more than once across the picks (every variant of a family is
+the same project, so reusing one would put it on the CV twice).
 
 Replace everything below with your own stories. Keep keys short and semantic.
 
