@@ -70,7 +70,7 @@ step=02 fetch-attempt method=web_fetch url=<URL> bytes=<N from stderr> result={o
 
 If Step 2a succeeded but the file might be a shell page hiding an iframe, check for it.
 
-Read `temp/fetched-jd.md`. Many company careers pages (Mixmax, HubSpot, Notion, etc.) embed a Greenhouse/Lever/Ashby/Workday iframe — the actual JD lives at the embedded URL.
+Read `temp/fetched-jd.md`. Many company careers pages embed a Greenhouse/Lever/Ashby/Workday iframe — the actual JD lives at the embedded URL.
 
 Look for any of these URL patterns in the file:
 - `boards.greenhouse.io/embed/job_app?for=...&token=...`
@@ -232,5 +232,5 @@ The skill ends here. Control returns to the calling skill (or the user, if invok
 - **Don't write JD content into `temp/fetched-jd.md` yourself.** Only the script writes to that file. If the file is empty or wrong after the script runs, the next step is to invoke the script differently, not to type content yourself.
 - **Don't paraphrase to "clean up" the JD.** The script's output is what it is. Page-chrome stripping was Jina's job (Jina output is already clean markdown). Rewording is never your job.
 - **Don't supplement missing sections from your knowledge of the company.** If the JD is missing a requirements section, that's data about the role. Don't add what you think *should* be there.
-- **Don't trust your first impression of "this looks like a JD."** Apply the hard rules in Step 2c rigorously. A page that mentions "Staff Product Manager at Mixmax" once but has no JD body is a shell, not a JD.
+- **Don't trust your first impression of "this looks like a JD."** Apply the hard rules in Step 2c rigorously. A page that names a role once ("Staff Engineer at Acme," say) but has no JD body is a shell, not a JD.
 - **Don't skip the script and hand-write content because "I already know what's on the page."** You don't; the user's URL is the source of truth.

@@ -149,7 +149,7 @@ The user's own prose, when they share or write a substantial passage, is banked 
 
 Deep company research is a rare, on-demand step — `skills/company-research/SKILL.md`. It builds one reusable dossier per company: a company core (researched once, reused across every role there) plus department/product sections that accrete as the user applies to different areas. It is **not** part of process-job and never runs per job; assess-fit's light, always-on company-context block in the fit file is the per-job touch and is unrelated.
 
-**It fires when the user writes a cover letter or prepares for an interview**, and it runs directly on request ("research Hearth"). The cover-letter skill checks for a fresh dossier during grounding (its Step 1); the interview skill (when built) requires one.
+**It fires when the user writes a cover letter or prepares for an interview**, and it runs directly on request ("research Acme"). The cover-letter skill checks for a fresh dossier during grounding (its Step 1); the interview skill (when built) requires one.
 
 **Storage.** Local `output/companies/{slug}.md` — one flat file per company (gitignored), core written once with department sections appended. In **notion mode** the dossier also lives on the company's page in the Notion Companies DB, and the Notion page is the **authority**: the user works across machines, so the local `output/` file is a per-machine cache while the Notion page is the durable, cross-machine record. The `{slug}` is the short-ID company-slug rule without the id-tail.
 
@@ -280,7 +280,7 @@ The JD itself is never modified — only described in the report.
 Bullets for the auto slots come from one of two sources, decided at Step 7 of process-job:
 
 - **Agent's picks** (default) — assess-fit picks one bullet per auto slot from `profile/master-bullets.md`, each drawn from that slot's eligible families, with no family used twice and themes spread. If the user says "proceed," these are used.
-- **the user's overrides** — the user can override any slot's pick directly, by slot name or position. They may give a KEY from master-bullets.md (e.g., "use PLG for meridian_1") or verbatim text in quotes. For each auto slot, use the override if given, otherwise fall back to the agent's pick.
+- **the user's overrides** — the user can override any slot's pick directly, by slot name or position. They may give a KEY from master-bullets.md (e.g., "use FAMILY-A for meridian_1") or verbatim text in quotes. For each auto slot, use the override if given, otherwise fall back to the agent's pick.
 
 Whichever source: paste verbatim, no edits, no reordering. The fill step refuses to export while any `{slot}` token remains, so nothing renders literally.
 

@@ -183,7 +183,7 @@ Show the user `profile/cv-rules.md`, then set expectations before building.
 
 **Start with the default; decide on more tailoring after the practice run.** The out-of-the-box setup tailors just two bullets (below). It is much easier to judge whether you need more *after* watching one job go through the pipeline (the practice run, Step 2.7), and that call gets made when the real bank is built (Milestone 3). So the recommended path is: set up the default here, do the practice run, then expand later if the first result makes you want to. If the user already knows they want more, that is fine too (below).
 
-**The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, two different families), following a `slots:` block you declare in `config.yaml` (Step 2.3). Everything else on the CV is fixed and identical on every application. You can tailor more later — slots can sit in any role — but two in the most recent role is the conservative start.
+**The default is rigid, on purpose.** Out of the box only two bullets are tailored: `{bullet_2}` and `{bullet_3}`, both in the most recent role. `assess-fit` fills those two per application from `master-bullets.md` (two projects, no family used twice), following a `slots:` block you declare in `config.yaml` (Step 2.3). Everything else on the CV is fixed and identical on every application. You can tailor more later — slots can sit in any role — but two in the most recent role is the conservative start.
 
 **Recommended: lock the first bullet of every role.** Treat bullet 1 of each role as the orientation line: the always-on summary of what the job was and the key achievements there, written for a reader scanning the page. Keep it fixed. Tailored slots come after it.
 
@@ -217,7 +217,7 @@ Checkpoint.
 The story bank (`master-bullets.md`) is the library `assess-fit` picks from. The real bank is built in **Milestone 3** (`build-story-bank`), with the user and approved by the user. **Here you set up only the family skeleton:** the family names, plus a placeholder for each `-MAIN` so the pipeline has slots to fill during the practice run.
 
 - **Ask whether the user has a list of their key projects or themes.** If they do, use it to name the families. If not, derive the family **names** from their resume and CV. The resume tells you *which projects exist*, the structure, not what the bullets should say.
-- Group the work into 3 to 6 distinct **families** (the example uses PLATFORM, AI, GROWTH, DATA, ONBOARD). Two picks always come from two different families, so they must be genuinely distinct.
+- Group the work into 3 to 6 distinct **families** (the example uses PLATFORM, AI, GROWTH, DATA, ONBOARD). No family is used more than once across the picks, so they must be genuinely distinct.
 - Give each family a `-MAIN` **placeholder**, never real prose, a visible stub the real bank replaces in Milestone 3. For example:
 
   ```

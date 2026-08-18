@@ -100,7 +100,7 @@ If a case study has no dedicated page, do not list it here.
 
 ## Other notable themes
 
-{Optional. Anything else distinctive — e.g., a stance on AI-native PM, a framework, etc. Helpful for the fit-assessment step's "would the user actually be excited?" question.}
+{Optional. Anything else distinctive — e.g., a stance on where your field is heading, a framework, etc. Helpful for the fit-assessment step's "would the user actually be excited?" question.}
 ```
 
 Fill each section from the fetched content. Be faithful to what's on the site — don't invent. If a section has no source material on the site (e.g., "What I'm looking for" / "What I'm NOT looking for" are often hand-written and not published anywhere on the portfolio), **do not blank it** — leave it as a gap for now and let Step 5 carry over whatever the existing file holds. Some sections are user-maintained by design; a fresh scrape is not authoritative over them.

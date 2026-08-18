@@ -17,7 +17,7 @@ Unlike the cover letter (fixed structure, fixed length, template-driven), answer
 
 - `output/{short-id}/fit-{short-id}.md` — what the role wants, what the user brings, the gaps, **and the Company context block** (a few sourced facts assess-fit already captured — reuse this before doing any new research)
 - `profile/persona.md` — positioning, case studies, verified URLs
-- `profile/master-bullets.md` — the story bank (COMM-1, REPORT-1, AI, PLG, DATA-ACCESS, etc.)
+- `profile/master-bullets.md` — the story bank (FAMILY-A-1, FAMILY-B-1, etc.)
 - `output/{short-id}/job-description-{short-id}.md` — the JD, for company/role specifics
 - `profile/answers-field-notes.md` — accumulated learnings about what kinds of answers land (read it before drafting; it may already have guidance for the question types in front of you)
 - `profile/voice-bank.md` — the user's own banked drafts, verbatim; a grounding source and a source of real phrasing (see `skills/shared/voice-bank.md`)

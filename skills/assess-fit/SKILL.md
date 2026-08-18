@@ -21,10 +21,10 @@ If `master-bullets.md` doesn't exist, tell the user it's missing and stop. The s
 
 ### Bullet file structure (read before Step 5)
 
-`master-bullets.md` is organized into **families** — one per case study (currently COMM, PLATFORM, AI, PLG, DG). Each family has:
+`master-bullets.md` is organized into **families** — one per case study. Each family has:
 
-- A **`-MAIN` bullet** (e.g. `COMM-MAIN`): the headline version of the case, no metadata. This is the fallback.
-- Several **themed variants** (e.g. `COMM-1`, `COMM-2`): the same case angled toward a specific theme. Each variant carries two metadata lines:
+- A **`-MAIN` bullet** (e.g. `FAMILY-A-MAIN`): the headline version of the case, no metadata. This is the fallback.
+- Several **themed variants** (e.g. `FAMILY-A-1`, `FAMILY-A-2`): the same case angled toward a specific theme. Each variant carries two metadata lines:
   - `*Theme keys: ...*` — the theme clusters this variant leads with (italicized in the file).
   - `JD-fit signal: ...` — a plain-language rule for when this variant is the right pick.
 
@@ -68,17 +68,17 @@ When this happens, surface it rather than silently assuming the single city. The
 
 ### Leveling check (always)
 
-Separate from content match, read the role's **altitude** — the scope of ownership the JD actually describes — and compare it to the **posted title**. The two often disagree, and the gap changes how to play the application even when content fit is high. This is the Datadog case: a JD that says "operate like a GM for the Enterprise SKU," "own the P&L," and "define what 'Enterprise Ready' means for the platform" is Group-PM / product-line-GM work, whatever the "Senior PM" on the title says.
+Separate from content match, read the role's **altitude** — the scope of ownership the JD actually describes — and compare it to the **posted title**. The two often disagree, and the gap changes how to play the application even when content fit is high. A JD can describe far more ownership than its title implies: when it talks about owning an outcome end to end, setting a direction others follow, defining the standard a whole area works to, or building something from nothing, the real level sits above the title. The reverse happens too — a senior-sounding title whose actual scope is executing a plan set elsewhere.
 
 Read altitude from scope signals, not from the title:
-- **Pulls up** (higher altitude): owns a P&L, defines a cross-product standard the rest of the platform conforms to, launches a 0-to-1 SKU or product line, "operate like a GM," sets strategy rather than executing it, builds or owns a team/headcount.
-- **Pulls down** (lower altitude): executes a defined roadmap, owns one bounded surface, "supports" or "partners with" a senior PM, ships features against someone else's strategy.
+- **Pulls up** (higher altitude): owns an outcome or result end to end rather than a bounded piece; sets the direction, standard, or strategy others then work to; starts something from nothing; owns people, budget, or a bar the rest of the organization conforms to.
+- **Pulls down** (lower altitude): executes a plan set elsewhere; owns one bounded piece of a larger whole; supports, assists, or reports into a more senior owner; delivers against someone else's direction.
 
 Then judge three things and record a **leveling note** for Step 6 (fit file) and Step 7 (chat summary):
 
 1. **Scope vs title** — does the role's real scope read **above**, **at**, or **below** its posted title?
 2. **Salary-band tiebreaker** (only when scope reads above title) — if the JD states a band, compare it to what the posted title would normally pay. A band consistent with the posted title means they genuinely intend a fill at that level: the user is in the pool, but the in-pool bar is high, so the application must lead with altitude/ownership evidence. A band well above the posted title suggests a higher-level req wearing a junior title, where the user may be outranked by candidates a level up. If no band is stated, say so — don't guess.
-3. **Candidate altitude** — where the user's demonstrated altitude sits relative to the role's real scope, inferred fresh from `persona.md` and `cv.md` (e.g. owned product strategy for a $40M ARR platform, ran three squads). When the JD scope is genuinely ambiguous, or the user's altitude for this specific scope is unclear, **say the unknown out loud** rather than forcing a confident read — e.g. "scope reads group-PM, but the JD is vague on whether the P&L is real or aspirational." This mirrors how the assessment already flags open questions ("the unknowns are infrastructure-engineering domain and a 2-weeks/month travel load").
+3. **Candidate altitude** — where the user's demonstrated altitude sits relative to the role's real scope, inferred fresh from `persona.md` and `cv.md` (read it from what they actually owned — the scope of their results, whether they set direction or executed it, how much they carried end to end). When the JD scope is genuinely ambiguous, or the user's altitude for this specific scope is unclear, **say the unknown out loud** rather than forcing a confident read — e.g. "scope reads a level above the title, but the JD is vague on how much is genuinely owned versus aspirational." This mirrors how the assessment flags open questions (an unfamiliar domain, say, or a travel load the JD states and the user hasn't spoken to).
 
 Do not let leveling change Match; like the location check, it's a flag for the user, not a scoring input. It feeds the recommendation's "how to play it" line: it stops a high Match from being misread as an easy get, and stops a clean level fit from being overlooked because its Match came in a point lower.
 
@@ -93,7 +93,7 @@ For each item from Step 2, classify the user's match:
 Then separately identify:
 - **Differentiating strengths** — things the user brings that aren't in the JD but matter for the role. E.g., a startup operations background for a role at a Series B. If the field notes name a recurring strongest-differentiator or a proven "default going forward" framing that fits this role, foreground it here.
 - **Real gaps** — things the JD requires that the user doesn't have. Be honest, not generous. Sort each into one of two kinds, because they don't weigh the same:
-  - **coachable / adjacent** — the user lacks direct experience but has transferable or domain-adjacent work that closes the distance quickly (e.g. no query-engine/storage product experience, but deep platform-PM experience right next to it). A learnable, bridgeable gap.
+  - **coachable / adjacent** — the user lacks direct experience but has transferable or domain-adjacent work that closes the distance quickly (e.g. no direct experience in the role's specific domain, but deep experience in an adjacent one right next to it). A learnable, bridgeable gap.
   - **disqualifying** — a hard requirement the user genuinely lacks with no adjacent bridge (e.g. a regulated-domain bar or years-in-X minimum they can't credibly meet). The kind that actually keeps an application out.
 
 **Honor "Fit assessment should surface" requests.** If a field-notes entry that fits this role carries a "Fit assessment should surface" line (e.g. "surface the kill/shelved decision as the thesis seed for AI-judgment roles"), weave that signal into the assessment using the existing structure — usually under Differentiating strengths or in the Recommendation. Do not add a new section for it, and only act on requests genuinely relevant to this role; ignore the rest.
@@ -149,7 +149,7 @@ Combine the two into one recommendation — the read the user acts on (and, in a
 - **Gamble** — high Appeal does not rescue an unmet core. Default skip. Recorded honestly as a gamble so the user can override on a deliberate long shot, but it is not teed up as a confident swing.
 - **Skip** — below the gate and not appealing enough to stretch for.
 
-Add a one-line **how to play it** to the recommendation, folding in the Step 2 leveling read where it matters (e.g. "Apply — high-ceiling: scope reads above the Senior title, lead with ownership," or "Stretch — the fixed-ops gap is central and hard-tested; lean skip unless the user can speak to it"). The proceed/skip gate keys off **Match**; this band is the human-readable recommendation the Match threshold implements.
+Add a one-line **how to play it** to the recommendation, folding in the Step 2 leveling read where it matters (e.g. "Apply — high-ceiling: scope reads above the posted title, lead with ownership evidence," or "Stretch — the central requirement is a hard-tested gap; lean skip unless the user can speak to it"). The proceed/skip gate keys off **Match**; this band is the human-readable recommendation the Match threshold implements.
 
 ## Step 5: Pick bullets for the CV's auto slots
 
@@ -175,7 +175,7 @@ Then **assign one family to each slot so that no family is used twice.** Give a 
 For each slot's assigned family, choose one bullet:
 
 - Read each variant's `JD-fit signal` line against the JD. Pick the variant whose signal matches what the role actually emphasizes. The `Theme keys` line tells you what that variant leads with.
-- **Fall back to the `-MAIN` bullet** when the JD is generic, segment-agnostic, or no variant's signal clearly beats the headline. (Note: a family with a segment-neutral variant — e.g. `PLG-1b`, `PLG-3b` — usually beats `-MAIN` for segment-agnostic JDs; its signal says so. MAIN is the true fallback, not a frequent pick.)
+- **Fall back to the `-MAIN` bullet** when the JD is generic, segment-agnostic, or no variant's signal clearly beats the headline. (Note: a family with a segment-neutral variant — e.g. `FAMILY-A-1b` — usually beats `-MAIN` for segment-agnostic JDs; its signal says so. MAIN is the true fallback, not a frequent pick.)
 
 Record the **dominant theme** of each chosen variant (from its `Theme keys`), and note the runner-up variant in each family — 5d and 5e may need it.
 
@@ -183,7 +183,7 @@ Record the **dominant theme** of each chosen variant (from its `Theme keys`), an
 
 Look at all the chosen variants **together** and compare their `Theme keys`.
 
-- **If two picks share a dominant theme** (e.g. both lead with "Build-vs-Buy," or both with "Platform/Architecture"), that pair is narrow — it argues one point twice. **Re-pick one variant**: swap to a different variant *of the same family* whose theme broadens the coverage, as long as it still fits the JD acceptably. Keep the family fixed; change only the angle.
+- **If two picks share a dominant theme** (e.g. both lead with "Platform/Architecture," or both with "PLG / Growth"), that pair is narrow — it argues one point twice. **Re-pick one variant**: swap to a different variant *of the same family* whose theme broadens the coverage, as long as it still fits the JD acceptably. Keep the family fixed; change only the angle.
 - **If swapping would force a variant that doesn't fit the JD** (no acceptable alternative in that family), keep the overlapping pick but raise an `OVERLAP` note in 5e.
 - **If the themes are already distinct**, no change.
 

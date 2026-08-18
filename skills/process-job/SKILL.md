@@ -273,17 +273,14 @@ The gate is **Match only**: ≥ 6 proceeds, ≤ 5 skips. Appeal never moves the 
 - Any acceptance without specifying alternative bullets
 
 **Proceed with overridden bullets** → go to Step 8, using the user's bullets instead:
-- the user overrides one or more slots explicitly. They may give:
-  - A KEY from master-bullets.md (e.g., "use PLG instead")
-  - Verbatim text in quotes (e.g., 'for bullet 1 use "Led the rebuild of..."')
-  - A mix (e.g., 'for meridian_1 use COMM-1, for meridian_2 use this: "..."')
+- the user overrides one or more slots explicitly.
 - For each auto slot, determine: did the user specify it (by slot name or position)? If yes, use their choice (resolve KEYs by looking them up in `profile/master-bullets.md`). If no, fall back to the assess-fit pick for that slot.
 
 **Override / discussion** → stay paused, respond, then re-prompt:
 - "I think you missed X" / "I do have Y experience" — accept the override (update fit file if needed), re-show the scores + bullets, ask again
-- "Why did you pick AI over REPORT-1?" — answer the question, then re-prompt for decision
+- "Why did you pick AI over GROWTH-1?" — answer the question, then re-prompt for decision
 - Anything ambiguous — ask one clarifying question
-- When the user proposes or reshapes bullets, read the intent behind it (`skills/shared/editing-intent.md`): a firm swap to act on, a direction to explore, or an example floated to make a point. A user musing "maybe something more growth-flavored here" is not the same as "swap in PLG-3b." When it's not obvious, confirm in one line before rebuilding the CV around it.
+- When the user proposes or reshapes bullets, read the intent behind it (`skills/shared/editing-intent.md`): a firm swap to act on, a direction to explore, or an example floated to make a point. When it's not obvious, confirm in one line before rebuilding the CV around it.
 
 Log the user's decision: `[TS] step=07 mode=manual decision={proceed-as-picked|proceed-with-overrides|skip} bullets="{slot}={KEY or custom}; …"`
 

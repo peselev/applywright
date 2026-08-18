@@ -65,7 +65,7 @@ A thesis names the role's hardest problem or most important hire signal and conn
 - Unpacked (easy to read): "Free-to-paid only works if the motion feels natural, not aggressive. The hard part is moving the conversion number without spending the trust that got people to sign up." Same idea, each sentence lands before the next.
 
 Examples of thesis vs. summary:
-- Summary: "I'm a Senior PM with 10 years in B2B SaaS focused on AI products." (resume sentence — fine as the opener line, not as the thesis)
+- Summary: "I'm a data engineer with eight years in fintech." (resume sentence — fine as the opener line, not as the thesis)
 - Thesis: "Agent Context lives or dies on trusting retrieval at scale, and that comes down to measurement. I worked through exactly that shipping an AI Account Summary that cleared legal and accuracy bars at enterprise scale."
 
 Write down your thesis candidate before drafting. If two plausible theses exist, pick the one that is more specific and more defensible. Do not average them.
@@ -92,7 +92,7 @@ Then read `profile/cover-letter-field-notes.md` and apply any guidance that fits
 
 Letter structure — four short paragraphs:
 
-1. **Opener + thesis paragraph** — open with one short identity-anchor sentence (who is talking), then the thesis. The identity line is orientation, not fluff: the recruiter needs to know who's speaking before they can weigh the argument. Keep it to one line and tailor the focus to the role where natural. Example: "I'm a product manager with over a decade in B2B SaaS, most of it spent on growth and monetization." Then state the thesis. **The thesis must not be a single center-embedded sentence.** Break the load-bearing idea into two short sentences so each one resolves before the next begins. Do not stack three modifiers in front of the main verb (see writing-rules.md, "center-embedding").
+1. **Opener + thesis paragraph** — open with one short identity-anchor sentence (who is talking), then the thesis. The identity line is orientation, not fluff: the recruiter needs to know who's speaking before they can weigh the argument. Keep it to one line and tailor the focus to the role where natural. Example: "I'm a UX researcher with over a decade in healthcare, most of it spent on clinical workflow tools." Then state the thesis. **The thesis must not be a single center-embedded sentence.** Break the load-bearing idea into two short sentences so each one resolves before the next begins. Do not stack three modifiers in front of the main verb (see writing-rules.md, "center-embedding").
 2. **Proof paragraph** — the named evidence. One to two sentences. Narrative, not list. Concrete tradeoffs or decisions > metrics alone.
 3. **Portfolio paragraph** — if there is a relevant case study with a *verified* URL, embed it naturally ("full write-up here: {URL}"). See "Portfolio link rule" below. If no verified URL matches the thesis, skip this paragraph — the footer carries the portfolio site. Do not force it and do not invent a URL.
 4. **Bridge paragraph** — one sentence connecting to their bet.

@@ -12,7 +12,7 @@ Built for **Claude Code**. The work runs locally. Your CV, bullets, and applicat
 
 - **Fetches** the JD from a URL, with fallbacks (direct fetch, Jina reader, ATS-iframe detection, manual paste).
 - **Scans for prompt-injection** in two layers: a mechanical script (invisible characters, known phrases, HTML-comment imperatives, AI-directed commands) and a semantic pass where the agent reads the JD for manipulation disguised as job requirements. Job postings are untrusted input; this treats them that way.
-- **Assesses fit** against your CV, persona, and a library of tagged "master bullets," scoring two axes — **Match** (how well you clear the core of what the role needs, which gates whether it's worth applying) and **Appeal** (how well the role fits what you're looking for, which sets priority) — and picking the two bullets that best match the role.
+- **Assesses fit** against your CV, persona, and a library of tagged "master bullets," scoring two axes — **Match** (how well you clear the core of what the role needs, which gates whether it's worth applying) and **Appeal** (how well the role fits what you're looking for, which sets priority) — and picking a bullet for each of the CV's auto slots.
 - **Tailors and exports** your resume to PDF (Typst), swapping in the chosen bullets and a per-application UTM tag on your portfolio link.
 - **Tracks** every application in a CSV (default, zero setup) or Notion (optional), and **dedups** so the same job is never filed twice.
 - **Drafts cover letters and application-form answers** in your voice, on request, with a strict anti-AI-tell rule set.

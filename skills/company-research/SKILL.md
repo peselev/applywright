@@ -6,7 +6,7 @@ description: Build or refresh a reusable company dossier for a single company, u
 # Company Research
 
 Build a single reusable dossier for one company. The cover-letter skill and the
-interview skill read it; the user can also run it directly ("research Hearth").
+interview skill read it; the user can also run it directly ("research Acme").
 
 The dossier feeds two downstream uses from **one** document: cover-letter "why-company"
 hooks and interview preparation. There is no separate thin extract — the writer derives
@@ -28,8 +28,8 @@ deep, on-demand layer that sits above it.
   `output/` file is only present on the machine that produced it. The local file is a
   cache; the Notion page is the durable, cross-machine record.
 - **slug:** the same company-slug rule the short ID uses (lowercase, alphanumeric +
-  hyphens, strip "Inc"/"LLC"/commas/periods/ampersands), without the id-tail. `Hearth` →
-  `hearth`; `Bank of New York Mellon` → `bank-of-new-york-mellon`.
+  hyphens, strip "Inc"/"LLC"/commas/periods/ampersands), without the id-tail. `Acme` →
+  `acme`; `North Star Financial` → `north-star-financial`.
 
 **Freshness window: 45 days.** A tier (core, or one department) is fresh if it was
 researched 45 days ago or less. News fields are captured as "last 30 days **as of the
@@ -49,7 +49,7 @@ Do not research anything until this check says you need to. It runs in sub-steps
 
 **1a — Resolve the company and area.** Get the company name (from the caller, the JD, or
 the user) and compute the slug. Identify the **area** in play — the department or product
-the role sits in (e.g. Hearth → "Harper / AI receptionist"; Google → "DeepMind", or
+the role sits in (e.g. Acme → "their flagship product line"; Google → "DeepMind", or
 "Ads"). The caller usually knows the area; if it's ambiguous, ask the user one line rather
 than guess.
 
@@ -324,7 +324,7 @@ The dossier is ready. The calling skill derives what it needs:
 - **interview** (when built) reads the whole dossier for prep, plus the challenges/headwinds
   and leadership-narrative fields for the sharpest material.
 
-If the skill was run directly ("research Hearth"), show the user a short summary: what the
+If the skill was run directly ("research Acme"), show the user a short summary: what the
 dossier now covers (core + which department), how fresh it is, and any fields left
 `*not found*` so they know the gaps. Point them to `output/companies/{slug}.md`.
 

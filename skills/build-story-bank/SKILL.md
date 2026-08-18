@@ -111,7 +111,7 @@ JD-fit signal: ...
 - The `-MAIN` carries no metadata lines, just the headline paragraph.
 - `Theme keys` are short, semantic descriptors drawn from the user's field and their targeting (what kind of role each variant is aimed at), not a fixed central list. Primary first; list only the themes the variant genuinely hits, do not pad.
 - Keep each bullet roughly 30 to 50 words, single paragraph, no internal bullets or bold.
-- Two picks per application must come from **two different families** (every variant of a family is the same project), so the families must stay genuinely distinct.
+- No family is used more than once across the picks (every variant of a family is the same project), so the families must stay genuinely distinct.
 
 ## The approval loop (the hard gate)
 
