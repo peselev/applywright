@@ -127,12 +127,14 @@ JD-fit signal: ...
 
 **Targeting (`persona.md`).** This is the one part of the profile the resume cannot supply, so it is always an interview, never derived. Fill `## What I'm looking for` (target roles, level, stage or company type, must-haves) and `## What I'm NOT looking for` (dealbreakers and anti-targets) from the user's answers. `refresh-persona` deliberately preserves these hand-written sections and never scrapes them, so what is written here is the lasting source. If the user is unsure, capture what they know and leave the rest as `TODO:` rather than inventing a preference.
 
+**Field leveling (`persona.md`).** With the target roles and level now set (from targeting, above), research the field's leveling signals and write the `## Field leveling` section, replacing the placeholder orientation left. Scope it to **field-general vocabulary**: what the field's ladder terms tend to mean in terms of *scope of ownership*, which phrasings in a JD read as a level above or below the posted title, and a couple of concrete examples. Do not research a specific company's ladder — that is per-application, and `company-research` handles it — and do not assign the user their own level, which the positioning already covers. Draft it, show it to the user to confirm or correct, then write it in. Keep it short: a prior the fit step's leveling check can lean on, not a treatise.
+
 ## The setup check, then the Design handoff
 
 Before handing off, close the loop. Verify the finished profile against what the live pipeline assumes: read `skills/process-job/SKILL.md` and `skills/assess-fit/SKILL.md` and confirm every input they assume is present and real. At least:
 
 - `master-bullets.md` meets the completeness bar (at least four families, each with an approved `-MAIN` and at least two variants carrying `Theme keys` / `JD-fit signal`), no placeholders left, approval recorded.
-- `persona.md` has `Positioning`, the per-family case studies, and both targeting sections filled, not the shipped example.
+- `persona.md` has `Positioning`, the per-family case studies, both targeting sections, and `Field leveling` filled, not the shipped example.
 - `config.yaml` and `cv.md` still hold real content and `applywright check-slots profile` passes (the slot tokens and the `slots:` map agree); `applywright doctor` and `applywright tracker status` both read back.
 - No stray `TODO:` markers the user meant to resolve.
 

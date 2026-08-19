@@ -92,6 +92,23 @@ motion that depends on product rather than sales. Stage from Series B through pu
 
 ---
 
+## Field leveling
+
+How seniority maps to scope in the target field (product management), for the fit
+step's leveling check. Field-general context, not a specific company's ladder.
+
+- **Senior**: owns a product area end to end — outcomes, not just delivery — and
+  sets direction within it.
+- **Staff / Principal / Group**: sets direction across several areas or a whole
+  line, defines standards others follow, often owns a 0-to-1 bet or a P&L-equivalent.
+- **Director+**: owns a team and its outcomes; the scope is the org, not one surface.
+
+Phrasings that read a level **above** the posted title: "operate like a GM," "own
+the outcome," "define what good looks like for the org," "0-to-1." A level **below**:
+"support," "execute the roadmap," "own one surface," "report into."
+
+---
+
 ## Other notable themes
 
 Strong bias toward making the hard part legible: turning "is the AI good?" into a

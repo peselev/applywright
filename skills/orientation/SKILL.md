@@ -253,7 +253,7 @@ Checkpoint, noting which families exist and that `check-slots` passes.
 
 ## Step 2.4: Persona (light, for the practice run)
 
-`assess-fit` reads `persona.md` for context, and the cover-letter skill later reads it for case-study URLs. The full case-study version is part of Milestone 3. Here, write only a **short positioning summary**, a few lines on who the user is and what they do, so the practice run's fit step has context to read. Source it from the resume and the user's answers.
+`assess-fit` reads `persona.md` for context, and the cover-letter skill later reads it for case-study URLs. The full case-study version is part of Milestone 3. Here, write only a **short positioning summary**, a few lines on who the user is and what they do, so the practice run's fit step has context to read. Source it from the resume and the user's answers. Also add a `## Field leveling` section as a placeholder — a single line, `TODO: researched in Milestone 3 once target roles and level are set.` — so the section exists for Milestone 3 to fill. Don't research it now; the target roles aren't set yet.
 
 If `portfolio.url` is set and you can run the pipeline (the Claude Code seat), you may run `refresh-persona` now to build a fuller version from the site, or leave it for Milestone 3. The deeper per-project case studies are Milestone 3's job.
 
