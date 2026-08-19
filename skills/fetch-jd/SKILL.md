@@ -105,7 +105,7 @@ Then proceed to Step 2c.
 Read `temp/fetched-jd.md` and decide whether it contains a real JD.
 
 A real JD has ALL of these markers:
-- A role title (specific, e.g., "Senior Product Manager")
+- A specific role title (the exact posted title)
 - A company description paragraph (at least 2-3 sentences)
 - A responsibilities section (usually bulleted, several items)
 - A requirements section (usually bulleted, several items)

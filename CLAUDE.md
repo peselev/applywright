@@ -350,7 +350,7 @@ The script writes atomically and refuses duplicate URLs (pass `--allow-dup` to o
 
 Field mapping:
 - `company` = company name
-- `role` = role title (e.g. "Senior Product Manager")
+- `role` = role title (the exact posted title)
 - `url` = job posting URL
 - `source` = one of `Built In` | `LinkedIn` | `Career page` | `Incoming` (see inference)
 - `stage` = `To apply` (proceed) or `Decided against applying` (skip)
@@ -366,7 +366,7 @@ Only used when `tracker.mode = "notion"`. Requires the Notion MCP and two databa
 | Column | Type | What agent writes |
 |---|---|---|
 | ID | auto_increment_id | (do not touch — Notion assigns) |
-| Name | title (text) | The role title, e.g., "Senior Product Manager" |
+| Name | title (text) | The role title, exactly as posted |
 | URL | URL | The job posting URL |
 | Company | relation → Companies DB | Match an existing Company by name; if no match, auto-create one (see below) |
 | Source | select (single) | Exactly one of: `Built In`, `Career page`, `LinkedIn`, `Incoming`. Case-sensitive. Infer from URL (see below). |
